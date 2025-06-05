@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Field Categorization</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="dashboard">
+      <div class="dashboard-header">
+        <h1>Paper Field Categorization</h1>
+        <div id="paperCountCard" class="card">Total Papers: <span id="paperCount">...</span></div>
+      </div>
+      <div class="dashboard-actions">
+        <button class="action-btn" id="showMetrics">Check Model Accuracy</button>
+        <button class="action-btn" id="showTFIDF">View TF-IDF Values</button>
+        <button class="action-btn" id="showPreprocessed">View Preprocessed Data</button>
+      </div>
+      <div class="dashboard-form">
+        <form id="paperForm">
+          <div class="form-row">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+          </div>
+          <div class="form-row">
+            <label for="abstract">Abstract:</label>
+            <textarea id="abstract" name="abstract" rows="5" required></textarea>
+          </div>
+          <div class="form-row">
+            <label for="kernel">SVM Kernel:</label>
+            <select id="kernel" name="kernel">
+              <option value="linear">Linear</option>
+              <option value="poly">Polynomial</option>
+            </select>
+          </div>
+          <button type="submit" class="main-btn">Categorize Paper</button>
+        </form>
+      </div>
+    </div>
+    <!-- Modals -->
+    <div id="resultModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>Prediction Result</h2>
+        <p id="resultText"></p>
+      </div>
+    </div>
+    <div id="metricsModal" class="modal">
+      <div class="modal-content modal-large">
+        <span class="close" id="closeMetrics">&times;</span>
+        <h2>Model Accuracy (F1, Precision, Recall)</h2>
+        <canvas id="metricsChart"></canvas>
+        <div id="metricsTable"></div>
+      </div>
+    </div>
+    <div id="tfidfModal" class="modal">
+      <div class="modal-content modal-large">
+        <span class="close" id="closeTFIDF">&times;</span>
+        <h2>TF-IDF Values (First 10 Papers)</h2>
+        <div id="tfidfTable"></div>
+      </div>
+    </div>
+    <div id="preprocessedModal" class="modal">
+      <div class="modal-content modal-large">
+        <span class="close" id="closePreprocessed">&times;</span>
+        <h2>Preprocessed Data (First 10 Papers)</h2>
+        <div id="preprocessedTable"></div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Fetch and display paper count
+      fetch('/paper_count').then(res => res.json()).then(d => {
+        document.getElementById('paperCount').textContent = d.count;
+      });
+      // Categorize form
+      document.getElementById('paperForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        formData.set('kernel', document.getElementById('kernel').value);
+        const response = await fetch('/predict', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        document.getElementById('resultText').innerHTML =
+          `<strong>Predicted Field:</strong> ${result.category}<br><strong>Confidence:</strong> ${(result.prob * 100).toFixed(1)}%`;
+        document.getElementById('resultModal').style.display = 'block';
+      };
+      // Metrics modal
+      document.getElementById('showMetrics').onclick = async function() {
+        document.getElementById('metricsModal').style.display = 'block';
+        const res = await fetch('/metrics');
+        const data = await res.json();
+        // Prepare chart data (macro avg)
+        const kernels = ['linear', 'poly'];
+        const metrics = ['f1-score', 'precision', 'recall'];
+        const macro = kernels.map(k => [
+          data[k]['macro avg']['f1-score'],
+          data[k]['macro avg']['precision'],
+          data[k]['macro avg']['recall']
+        ]);
+        const ctx = document.getElementById('metricsChart').getContext('2d');
+        if(window.metricsChartObj) window.metricsChartObj.destroy();
+        window.metricsChartObj = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: metrics,
+            datasets: [
+              { label: 'Linear', data: macro[0], backgroundColor: '#007bff' },
+              { label: 'Polynomial', data: macro[1], backgroundColor: '#ff9800' }
+            ]
+          },
+          options: { responsive: true, scales: { y: { min: 0, max: 1 } } }
+        });
+        // Table
+        let html = `<table><thead><tr><th>Metric</th><th>Linear</th><th>Polynomial</th></tr></thead><tbody>`;
+        metrics.forEach(m => {
+          html += `<tr><td>${m}</td><td>${data.linear['macro avg'][m].toFixed(3)}</td><td>${data.poly['macro avg'][m].toFixed(3)}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('metricsTable').innerHTML = html;
+      };
+      // TF-IDF modal
+      document.getElementById('showTFIDF').onclick = async function() {
+        document.getElementById('tfidfModal').style.display = 'block';
+        const res = await fetch('/tfidf_values');
+        const data = await res.json();
+        let html = '<div style="overflow-x:auto;"><table><thead><tr><th>Paper #</th>';
+        data.features.slice(0, 10).forEach(f => html += `<th>${f}</th>`);
+        html += '</tr></thead><tbody>';
+        data.matrix.forEach((row, i) => {
+          html += `<tr><td>${i+1}</td>`;
+          row.slice(0, 10).forEach(val => html += `<td>${val.toFixed(3)}</td>`);
+          html += '</tr>';
+        });
+        html += '</tbody></table></div>';
+        document.getElementById('tfidfTable').innerHTML = html;
+      };
+      // Preprocessed modal
+      document.getElementById('showPreprocessed').onclick = async function() {
+        document.getElementById('preprocessedModal').style.display = 'block';
+        const res = await fetch('/preprocessed_data');
+        const data = await res.json();
+        let html = '<div style="overflow-x:auto;"><table><thead><tr><th>Preprocessed Text</th><th>Category</th></tr></thead><tbody>';
+        data.data.forEach(row => {
+          html += `<tr><td>${row.text}</td><td>${row.Category}</td></tr>`;
+        });
+        html += '</tbody></table></div>';
+        document.getElementById('preprocessedTable').innerHTML = html;
+      };
+      // Modal close logic
+      document.getElementById('closeModal').onclick = function() {
+        document.getElementById('resultModal').style.display = 'none';
+      };
+      document.getElementById('closeMetrics').onclick = function() {
+        document.getElementById('metricsModal').style.display = 'none';
+      };
+      document.getElementById('closeTFIDF').onclick = function() {
+        document.getElementById('tfidfModal').style.display = 'none';
+      };
+      document.getElementById('closePreprocessed').onclick = function() {
+        document.getElementById('preprocessedModal').style.display = 'none';
+      };
+      window.onclick = function(event) {
+        ['resultModal','metricsModal','tfidfModal','preprocessedModal'].forEach(id => {
+          if (event.target == document.getElementById(id)) {
+            document.getElementById(id).style.display = 'none';
+          }
+        });
+      };
+    </script>
+</body>
+</html>
