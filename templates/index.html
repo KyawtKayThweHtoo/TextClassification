@@ -4,172 +4,225 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paper Field Categorization</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-    <div class="dashboard">
-      <div class="dashboard-header">
-        <h1>Paper Field Categorization</h1>
-        <div id="paperCountCard" class="card">Total Papers: <span id="paperCount">...</span></div>
+<body class="bg-light">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="/">Text Mining App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/">Categorization</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="dashboard-actions">
-        <button class="action-btn" id="showMetrics">Check Model Accuracy</button>
-        <button class="action-btn" id="showTFIDF">View TF-IDF Values</button>
-        <button class="action-btn" id="showPreprocessed">View Preprocessed Data</button>
-      </div>
-      <div class="dashboard-form">
-        <form id="paperForm">
-          <div class="form-row">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
+    </nav>
+    <div class="container mt-6">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-6">
+                <h2 class="mb-4 text-center">Paper Field Categorization</h2>
+                <div class="card shadow-lg">
+                    <form id="paperForm" class="p-4">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Paper Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="abstract" class="form-label">Paper Abstract</label>
+                            <textarea class="form-control" id="abstract" name="abstract" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="kernel" class="form-label">SVM Kernel</label>
+                            <select class="form-select" id="kernel" name="kernel">
+                                <option value="linear">Linear</option>
+                                <option value="poly">Polynomial</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Categorize Paper</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Result Modal - Modern Design -->
+    <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow" style="border-radius: 15px; overflow: hidden; border: none;">
+          <div class="modal-header" style="background: linear-gradient(45deg, #4776E6 0%, #8E54E9 100%); color: white; border: none;">
+            <h5 class="modal-title" id="resultModalLabel" style="font-weight: 600;">Paper Classification Results</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="form-row">
-            <label for="abstract">Abstract:</label>
-            <textarea id="abstract" name="abstract" rows="5" required></textarea>
+          <div class="modal-body p-4" id="resultText" style="background-color: #f8f9fa;">
+            <!-- Content will be dynamically inserted here -->
           </div>
-          <div class="form-row">
-            <label for="kernel">SVM Kernel:</label>
-            <select id="kernel" name="kernel">
-              <option value="linear">Linear</option>
-              <option value="poly">Polynomial</option>
-            </select>
+          <div class="modal-footer" style="border-top: none; background-color: #f8f9fa;">
+            <button type="button" class="btn" data-bs-dismiss="modal" style="background: linear-gradient(45deg, #4776E6 0%, #8E54E9 100%); color: white; border-radius: 10px; padding: 8px 20px; font-weight: 500; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">Close</button>
           </div>
-          <button type="submit" class="main-btn">Categorize Paper</button>
-        </form>
+        </div>
       </div>
     </div>
-    <!-- Modals -->
-    <div id="resultModal" class="modal">
-      <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
-        <h2>Prediction Result</h2>
-        <p id="resultText"></p>
-      </div>
-    </div>
-    <div id="metricsModal" class="modal">
-      <div class="modal-content modal-large">
-        <span class="close" id="closeMetrics">&times;</span>
-        <h2>Model Accuracy (F1, Precision, Recall)</h2>
-        <canvas id="metricsChart"></canvas>
-        <div id="metricsTable"></div>
-      </div>
-    </div>
-    <div id="tfidfModal" class="modal">
-      <div class="modal-content modal-large">
-        <span class="close" id="closeTFIDF">&times;</span>
-        <h2>TF-IDF Values (First 10 Papers)</h2>
-        <div id="tfidfTable"></div>
-      </div>
-    </div>
-    <div id="preprocessedModal" class="modal">
-      <div class="modal-content modal-large">
-        <span class="close" id="closePreprocessed">&times;</span>
-        <h2>Preprocessed Data (First 10 Papers)</h2>
-        <div id="preprocessedTable"></div>
-      </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Fetch and display paper count
-      fetch('/paper_count').then(res => res.json()).then(d => {
-        document.getElementById('paperCount').textContent = d.count;
-      });
       // Categorize form
+      // Initialize all modals
+      document.addEventListener('DOMContentLoaded', function() {
+        // Make sure Bootstrap is properly loaded
+        if (typeof bootstrap !== 'undefined') {
+          console.log('Bootstrap loaded successfully');
+          
+          // Ensure modal close buttons work by adding event listeners
+          const closeButtons = document.querySelectorAll('[data-bs-dismiss="modal"]');
+          closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              const modalId = this.closest('.modal').id;
+              const modalElement = document.getElementById(modalId);
+              const modalInstance = bootstrap.Modal.getInstance(modalElement);
+              if (modalInstance) {
+                modalInstance.hide();
+              }
+            });
+          });
+        } else {
+          console.error('Bootstrap not loaded properly');
+        }
+      });
+      
       document.getElementById('paperForm').onsubmit = async function(e) {
         e.preventDefault();
         const formData = new FormData(this);
-        formData.set('kernel', document.getElementById('kernel').value);
-        const response = await fetch('/predict', {
-          method: 'POST',
-          body: formData
-        });
-        const result = await response.json();
-        document.getElementById('resultText').innerHTML =
-          `<strong>Predicted Field:</strong> ${result.category}<br><strong>Confidence:</strong> ${(result.prob * 100).toFixed(1)}%`;
-        document.getElementById('resultModal').style.display = 'block';
+        // Always send for both kernels
+        const title = document.getElementById('title').value;
+        const abstract = document.getElementById('abstract').value;
+        
+        // Get the modal element
+        const modalElement = document.getElementById('resultModal');
+        
+        // Show loading state in modal with modern styling
+        document.getElementById('resultText').innerHTML = `
+          <div class="d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="position-relative" style="width: 80px; height: 80px;">
+              <div class="spinner-grow text-primary" style="position: absolute; width: 80px; height: 80px; opacity: 0.3;" role="status"></div>
+              <div class="spinner-grow text-primary" style="position: absolute; width: 60px; height: 60px; left: 10px; top: 10px; opacity: 0.5;" role="status"></div>
+              <div class="spinner-grow text-primary" style="position: absolute; width: 40px; height: 40px; left: 20px; top: 20px; opacity: 0.7;" role="status"></div>
+            </div>
+            <h5 class="mt-4" style="font-weight: 500; color: #4776E6;">Analyzing paper...</h5>
+            <p class="text-muted">Applying machine learning models</p>
+          </div>
+        `;
+        
+        // Create and show the modal
+        let resultModal;
+        if (bootstrap && bootstrap.Modal) {
+          // Try to get existing instance first
+          resultModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement, {
+            backdrop: 'static',  // Prevents closing when clicking outside
+            keyboard: true       // Allows closing with ESC key
+          });
+          resultModal.show();
+        } else {
+          console.error('Bootstrap Modal not available');
+          return;
+        }
+        
+        try {
+          // Request both linear and polynomial
+          const [linearRes, polyRes] = await Promise.all([
+            fetch('/predict', {
+              method: 'POST',
+              body: new URLSearchParams({title, abstract, kernel: 'linear'})
+            }),
+            fetch('/predict', {
+              method: 'POST',
+              body: new URLSearchParams({title, abstract, kernel: 'poly'})
+            })
+          ]);
+          
+          const linear = await linearRes.json();
+          const poly = await polyRes.json();
+          
+          // Format the results with modern styling and more visible accuracy
+          document.getElementById('resultText').innerHTML = `
+            <div class="mb-4">
+              <div class="card" style="border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                <div style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; padding: 15px 20px;">
+                  <h5 class="mb-0" style="font-weight: 600;">Linear SVM Results</h5>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center">
+                      <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                        <i class="bi bi-check-lg" style="color: white; font-size: 20px;"></i>
+                      </div>
+                      <h5 class="mb-0" style="font-weight: 600; font-size: 1.3rem;">${linear.category}</h5>
+                    </div>
+                    <div class="accuracy-badge" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
+                      <i class="bi bi-graph-up me-2"></i>
+                      ${linear.accuracy.toFixed(1)}%
+                    </div>
+                  </div>
+                  <div class="progress" style="height: 15px; border-radius: 10px; background-color: #e9ecef; margin-top: 10px; overflow: hidden;">
+                    <div class="progress-bar" role="progressbar" style="width: ${linear.accuracy.toFixed(1)}%; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); transition: width 1.5s ease-in-out;" 
+                      aria-valuenow="${linear.accuracy.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="card" style="border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                <div style="background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); color: white; padding: 15px 20px;">
+                  <h5 class="mb-0" style="font-weight: 600;">Polynomial SVM Results</h5>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center">
+                      <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                        <i class="bi bi-check-lg" style="color: white; font-size: 20px;"></i>
+                      </div>
+                      <h5 class="mb-0" style="font-weight: 600; font-size: 1.3rem;">${poly.category}</h5>
+                    </div>
+                    <div class="accuracy-badge" style="background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
+                      <i class="bi bi-graph-up me-2"></i>
+                      ${poly.accuracy.toFixed(1)}%
+                    </div>
+                  </div>
+                  <div class="progress" style="height: 15px; border-radius: 10px; background-color: #e9ecef; margin-top: 10px; overflow: hidden;">
+                    <div class="progress-bar" role="progressbar" style="width: ${poly.accuracy.toFixed(1)}%; background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); transition: width 1.5s ease-in-out;" 
+                      aria-valuenow="${poly.accuracy.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        } catch (error) {
+          document.getElementById('resultText').innerHTML = `
+            <div class="alert alert-danger">
+              Error processing your request. Please try again.
+            </div>
+          `;
+        }
       };
-      // Metrics modal
-      document.getElementById('showMetrics').onclick = async function() {
-        document.getElementById('metricsModal').style.display = 'block';
-        const res = await fetch('/metrics');
-        const data = await res.json();
-        // Prepare chart data (macro avg)
-        const kernels = ['linear', 'poly'];
-        const metrics = ['f1-score', 'precision', 'recall'];
-        const macro = kernels.map(k => [
-          data[k]['macro avg']['f1-score'],
-          data[k]['macro avg']['precision'],
-          data[k]['macro avg']['recall']
-        ]);
-        const ctx = document.getElementById('metricsChart').getContext('2d');
-        if(window.metricsChartObj) window.metricsChartObj.destroy();
-        window.metricsChartObj = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: metrics,
-            datasets: [
-              { label: 'Linear', data: macro[0], backgroundColor: '#007bff' },
-              { label: 'Polynomial', data: macro[1], backgroundColor: '#ff9800' }
-            ]
-          },
-          options: { responsive: true, scales: { y: { min: 0, max: 1 } } }
-        });
-        // Table
-        let html = `<table><thead><tr><th>Metric</th><th>Linear</th><th>Polynomial</th></tr></thead><tbody>`;
-        metrics.forEach(m => {
-          html += `<tr><td>${m}</td><td>${data.linear['macro avg'][m].toFixed(3)}</td><td>${data.poly['macro avg'][m].toFixed(3)}</td></tr>`;
-        });
-        html += '</tbody></table>';
-        document.getElementById('metricsTable').innerHTML = html;
-      };
-      // TF-IDF modal
-      document.getElementById('showTFIDF').onclick = async function() {
-        document.getElementById('tfidfModal').style.display = 'block';
-        const res = await fetch('/tfidf_values');
-        const data = await res.json();
-        let html = '<div style="overflow-x:auto;"><table><thead><tr><th>Paper #</th>';
-        data.features.slice(0, 10).forEach(f => html += `<th>${f}</th>`);
-        html += '</tr></thead><tbody>';
-        data.matrix.forEach((row, i) => {
-          html += `<tr><td>${i+1}</td>`;
-          row.slice(0, 10).forEach(val => html += `<td>${val.toFixed(3)}</td>`);
-          html += '</tr>';
-        });
-        html += '</tbody></table></div>';
-        document.getElementById('tfidfTable').innerHTML = html;
-      };
-      // Preprocessed modal
-      document.getElementById('showPreprocessed').onclick = async function() {
-        document.getElementById('preprocessedModal').style.display = 'block';
-        const res = await fetch('/preprocessed_data');
-        const data = await res.json();
-        let html = '<div style="overflow-x:auto;"><table><thead><tr><th>Preprocessed Text</th><th>Category</th></tr></thead><tbody>';
-        data.data.forEach(row => {
-          html += `<tr><td>${row.text}</td><td>${row.Category}</td></tr>`;
-        });
-        html += '</tbody></table></div>';
-        document.getElementById('preprocessedTable').innerHTML = html;
-      };
-      // Modal close logic
-      document.getElementById('closeModal').onclick = function() {
-        document.getElementById('resultModal').style.display = 'none';
-      };
-      document.getElementById('closeMetrics').onclick = function() {
-        document.getElementById('metricsModal').style.display = 'none';
-      };
-      document.getElementById('closeTFIDF').onclick = function() {
-        document.getElementById('tfidfModal').style.display = 'none';
-      };
-      document.getElementById('closePreprocessed').onclick = function() {
-        document.getElementById('preprocessedModal').style.display = 'none';
-      };
-      window.onclick = function(event) {
-        ['resultModal','metricsModal','tfidfModal','preprocessedModal'].forEach(id => {
-          if (event.target == document.getElementById(id)) {
-            document.getElementById(id).style.display = 'none';
+      
+      // Add event listener to close button
+      document.querySelectorAll('.modal .btn-secondary').forEach(button => {
+        button.addEventListener('click', function() {
+          const modalElement = document.getElementById('resultModal');
+          const modalInstance = bootstrap.Modal.getInstance(modalElement);
+          if (modalInstance) {
+            modalInstance.hide();
           }
         });
-      };
+      });
     </script>
 </body>
 </html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corpus & TF-IDF</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-light">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="/">Text Mining App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Categorization</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/corpus">Corpus & TF-IDF</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-6">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-6">
+                <h2 class="mb-4 text-center">Corpus Preprocessing & TF-IDF Values</h2>
+                <div class="card shadow-lg p-4">
+                    <div class="mb-3">
+                      <label for="fieldSelect" class="form-label">Select Field</label>
+                      <select id="fieldSelect" class="form-select"></select>
+                    </div>
+                    <div id="corpusTable"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Fetch corpus and tf-idf data from backend and render
+      let allCorpusData = [];
+      async function loadCorpus() {
+        try {
+          const res = await fetch('/corpus_data');
+          allCorpusData = await res.json();
+          console.log('Loaded corpus data:', allCorpusData);
+          populateFieldSelect();
+          renderCorpusTable();
+        } catch (error) {
+          console.error('Error loading corpus data:', error);
+          document.getElementById('corpusTable').innerHTML = '<div class="alert alert-danger">Error loading corpus data. Please try refreshing the page.</div>';
+        }
+      }
+      function populateFieldSelect() {
+        const select = document.getElementById('fieldSelect');
+        select.innerHTML = '';
+        
+        // Sort the data to ensure Artificial Intelligence appears first
+        const sortedData = [...allCorpusData].sort((a, b) => {
+          // If 'Artificial Intelligence' is present, it should come first
+          if (a.field === 'Artificial Intelligence') return -1;
+          if (b.field === 'Artificial Intelligence') return 1;
+          return a.field.localeCompare(b.field);
+        });
+        
+        sortedData.forEach((row, index) => {
+          const opt = document.createElement('option');
+          opt.value = row.field;
+          opt.text = row.field;
+          opt.selected = index === 0; // Only select the first item (which should be AI)
+          select.appendChild(opt);
+        });
+      }
+      function renderCorpusTable() {
+        const selected = document.getElementById('fieldSelect').value;
+        console.log('Selected field:', selected);
+        console.log('Available data:', allCorpusData);
+        
+        let html = `<table class='table table-bordered mt-4'><thead><tr><th>Field</th><th>Top Preprocessed Words (by TF-IDF)</th><th>TF-IDF Values</th></tr></thead><tbody>`;
+        
+        // Find the selected field data
+        const filteredData = allCorpusData.filter(row => row.field === selected);
+        console.log('Filtered data:', filteredData);
+        
+        if (filteredData.length === 0) {
+          html += `<tr><td colspan="3" class="text-center"><em>No data available for ${selected}</em></td></tr>`;
+        } else {
+          filteredData.forEach(row => {
+            if (!row.preprocessed_words || row.preprocessed_words.length === 0) {
+              html += `<tr><td>${row.field}</td><td colspan="2" class="text-center"><em>No data available</em></td></tr>`;
+              return;
+            }
+            
+            // Create a table for word-tfidf pairs
+            let wordTfidfTable = '<div class="table-responsive" style="max-height: 400px; overflow-y: auto;"><table class="table table-sm table-striped">';
+            wordTfidfTable += '<thead><tr><th>#</th><th>Word</th><th>TF-IDF Value</th></tr></thead><tbody>';
+            
+            // Add rows for each word-tfidf pair
+            row.preprocessed_words.forEach((word, index) => {
+              const tfidfValue = row.tfidf_values[index] ? row.tfidf_values[index].toFixed(4) : 'N/A';
+              wordTfidfTable += `<tr><td>${index + 1}</td><td>${word}</td><td>${tfidfValue}</td></tr>`;
+            });
+            
+            wordTfidfTable += '</tbody></table></div>';
+            
+            html += `<tr>
+                      <td>${row.field}</td>
+                      <td colspan="2">${wordTfidfTable}</td>
+                    </tr>`;
+          });
+        }
+        html += '</tbody></table>';
+        document.getElementById('corpusTable').innerHTML = html;
+      }
+      document.getElementById('fieldSelect').addEventListener('change', renderCorpusTable);
+      loadCorpus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Accuracy Metrics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-light">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="/">Text Mining App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Categorization</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/insights">Accuracy Chart</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container mt-6">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-6">
+                <h2 class="mb-4 text-center">Model Accuracy Metrics</h2>
+                <div class="card shadow-lg p-4">
+                    <canvas id="accuracyChart" height="120"></canvas>
+                    <div id="metricsTable" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Fetch metrics from backend and render chart and table
+      async function loadMetrics() {
+        try {
+          // Show loading state
+          document.getElementById('metricsTable').innerHTML = `
+            <div class="d-flex justify-content-center my-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          `;
+          
+          const res = await fetch('/metrics');
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+          
+          const data = await res.json();
+          console.log('Metrics data:', data); // Debug output
+          
+          // Check if there's an error in the response
+          if (data.error) {
+            throw new Error(data.error);
+          }
+          
+          // Ensure the data has the expected structure
+          if (!data.linear || !data.poly) {
+            throw new Error('Invalid data structure: missing linear or poly data');
+          }
+          
+          // Collect all common metrics
+          const metrics = ['f1-score', 'precision', 'recall'];
+          const kernels = ['linear', 'poly'];
+          
+          // Prepare data arrays with defensive coding
+          const chartData = [];
+          
+          // Process each metric
+          for (const metric of metrics) {
+            const metricValues = [];
+            
+            // For each kernel type
+            for (const kernel of kernels) {
+              try {
+                if (data[kernel] && 
+                    data[kernel]['macro avg'] && 
+                    typeof data[kernel]['macro avg'][metric] === 'number') {
+                  metricValues.push(data[kernel]['macro avg'][metric]);
+                } else {
+                  console.warn(`Missing or invalid ${metric} for ${kernel}`);
+                  metricValues.push(0); // Default value if missing
+                }
+              } catch (err) {
+                console.error(`Error accessing ${metric} for ${kernel}:`, err);
+                metricValues.push(0);
+              }
+            }
+            
+            chartData.push(metricValues);
+          }
+          
+          // Add accuracy which is in a different location
+          const accuracyValues = [];
+          for (const kernel of kernels) {
+            try {
+              if (data[kernel] && typeof data[kernel]['accuracy'] === 'number') {
+                accuracyValues.push(data[kernel]['accuracy']);
+              } else {
+                console.warn(`Missing accuracy for ${kernel}`);
+                accuracyValues.push(0);
+              }
+            } catch (err) {
+              console.error(`Error accessing accuracy for ${kernel}:`, err);
+              accuracyValues.push(0);
+            }
+          }
+          chartData.push(accuracyValues);
+          
+          // Log the chart data for debugging
+          console.log('Chart data:', chartData);
+          
+          // Destroy existing chart if it exists
+          const chartContainer = document.getElementById('accuracyChart');
+          const existingChart = Chart.getChart(chartContainer);
+          if (existingChart) {
+            existingChart.destroy();
+          }
+          
+          // Chart.js config
+          const ctx = chartContainer.getContext('2d');
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: [...metrics.map(m => m.charAt(0).toUpperCase() + m.slice(1)), 'Accuracy'],
+              datasets: [
+                {
+                  label: 'Linear SVM',
+                  data: chartData.map(row => row[0]),
+                  backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  borderWidth: 1
+                },
+                {
+                  label: 'Polynomial SVM',
+                  data: chartData.map(row => row[1]),
+                  backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                  borderColor: 'rgba(255, 159, 64, 1)',
+                  borderWidth: 1
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: 'top' },
+                title: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return `${context.dataset.label}: ${(context.raw * 100).toFixed(1)}%`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: { 
+                  beginAtZero: true, 
+                  max: 1,
+                  ticks: {
+                    callback: function(value) {
+                      return (value * 100) + '%';
+                    }
+                  }
+                }
+              }
+            }
+          });
+          
+          // Metrics table with percentage formatting
+          let html = `<table class="table table-bordered mt-4">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Linear SVM</th>
+                <th>Polynomial SVM</th>
+              </tr>
+            </thead>
+            <tbody>`;
+          
+          // Add rows for each metric
+          for (let i = 0; i < chartData.length; i++) {
+            const metricName = i < metrics.length ? metrics[i] : 'accuracy';
+            const formattedName = metricName.charAt(0).toUpperCase() + metricName.slice(1);
+            
+            html += `<tr>
+              <td>${formattedName}</td>
+              <td>${(chartData[i][0] * 100).toFixed(1)}%</td>
+              <td>${(chartData[i][1] * 100).toFixed(1)}%</td>
+            </tr>`;
+          }
+          
+          html += '</tbody></table>';
+          document.getElementById('metricsTable').innerHTML = html;
+          
+        } catch (error) {
+          console.error('Error loading metrics:', error);
+          document.getElementById('metricsTable').innerHTML = `
+            <div class="alert alert-danger">
+              Error loading metrics data. Please try refreshing the page.
+              <br>Details: ${error.message}
+            </div>
+          `;
+        }
+      }
+      loadMetrics();
+    </script>
+</body>
+</html>

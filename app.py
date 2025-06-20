@@ -42,7 +42,48 @@ def preprocess(text):
     return ' '.join(tokens)
 
 # --- Load Real Data for Thesis Fields ---
-data = pd.read_csv('preprocessed_papers_data.csv')
+# Load data from Excel files in the data directory
+def load_excel_data(filename, category):
+    # Use absolute path to ensure file is found
+    file_path = os.path.abspath(os.path.join('data', filename))
+    print(f"Looking for file: {file_path}")
+    
+    if os.path.exists(file_path):
+        print(f"File found: {file_path}")
+        try:
+            df = pd.read_excel(file_path)
+            print(f"Loaded {len(df)} rows from {filename}")
+            print(f"Columns: {df.columns.tolist()}")
+            
+            if 'Title' in df.columns and 'Abstract' in df.columns:
+                df['Category'] = category
+                return df[['Title', 'Abstract', 'Category']]
+            else:
+                print(f"Missing required columns in {filename}")
+        except Exception as e:
+            print(f"Error loading {filename}: {str(e)}")
+    else:
+        print(f"File not found: {file_path}")
+    
+    return pd.DataFrame()
+
+# Print current directory for debugging
+print(f"Current working directory: {os.getcwd()}")
+print(f"Data directory exists: {os.path.exists('data')}")
+if os.path.exists('data'):
+    print(f"Files in data directory: {os.listdir('data')}")
+
+# Load data from each Excel file
+dataframes = [
+    load_excel_data('ai_data.xlsx', 'Artificial Intelligence'),
+    load_excel_data('distribution_data.xlsx', 'Distribution Data'),
+    load_excel_data('image_processing_data.xlsx', 'Image Preprocessing'),
+    load_excel_data('networking_cybersecurity_data.xlsx', 'Networking and Cybersecurity'),
+    load_excel_data('se_data.xlsx', 'Software Engineering')
+]
+
+# Combine all dataframes
+data = pd.concat(dataframes, ignore_index=True)
 data = data.dropna(subset=['Title', 'Abstract', 'Category'])
 data['text'] = data['Title'].astype(str) + ' ' + data['Abstract'].astype(str)
 data['text'] = data['text'].apply(preprocess)
@@ -89,7 +130,9 @@ def predict():
         pred_code = linear_pipeline.predict([text])[0]
         prob = np.max(linear_pipeline.predict_proba([text]))
     pred = label_encoder.inverse_transform([pred_code])[0]
-    return jsonify({'category': pred, 'prob': round(float(prob), 2)})
+    # Convert probability to accuracy percentage
+    accuracy = float(prob) * 100
+    return jsonify({'category': pred, 'accuracy': accuracy})
 
 @app.route('/metrics', methods=['GET'])
 def metrics():
@@ -124,6 +167,71 @@ def preprocessed_data():
 @app.route('/paper_count', methods=['GET'])
 def paper_count():
     return jsonify({'count': len(data)})
+
+@app.route('/insights')
+def insights():
+    return render_template('insights.html')
+
+@app.route('/corpus')
+def corpus():
+    return render_template('corpus.html')
+
+@app.route('/corpus_data')
+def corpus_data():
+    tfidf_vec = linear_pipeline.named_steps['tfidf']
+    feature_names = tfidf_vec.get_feature_names_out()
+    result = []
+    
+    # Print debug information
+    print(f"Available categories in data: {data['Category'].unique()}")
+    print(f"Total data rows: {len(data)}")
+    print(f"Feature names count: {len(feature_names)}")
+    
+    for cat in FIELDS:
+        cat_rows = data[data['Category'] == cat]
+        print(f"Category '{cat}' has {len(cat_rows)} rows")
+        
+        if not cat_rows.empty:
+            # Process words for this category - use actual meaningful words
+            words = []
+            for t in cat_rows['text']:
+                if isinstance(t, str):
+                    words.extend(t.split())
+            
+            # Get unique words and sort them
+            unique_words = sorted(list(set(words)))
+            
+            # Calculate TF-IDF values
+            tfidf_matrix = tfidf_vec.transform(cat_rows['text'])
+            tfidf_avg = np.asarray(tfidf_matrix.mean(axis=0)).flatten()
+            
+            # Create a dictionary of word:tfidf_value pairs
+            word_tfidf_pairs = []
+            for idx, word in enumerate(feature_names):
+                if word in unique_words:
+                    # Only include words that are in this category's vocabulary
+                    word_tfidf_pairs.append((word, float(tfidf_avg[idx])))
+            
+            # Sort by TF-IDF value in descending order to get most important terms first
+            word_tfidf_pairs.sort(key=lambda x: x[1], reverse=True)
+            
+            # Separate into words and values for the response
+            top_words = [pair[0] for pair in word_tfidf_pairs[:100]]
+            top_tfidf_values = [pair[1] for pair in word_tfidf_pairs[:100]]
+            
+            result.append({
+                'field': cat,
+                'preprocessed_words': top_words,  # Most important words by TF-IDF
+                'tfidf_values': top_tfidf_values  # Corresponding TF-IDF values
+            })
+        else:
+            result.append({
+                'field': cat,
+                'preprocessed_words': [],
+                'tfidf_values': []
+            })
+    
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)
