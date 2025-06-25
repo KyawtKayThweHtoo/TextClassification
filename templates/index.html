@@ -133,77 +133,85 @@
         }
         
         try {
-          // Request both linear and polynomial
-          const [linearRes, polyRes] = await Promise.all([
-            fetch('/predict', {
+          // Get the selected kernel
+          const selectedKernel = document.getElementById('kernel').value;
+          
+          // Only request the selected kernel
+          let response;
+          if (selectedKernel === 'linear') {
+            response = await fetch('/predict', {
               method: 'POST',
               body: new URLSearchParams({title, abstract, kernel: 'linear'})
-            }),
-            fetch('/predict', {
+            });
+          } else {
+            response = await fetch('/predict', {
               method: 'POST',
               body: new URLSearchParams({title, abstract, kernel: 'poly'})
-            })
-          ]);
+            });
+          }
           
-          const linear = await linearRes.json();
-          const poly = await polyRes.json();
+          const result = await response.json();
+          const isLinear = selectedKernel === 'linear';
           
           // Format the results with modern styling and more visible accuracy
-          document.getElementById('resultText').innerHTML = `
-            <div class="mb-4">
-              <div class="card" style="border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                <div style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; padding: 15px 20px;">
-                  <h5 class="mb-0" style="font-weight: 600;">Linear SVM Results</h5>
-                </div>
-                <div class="card-body" style="padding: 20px;">
-                  <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="d-flex align-items-center">
-                      <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                        <i class="bi bi-check-lg" style="color: white; font-size: 20px;"></i>
-                      </div>
-                      <h5 class="mb-0" style="font-weight: 600; font-size: 1.3rem;">${linear.category}</h5>
+          // Only show the selected kernel's results
+          let resultHTML = '';
+          
+          if (isLinear) {
+            // Linear SVM Results
+            resultHTML = `<div class="card" style="border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+              <div style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; padding: 15px 20px;">
+                <h5 class="mb-0" style="font-weight: 600;">Linear SVM Results</h5>
+              </div>
+              <div class="card-body" style="padding: 20px;">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex align-items-center">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                      <i class="bi bi-check-lg" style="color: white; font-size: 20px;"></i>
                     </div>
-                    <div class="accuracy-badge" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
-                      <i class="bi bi-graph-up me-2"></i>
-                      ${linear.accuracy.toFixed(1)}%
-                    </div>
+                    <h5 class="mb-0" style="font-weight: 600; font-size: 1.3rem;">${result.category}</h5>
                   </div>
-                  <div class="progress" style="height: 15px; border-radius: 10px; background-color: #e9ecef; margin-top: 10px; overflow: hidden;">
-                    <div class="progress-bar" role="progressbar" style="width: ${linear.accuracy.toFixed(1)}%; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); transition: width 1.5s ease-in-out;" 
-                      aria-valuenow="${linear.accuracy.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
-                    </div>
+                  <div class="accuracy-badge" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
+                    <i class="bi bi-graph-up me-2"></i>
+                    ${result.accuracy.toFixed(1)}%
+                  </div>
+                </div>
+                <div class="progress" style="height: 15px; border-radius: 10px; background-color: #e9ecef; margin-top: 10px; overflow: hidden;">
+                  <div class="progress-bar" role="progressbar" style="width: ${result.accuracy.toFixed(1)}%; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); transition: width 1.5s ease-in-out;" 
+                    aria-valuenow="${result.accuracy.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
                   </div>
                 </div>
               </div>
-            </div>
-            
-            <div>
-              <div class="card" style="border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                <div style="background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); color: white; padding: 15px 20px;">
-                  <h5 class="mb-0" style="font-weight: 600;">Polynomial SVM Results</h5>
-                </div>
-                <div class="card-body" style="padding: 20px;">
-                  <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="d-flex align-items-center">
-                      <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                        <i class="bi bi-check-lg" style="color: white; font-size: 20px;"></i>
-                      </div>
-                      <h5 class="mb-0" style="font-weight: 600; font-size: 1.3rem;">${poly.category}</h5>
+            </div>`;
+          } else {
+            // Polynomial SVM Results
+            resultHTML = `<div class="card" style="border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+              <div style="background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); color: white; padding: 15px 20px;">
+                <h5 class="mb-0" style="font-weight: 600;">Polynomial SVM Results</h5>
+              </div>
+              <div class="card-body" style="padding: 20px;">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <div class="d-flex align-items-center">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                      <i class="bi bi-check-lg" style="color: white; font-size: 20px;"></i>
                     </div>
-                    <div class="accuracy-badge" style="background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
-                      <i class="bi bi-graph-up me-2"></i>
-                      ${poly.accuracy.toFixed(1)}%
-                    </div>
+                    <h5 class="mb-0" style="font-weight: 600; font-size: 1.3rem;">${result.category}</h5>
                   </div>
-                  <div class="progress" style="height: 15px; border-radius: 10px; background-color: #e9ecef; margin-top: 10px; overflow: hidden;">
-                    <div class="progress-bar" role="progressbar" style="width: ${poly.accuracy.toFixed(1)}%; background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); transition: width 1.5s ease-in-out;" 
-                      aria-valuenow="${poly.accuracy.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
-                    </div>
+                  <div class="accuracy-badge" style="background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
+                    <i class="bi bi-graph-up me-2"></i>
+                    ${result.accuracy.toFixed(1)}%
+                  </div>
+                </div>
+                <div class="progress" style="height: 15px; border-radius: 10px; background-color: #e9ecef; margin-top: 10px; overflow: hidden;">
+                  <div class="progress-bar" role="progressbar" style="width: ${result.accuracy.toFixed(1)}%; background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); transition: width 1.5s ease-in-out;" 
+                    aria-valuenow="${result.accuracy.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
                   </div>
                 </div>
               </div>
-            </div>
-          `;
+            </div>`;
+          }
+          
+          document.getElementById('resultText').innerHTML = resultHTML;
         } catch (error) {
           document.getElementById('resultText').innerHTML = `
             <div class="alert alert-danger">
