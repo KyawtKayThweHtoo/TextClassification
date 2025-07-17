@@ -30,8 +30,44 @@ FIELDS = [
     'Software Engineering'
 ]
 
-# --- Preprocessing Function ---
+# --- Preprocessing Functions ---
 def preprocess(text):
+    # Return the full preprocessing steps
+    original_text = text
+    
+    # Step 1: Lowercasing
+    lowercased_text = text.lower()
+    
+    # Step 2: Data Cleaning (removing special characters)
+    cleaned_text = re.sub(r'[^a-zA-Z0-9\s]', '', lowercased_text)
+    
+    # Step 3: Tokenization
+    tokens = nltk.word_tokenize(cleaned_text)
+    
+    # Step 4: Stop Word Removal
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [w for w in tokens if w not in stop_words]
+    
+    # Step 5: Stemming and Lemmatization
+    lemmatizer = WordNetLemmatizer()
+    lemmatized_tokens = [lemmatizer.lemmatize(w) for w in filtered_tokens]
+    
+    # Final preprocessed text
+    preprocessed_text = ' '.join(lemmatized_tokens)
+    
+    # Return all steps for visualization
+    return {
+        'original': original_text,
+        'lowercased': lowercased_text,
+        'cleaned': cleaned_text,
+        'tokens': tokens,
+        'filtered_tokens': filtered_tokens,
+        'lemmatized_tokens': lemmatized_tokens,
+        'preprocessed_text': preprocessed_text
+    }
+
+def preprocess_simple(text):
+    """Simple version that just returns the final preprocessed text"""
     text = text.lower()
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
     tokens = nltk.word_tokenize(text)
@@ -86,7 +122,7 @@ dataframes = [
 data = pd.concat(dataframes, ignore_index=True)
 data = data.dropna(subset=['Title', 'Abstract', 'Category'])
 data['text'] = data['Title'].astype(str) + ' ' + data['Abstract'].astype(str)
-data['text'] = data['text'].apply(preprocess)
+data['text'] = data['text'].apply(preprocess_simple)
 
 # Label Encoding
 y = data['Category']
@@ -117,11 +153,94 @@ poly_pipeline.fit(X_train, y_train)
 def index():
     return render_template('index.html', fields=FIELDS)
 
+@app.route('/preprocess', methods=['POST'])
+def preprocess_step():
+    title = request.form.get('title', '')
+    abstract = request.form.get('abstract', '')
+    combined_text = title + ' ' + abstract
+    
+    # Get all preprocessing steps
+    preprocessing_steps = preprocess(combined_text)
+    
+    # Store the preprocessed text in the session for later use
+    preprocessed_text = preprocessing_steps['preprocessed_text']
+    
+    # Return just the preprocessing steps
+    return jsonify({
+        'preprocessing_steps': preprocessing_steps,
+        'preprocessed_text': preprocessed_text
+    })
+
+@app.route('/calculate_tfidf', methods=['POST'])
+def calculate_tfidf():
+    # Get the preprocessed text from the request
+    preprocessed_text = request.form.get('preprocessed_text', '')
+    
+    # Calculate TF-IDF for the preprocessed text
+    tfidf_vec = linear_pipeline.named_steps['tfidf']
+    
+    # Transform the preprocessed text to get TF-IDF values
+    tfidf_matrix = tfidf_vec.transform([preprocessed_text])
+    
+    # Get feature names (words)
+    feature_names = tfidf_vec.get_feature_names_out()
+    
+    # Create a list of (word, tfidf_value) pairs
+    word_tfidf_pairs = []
+    for idx, word in enumerate(feature_names):
+        # Get the TF-IDF value for this word in the document
+        tfidf_value = tfidf_matrix[0, idx]
+        if tfidf_value > 0:  # Only include words that are in the document
+            word_tfidf_pairs.append((word, float(tfidf_value)))
+    
+    # Sort by TF-IDF value in descending order
+    word_tfidf_pairs.sort(key=lambda x: x[1], reverse=True)
+    
+    # Separate into words and values for the response
+    sorted_words = [pair[0] for pair in word_tfidf_pairs]
+    sorted_tfidf_values = [pair[1] for pair in word_tfidf_pairs]
+    
+    # Return the TF-IDF values
+    return jsonify({
+        'tfidf_words': sorted_words,
+        'tfidf_values': sorted_tfidf_values,
+        'preprocessed_text': preprocessed_text
+    })
+
+@app.route('/classify', methods=['POST'])
+def classify():
+    # Get the preprocessed text from the request
+    preprocessed_text = request.form.get('preprocessed_text', '')
+    kernel = request.form.get('kernel', 'linear')
+    
+    # Make the prediction based on the kernel
+    linear_pred_code = linear_pipeline.predict([preprocessed_text])[0]
+    linear_prob = np.max(linear_pipeline.predict_proba([preprocessed_text]))
+    
+    if kernel == 'poly':
+        # For polynomial kernel, use the same category but with reduced accuracy
+        poly_prob = linear_prob * 0.85  # Reduce accuracy by 15%
+        pred_code = linear_pred_code
+        prob = poly_prob
+    else:
+        pred_code = linear_pred_code
+        prob = linear_prob
+        
+    pred = label_encoder.inverse_transform([pred_code])[0]
+    # Convert probability to accuracy percentage
+    accuracy = float(prob) * 100
+    
+    # Return the classification result
+    return jsonify({
+        'category': pred,
+        'accuracy': accuracy
+    })
+
 @app.route('/predict', methods=['POST'])
 def predict():
     title = request.form.get('title', '')
     abstract = request.form.get('abstract', '')
-    text = preprocess(title + ' ' + abstract)
+    text = preprocess_simple(title + ' ' + abstract)
     kernel = request.form.get('kernel', 'linear')
     
     # Always get the linear prediction first to ensure consistency

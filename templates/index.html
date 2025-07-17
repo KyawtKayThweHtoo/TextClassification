@@ -39,36 +39,227 @@
                             <label for="abstract" class="form-label">Paper Abstract</label>
                             <textarea class="form-control" id="abstract" name="abstract" rows="3" required></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="kernel" class="form-label">SVM Kernel</label>
-                            <select class="form-select" id="kernel" name="kernel">
-                                <option value="linear">Linear</option>
-                                <option value="poly">Polynomial</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Categorize Paper</button>
+                        <button type="submit" class="btn btn-primary w-100">Preprocess</button>
                     </form>
+                </div>
+                
+                <!-- Preprocessing Steps Section -->
+                <div id="preprocessingSteps" class="mt-4" style="display: none;">
+                    <h3 class="mb-3">Text Preprocessing Steps</h3>
+                    
+                    <!-- Accordion for Preprocessing Steps -->
+                    <div class="accordion" id="preprocessingAccordion">
+                        <!-- Data Cleaning Step -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="dataCleaning">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dataCleaningContent" aria-expanded="false" aria-controls="dataCleaningContent">
+                                    <i class="bi bi-check-circle-fill me-2 text-success"></i> Data Cleaning
+                                </button>
+                            </h2>
+                            <div id="dataCleaningContent" class="accordion-collapse collapse" aria-labelledby="dataCleaning" data-bs-parent="#preprocessingAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Original Text:</h6>
+                                            <div class="border p-2 rounded mb-3" id="originalText"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>After Cleaning:</h6>
+                                            <div class="border p-2 rounded" id="cleanedText"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tokenization Step -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="tokenization">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tokenizationContent" aria-expanded="false" aria-controls="tokenizationContent">
+                                    <i class="bi bi-scissors me-2 text-primary"></i> Tokenization
+                                </button>
+                            </h2>
+                            <div id="tokenizationContent" class="accordion-collapse collapse" aria-labelledby="tokenization" data-bs-parent="#preprocessingAccordion">
+                                <div class="accordion-body">
+                                    <h6>Tokens:</h6>
+                                    <div class="border p-2 rounded" id="tokenizedText" style="max-height: 200px; overflow-y: auto;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stop Word Removal Step -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="stopWordRemoval">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#stopWordRemovalContent" aria-expanded="false" aria-controls="stopWordRemovalContent">
+                                    <i class="bi bi-x-circle me-2 text-danger"></i> Stop Word Removal
+                                </button>
+                            </h2>
+                            <div id="stopWordRemovalContent" class="accordion-collapse collapse" aria-labelledby="stopWordRemoval" data-bs-parent="#preprocessingAccordion">
+                                <div class="accordion-body">
+                                    <h6>After Stop Word Removal:</h6>
+                                    <div class="border p-2 rounded" id="filteredText" style="max-height: 200px; overflow-y: auto;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Lowercasing Step -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="lowercasing">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#lowercasingContent" aria-expanded="false" aria-controls="lowercasingContent">
+                                    <i class="bi bi-type-lowercase me-2 text-info"></i> Lowercasing
+                                </button>
+                            </h2>
+                            <div id="lowercasingContent" class="accordion-collapse collapse" aria-labelledby="lowercasing" data-bs-parent="#preprocessingAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Original Text:</h6>
+                                            <div class="border p-2 rounded mb-3" id="beforeLowercaseText"></div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>After Lowercasing:</h6>
+                                            <div class="border p-2 rounded" id="lowercasedText"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stemming and Lemmatization Step -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="stemming">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#stemmingContent" aria-expanded="false" aria-controls="stemmingContent">
+                                    <i class="bi bi-flower1 me-2 text-success"></i> Stemming and Lemmatization
+                                </button>
+                            </h2>
+                            <div id="stemmingContent" class="accordion-collapse collapse" aria-labelledby="stemming" data-bs-parent="#preprocessingAccordion">
+                                <div class="accordion-body">
+                                    <h6>After Stemming and Lemmatization:</h6>
+                                    <div class="border p-2 rounded" id="lemmatizedText" style="max-height: 200px; overflow-y: auto;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Button to show TF-IDF Values -->
+                    <div class="mt-4 text-center" id="showTfidfButtonContainer">
+                        <button id="showTfidfButton" class="btn btn-success btn-lg">
+                            <i class="bi bi-table me-2"></i> Show TF-IDF Values
+                        </button>
+                    </div>
+                    
+                    <!-- TF-IDF Values Section -->
+                    <div class="mt-4" id="tfidfSection" style="display: none;">
+                        <h3 class="mb-3">TF-IDF Values</h3>
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" id="tfidfSearch" placeholder="Search words...">
+                                </div>
+                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                    <table class="table table-striped table-hover" id="tfidfTable">
+                                        <thead class="sticky-top bg-light">
+                                            <tr>
+                                                <th>Rank</th>
+                                                <th>Word</th>
+                                                <th>TF-IDF Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tfidfTableBody">
+                                            <!-- TF-IDF values will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Button to show Classification Options -->
+                        <div class="mt-4 text-center" id="showClassificationButtonContainer">
+                            <div class="card shadow-sm p-3">
+                                <div class="mb-3">
+                                    <label for="kernel" class="form-label">SVM Kernel</label>
+                                    <select class="form-select" id="kernel" name="kernel">
+                                        <option value="linear">Linear</option>
+                                        <option value="poly">Polynomial</option>
+                                    </select>
+                                </div>
+                                <button id="categorizeButton" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-tag-fill me-2"></i> Categorize
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Classification Result Section -->
+                    <div class="mt-4 mb-5" id="classificationSection" style="display: none;">
+                        <h3 class="mb-3">Classification Result</h3>
+                        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-award" style="font-size: 3rem; color: #4776E6;"></i>
+                                </div>
+                                <h4 class="mb-3" id="resultCategory">Processing...</h4>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <div class="accuracy-badge" id="resultAccuracy" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
+                                        <i class="bi bi-graph-up me-2"></i>
+                                        Accuracy: 0%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Result Modal - Modern Design -->
-    <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow" style="border-radius: 15px; overflow: hidden; border: none;">
-          <div class="modal-header" style="background: linear-gradient(45deg, #4776E6 0%, #8E54E9 100%); color: white; border: none;">
-            <h5 class="modal-title" id="resultModalLabel" style="font-weight: 600;">Paper Classification Results</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body p-4" id="resultText" style="background-color: #f8f9fa;">
-            <!-- Content will be dynamically inserted here -->
-          </div>
-          <div class="modal-footer" style="border-top: none; background-color: #f8f9fa;">
-            <button type="button" class="btn" data-bs-dismiss="modal" style="background: linear-gradient(45deg, #4776E6 0%, #8E54E9 100%); color: white; border-radius: 10px; padding: 8px 20px; font-weight: 500; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- We've removed the modal as we're now showing results directly on the page -->
+    <!-- Additional CSS for the preprocessing steps -->
+    <style>
+      .mt-6 {
+        margin-top: 5rem !important;
+      }
+      
+      /* Animation for loading transitions */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      #preprocessingSteps {
+        animation: fadeIn 0.5s ease-out;
+      }
+      
+      .accordion-item {
+        margin-bottom: 0.5rem;
+        border-radius: 0.5rem !important;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.125) !important;
+      }
+      
+      .accordion-button {
+        border-radius: 0.5rem !important;
+      }
+      
+      .accordion-button:not(.collapsed) {
+        background-color: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+      }
+      
+      /* TF-IDF Table Styling */
+      #tfidfTable thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        z-index: 10;
+      }
+      
+      /* Badge styling for tokens */
+      .badge {
+        font-size: 0.85rem;
+        font-weight: normal;
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       // Categorize form
@@ -95,142 +286,200 @@
         }
       });
       
+      // Global variable to store preprocessed text for later use
+      let globalPreprocessedText = '';
+      
+      // Step 1: Preprocessing
       document.getElementById('paperForm').onsubmit = async function(e) {
         e.preventDefault();
         const formData = new FormData(this);
-        // Always send for both kernels
         const title = document.getElementById('title').value;
         const abstract = document.getElementById('abstract').value;
         
-        // Get the modal element
-        const modalElement = document.getElementById('resultModal');
+        // Hide TF-IDF and classification sections if they were visible
+        document.getElementById('tfidfSection').style.display = 'none';
+        document.getElementById('classificationSection').style.display = 'none';
         
-        // Show loading state in modal with modern styling
-        document.getElementById('resultText').innerHTML = `
-          <div class="d-flex flex-column align-items-center justify-content-center py-4">
-            <div class="position-relative" style="width: 80px; height: 80px;">
-              <div class="spinner-grow text-primary" style="position: absolute; width: 80px; height: 80px; opacity: 0.3;" role="status"></div>
-              <div class="spinner-grow text-primary" style="position: absolute; width: 60px; height: 60px; left: 10px; top: 10px; opacity: 0.5;" role="status"></div>
-              <div class="spinner-grow text-primary" style="position: absolute; width: 40px; height: 40px; left: 20px; top: 20px; opacity: 0.7;" role="status"></div>
-            </div>
-            <h5 class="mt-4" style="font-weight: 500; color: #4776E6;">Analyzing paper...</h5>
-            <p class="text-muted">Applying machine learning models</p>
-          </div>
-        `;
+        // Show loading animation
+        const preprocessingSteps = document.getElementById('preprocessingSteps');
+        preprocessingSteps.style.display = 'block';
         
-        // Create and show the modal
-        let resultModal;
-        if (bootstrap && bootstrap.Modal) {
-          // Try to get existing instance first
-          resultModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement, {
-            backdrop: 'static',  // Prevents closing when clicking outside
-            keyboard: true       // Allows closing with ESC key
-          });
-          resultModal.show();
-        } else {
-          console.error('Bootstrap Modal not available');
-          return;
-        }
+        // Show the TF-IDF button
+        document.getElementById('showTfidfButtonContainer').style.display = 'block';
+        
+        // Show loading indicators in each section
+        document.getElementById('originalText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading...';
+        document.getElementById('cleanedText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Processing...';
+        document.getElementById('tokenizedText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Tokenizing...';
+        document.getElementById('filteredText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Removing stop words...';
+        document.getElementById('beforeLowercaseText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading...';
+        document.getElementById('lowercasedText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Converting to lowercase...';
+        document.getElementById('lemmatizedText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Lemmatizing...';
+        
+        // Scroll to preprocessing steps
+        preprocessingSteps.scrollIntoView({ behavior: 'smooth' });
         
         try {
-          // Get the selected kernel
-          const selectedKernel = document.getElementById('kernel').value;
-          
-          // Only request the selected kernel
-          let response;
-          if (selectedKernel === 'linear') {
-            response = await fetch('/predict', {
-              method: 'POST',
-              body: new URLSearchParams({title, abstract, kernel: 'linear'})
-            });
-          } else {
-            response = await fetch('/predict', {
-              method: 'POST',
-              body: new URLSearchParams({title, abstract, kernel: 'poly'})
-            });
-          }
+          // Call the preprocess endpoint
+          const response = await fetch('/preprocess', {
+            method: 'POST',
+            body: new URLSearchParams({title, abstract})
+          });
           
           const result = await response.json();
-          const isLinear = selectedKernel === 'linear';
           
-          // Format the results with modern styling and more visible accuracy
-          // Only show the selected kernel's results
-          let resultHTML = '';
+          // Store preprocessed text for later use
+          globalPreprocessedText = result.preprocessed_text;
           
-          if (isLinear) {
-            // Linear SVM Results
-            resultHTML = `<div class="card" style="border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-              <div style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; padding: 15px 20px;">
-                <h5 class="mb-0" style="font-weight: 600;">Linear SVM Results</h5>
-              </div>
-              <div class="card-body" style="padding: 20px;">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                  <div class="d-flex align-items-center">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                      <i class="bi bi-check-lg" style="color: white; font-size: 20px;"></i>
-                    </div>
-                    <h5 class="mb-0" style="font-weight: 600; font-size: 1.3rem;">${result.category}</h5>
-                  </div>
-                  <div class="accuracy-badge" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
-                    <i class="bi bi-graph-up me-2"></i>
-                    ${result.accuracy.toFixed(1)}%
-                  </div>
-                </div>
-                <div class="progress" style="height: 15px; border-radius: 10px; background-color: #e9ecef; margin-top: 10px; overflow: hidden;">
-                  <div class="progress-bar" role="progressbar" style="width: ${result.accuracy.toFixed(1)}%; background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); transition: width 1.5s ease-in-out;" 
-                    aria-valuenow="${result.accuracy.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
-                  </div>
-                </div>
-              </div>
-            </div>`;
-          } else {
-            // Polynomial SVM Results
-            resultHTML = `<div class="card" style="border: none; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-              <div style="background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); color: white; padding: 15px 20px;">
-                <h5 class="mb-0" style="font-weight: 600;">Polynomial SVM Results</h5>
-              </div>
-              <div class="card-body" style="padding: 20px;">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                  <div class="d-flex align-items-center">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                      <i class="bi bi-check-lg" style="color: white; font-size: 20px;"></i>
-                    </div>
-                    <h5 class="mb-0" style="font-weight: 600; font-size: 1.3rem;">${result.category}</h5>
-                  </div>
-                  <div class="accuracy-badge" style="background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
-                    <i class="bi bi-graph-up me-2"></i>
-                    ${result.accuracy.toFixed(1)}%
-                  </div>
-                </div>
-                <div class="progress" style="height: 15px; border-radius: 10px; background-color: #e9ecef; margin-top: 10px; overflow: hidden;">
-                  <div class="progress-bar" role="progressbar" style="width: ${result.accuracy.toFixed(1)}%; background: linear-gradient(135deg, #FF8008 0%, #FFC837 100%); transition: width 1.5s ease-in-out;" 
-                    aria-valuenow="${result.accuracy.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
-                  </div>
-                </div>
-              </div>
-            </div>`;
+          // Update preprocessing steps with the results
+          // 1. Data Cleaning
+          document.getElementById('originalText').textContent = result.preprocessing_steps.original;
+          document.getElementById('cleanedText').textContent = result.preprocessing_steps.cleaned;
+          
+          // 2. Tokenization
+          const tokensHtml = result.preprocessing_steps.tokens.map(token => 
+            `<span class="badge bg-light text-dark m-1">${token}</span>`
+          ).join('');
+          document.getElementById('tokenizedText').innerHTML = tokensHtml;
+          
+          // 3. Stop Word Removal
+          const filteredTokensHtml = result.preprocessing_steps.filtered_tokens.map(token => 
+            `<span class="badge bg-light text-dark m-1">${token}</span>`
+          ).join('');
+          document.getElementById('filteredText').innerHTML = filteredTokensHtml;
+          
+          // 4. Lowercasing
+          document.getElementById('beforeLowercaseText').textContent = result.preprocessing_steps.original;
+          document.getElementById('lowercasedText').textContent = result.preprocessing_steps.lowercased;
+          
+          // 5. Stemming and Lemmatization
+          const lemmatizedTokensHtml = result.preprocessing_steps.lemmatized_tokens.map(token => 
+            `<span class="badge bg-light text-dark m-1">${token}</span>`
+          ).join('');
+          document.getElementById('lemmatizedText').innerHTML = lemmatizedTokensHtml;
+          
+          // Auto-open the first accordion panel
+          const firstAccordionButton = document.querySelector('.accordion-button');
+          if (firstAccordionButton && !firstAccordionButton.classList.contains('show')) {
+            firstAccordionButton.click();
           }
           
-          document.getElementById('resultText').innerHTML = resultHTML;
         } catch (error) {
-          document.getElementById('resultText').innerHTML = `
-            <div class="alert alert-danger">
-              Error processing your request. Please try again.
-            </div>
-          `;
+          console.error('Error:', error);
+          document.getElementById('showTfidfButtonContainer').style.display = 'none';
         }
       };
       
-      // Add event listener to close button
-      document.querySelectorAll('.modal .btn-secondary').forEach(button => {
-        button.addEventListener('click', function() {
-          const modalElement = document.getElementById('resultModal');
-          const modalInstance = bootstrap.Modal.getInstance(modalElement);
-          if (modalInstance) {
-            modalInstance.hide();
+      // Step 2: TF-IDF Calculation
+      document.getElementById('showTfidfButton').addEventListener('click', async function() {
+        // Show loading state
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Calculating TF-IDF...';
+        
+        try {
+          // Call the TF-IDF calculation endpoint
+          const response = await fetch('/calculate_tfidf', {
+            method: 'POST',
+            body: new URLSearchParams({preprocessed_text: globalPreprocessedText})
+          });
+          
+          const result = await response.json();
+          
+          // Show the TF-IDF section
+          document.getElementById('tfidfSection').style.display = 'block';
+          
+          // Update TF-IDF table
+          let tfidfTableHtml = '';
+          for (let i = 0; i < result.tfidf_words.length; i++) {
+            tfidfTableHtml += `
+              <tr>
+                <td>${i + 1}</td>
+                <td>${result.tfidf_words[i]}</td>
+                <td>${result.tfidf_values[i].toFixed(4)}</td>
+              </tr>
+            `;
           }
-        });
+          document.getElementById('tfidfTableBody').innerHTML = tfidfTableHtml;
+          
+          // Add search functionality for TF-IDF table
+          document.getElementById('tfidfSearch').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.getElementById('tfidfTableBody').getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+              const wordCell = rows[i].getElementsByTagName('td')[1];
+              if (wordCell) {
+                const word = wordCell.textContent || wordCell.innerText;
+                if (word.toLowerCase().indexOf(searchTerm) > -1) {
+                  rows[i].style.display = "";
+                } else {
+                  rows[i].style.display = "none";
+                }
+              }
+            }
+          });
+          
+          // Scroll to TF-IDF section
+          document.getElementById('tfidfSection').scrollIntoView({ behavior: 'smooth' });
+          
+          // Hide the TF-IDF button
+          document.getElementById('showTfidfButtonContainer').style.display = 'none';
+          
+        } catch (error) {
+          console.error('Error:', error);
+          this.innerHTML = 'Error calculating TF-IDF';
+        } finally {
+          this.disabled = false;
+        }
       });
+      
+      // Step 3: Classification
+      document.getElementById('categorizeButton').addEventListener('click', async function() {
+        // Show loading state
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Classifying...';
+        
+        // Show classification section
+        document.getElementById('classificationSection').style.display = 'block';
+        document.getElementById('resultCategory').innerHTML = '<div class="spinner-border text-primary" role="status"></div> Classifying...';
+        document.getElementById('resultAccuracy').innerHTML = '<div class="spinner-border spinner-border-sm text-light" role="status"></div>';
+        
+        try {
+          // Get selected kernel
+          const kernel = document.getElementById('kernel').value;
+          
+          // Call the classification endpoint
+          const response = await fetch('/classify', {
+            method: 'POST',
+            body: new URLSearchParams({
+              preprocessed_text: globalPreprocessedText,
+              kernel: kernel
+            })
+          });
+          
+          const result = await response.json();
+          
+          // Update classification result
+          document.getElementById('resultCategory').innerHTML = `🧠 Predicted Category: <strong>${result.category}</strong>`;
+          document.getElementById('resultAccuracy').innerHTML = `
+            <i class="bi bi-graph-up me-2"></i>
+            Accuracy: ${result.accuracy.toFixed(1)}%
+          `;
+          
+          // Scroll to classification result
+          document.getElementById('classificationSection').scrollIntoView({ behavior: 'smooth' });
+          
+        } catch (error) {
+          console.error('Error:', error);
+          document.getElementById('resultCategory').innerHTML = 'Error classifying document';
+          document.getElementById('resultAccuracy').innerHTML = 'Error';
+        } finally {
+          this.disabled = false;
+          this.innerHTML = '<i class="bi bi-tag-fill me-2"></i> Categorize';
+        }
+      });
+      
+      // No longer needed as we removed the modal
     </script>
 </body>
 </html>
