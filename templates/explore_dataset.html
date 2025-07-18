@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Paper Categorization - Explore Dataset</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="/">Research Paper Categorization</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/workflow">Workflow</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/explore">Explore Dataset</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-6">
+        <h1 class="text-center mb-4">Research Paper Dataset Explorer</h1>
+        
+        <!-- All Papers Table Section -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">
+                    <i class="bi bi-journals me-2"></i> Complete Paper Collection
+                </h2>
+                <p class="text-center mb-3">Showing all 1,500 papers from the dataset</p>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="all-papers-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Order ID</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-papers-body">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Loading all papers...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Paper Workflow Modal -->
+        <div class="modal fade" id="paperWorkflowModal" tabindex="-1" aria-labelledby="paperWorkflowModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="paperWorkflowModalLabel">Paper Workflow Analysis</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Paper Input Section -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h4 class="card-title"><i class="bi bi-file-text me-2"></i>Paper Details</h4>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="modal-title" class="form-label">Paper Title</label>
+                                            <input type="text" class="form-control" id="modal-title" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="modal-category" class="form-label">Category</label>
+                                            <input type="text" class="form-control" id="modal-category" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="modal-abstract" class="form-label">Paper Abstract</label>
+                                    <textarea class="form-control" id="modal-abstract" rows="3" readonly></textarea>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button id="modal-preprocess-btn" class="btn btn-primary">
+                                        <i class="bi bi-gear me-2"></i> Preprocess Text
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Workflow Steps Container -->
+                        <div id="workflow-steps-container">
+                            <!-- Step 1: Preprocessing -->
+                            <div class="workflow-step" id="modal-preprocessing-section" style="display: none;">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h4 class="mb-0 d-flex align-items-center">
+                                            <span class="badge rounded-pill bg-primary me-2">1</span>
+                                            <i class="bi bi-funnel me-2 text-primary"></i>
+                                            Preprocessing
+                                        </h4>
+                                    </div>
+                    <!-- Step 1: Preprocessing -->
+                    <div class="step-container mb-4">
+                        <h4 class="d-flex align-items-center">
+                            <span class="badge bg-primary me-2">1</span> Preprocessing
+                        </h4>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i> This step performs data cleaning, tokenization, stop word removal, lowercasing, and stemming & lemmatization.
+                        </div>
+                        <button id="preprocess-btn" class="btn btn-primary mb-3">
+                            <i class="bi bi-gear me-2"></i> Run Preprocessing
+                        </button>
+                        
+                        <!-- Preprocessing Results (Initially Hidden) -->
+                        <div id="preprocessing-results" style="display: none;">
+                            <div class="accordion" id="preprocessingAccordion">
+                                <!-- Data Cleaning Step -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="dataCleaning">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dataCleaningContent" aria-expanded="false" aria-controls="dataCleaningContent">
+                                            <i class="bi bi-check-circle-fill me-2 text-success"></i> Data Cleaning
+                                        </button>
+                                    </h2>
+                                    <div id="dataCleaningContent" class="accordion-collapse collapse" aria-labelledby="dataCleaning" data-bs-parent="#preprocessingAccordion">
+                                        <div class="accordion-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>Original Text:</h6>
+                                                    <div class="border p-2 rounded mb-3" id="originalText"></div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6>After Cleaning:</h6>
+                                                    <div class="border p-2 rounded" id="cleanedText"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Tokenization Step -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="tokenization">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tokenizationContent" aria-expanded="false" aria-controls="tokenizationContent">
+                                            <i class="bi bi-scissors me-2 text-primary"></i> Tokenization
+                                        </button>
+                                    </h2>
+                                    <div id="tokenizationContent" class="accordion-collapse collapse" aria-labelledby="tokenization" data-bs-parent="#preprocessingAccordion">
+                                        <div class="accordion-body">
+                                            <h6>Tokens:</h6>
+                                            <div class="border p-2 rounded" id="tokenizedText" style="max-height: 200px; overflow-y: auto;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Stop Word Removal Step -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="stopWordRemoval">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#stopWordRemovalContent" aria-expanded="false" aria-controls="stopWordRemovalContent">
+                                            <i class="bi bi-x-circle me-2 text-danger"></i> Stop Word Removal
+                                        </button>
+                                    </h2>
+                                    <div id="stopWordRemovalContent" class="accordion-collapse collapse" aria-labelledby="stopWordRemoval" data-bs-parent="#preprocessingAccordion">
+                                        <div class="accordion-body">
+                                            <h6>After Stop Word Removal:</h6>
+                                            <div class="border p-2 rounded" id="filteredText" style="max-height: 200px; overflow-y: auto;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Lowercasing Step -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="lowercasing">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#lowercasingContent" aria-expanded="false" aria-controls="lowercasingContent">
+                                            <i class="bi bi-type-lowercase me-2 text-info"></i> Lowercasing
+                                        </button>
+                                    </h2>
+                                    <div id="lowercasingContent" class="accordion-collapse collapse" aria-labelledby="lowercasing" data-bs-parent="#preprocessingAccordion">
+                                        <div class="accordion-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>Original Text:</h6>
+                                                    <div class="border p-2 rounded mb-3" id="beforeLowercaseText"></div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6>After Lowercasing:</h6>
+                                                    <div class="border p-2 rounded" id="lowercasedText"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Stemming and Lemmatization Step -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="stemming">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#stemmingContent" aria-expanded="false" aria-controls="stemmingContent">
+                                            <i class="bi bi-flower1 me-2 text-success"></i> Stemming and Lemmatization
+                                        </button>
+                                    </h2>
+                                    <div id="stemmingContent" class="accordion-collapse collapse" aria-labelledby="stemming" data-bs-parent="#preprocessingAccordion">
+                                        <div class="accordion-body">
+                                            <h6>After Stemming and Lemmatization:</h6>
+                                            <div class="border p-2 rounded" id="lemmatizedText" style="max-height: 200px; overflow-y: auto;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    </div>
+                </div>
+                
+                <!-- Step 2: TF-IDF Vectorization -->
+                <div class="card mb-4" id="modal-tfidf-section" style="display: none;">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0 d-flex align-items-center">
+                            <span class="badge rounded-pill bg-primary me-2">2</span>
+                            <i class="bi bi-table me-2 text-success"></i>
+                            TF-IDF Vectorization
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i> This step calculates the importance of each word in the document using Term Frequency-Inverse Document Frequency.
+                        </div>
+                        <button id="calculate-tfidf-btn" class="btn btn-primary mb-3" disabled>
+                            <i class="bi bi-table me-2"></i> Calculate TF-IDF
+                        </button>
+                        
+                        <!-- TF-IDF Results (Initially Hidden) -->
+                        <div id="tfidf-results" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <h6 class="mb-3">Top TF-IDF Terms (sorted by importance)</h6>
+                                            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                                                <table class="table table-striped table-hover" id="tfidfTable">
+                                                    <thead class="sticky-top bg-light">
+                                                        <tr>
+                                                            <th>Rank</th>
+                                                            <th>Word</th>
+                                                            <th>TF-IDF Score</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tfidfTableBody">
+                                                        <!-- TF-IDF values will be inserted here -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Top Words</h5>
+                                            <canvas id="tfidfChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Categorization -->
+                    </div>
+                </div>
+                
+                <!-- Step 3: Categorization -->
+                <div class="card mb-4" id="modal-categorization-section" style="display: none;">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0 d-flex align-items-center">
+                            <span class="badge rounded-pill bg-primary me-2">3</span>
+                            <i class="bi bi-tags me-2 text-danger"></i>
+                            Categorization
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i> This step predicts the research field category using SVM classification with your selected settings.
+                        </div>
+                        
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="train-test-split" class="form-label">Select Train-Test Split Ratio</label>
+                                            <select class="form-select" id="train-test-split">
+                                                <option value="80">80/20</option>
+                                                <option value="70">70/30</option>
+                                                <option value="60">60/40</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="kernel-type" class="form-label">Choose Kernel</label>
+                                            <select class="form-select" id="kernel-type">
+                                                <option value="linear">Linear</option>
+                                                <option value="poly">Polynomial</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="categorize-btn" class="btn btn-primary mb-3" disabled>
+                            <i class="bi bi-tags me-2"></i> Categorize
+                        </button>
+                        
+                        <!-- Categorization Results (Initially Hidden) -->
+                        <div id="categorization-results" style="display: none;">
+                            <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px;">
+                                <div class="card-body text-center p-4">
+                                    <div class="mb-3">
+                                        <i class="bi bi-award" style="font-size: 3rem; color: #4776E6;"></i>
+                                    </div>
+                                    <h4 class="mb-3" id="resultCategory">Processing...</h4>
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <div class="accuracy-badge" id="resultAccuracy" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
+                                            <i class="bi bi-graph-up me-2"></i>
+                                            Accuracy: 0%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let allPapers = [];
+        let currentPaper = null;
+        let selectedPaper = null;
+        let preprocessedText = '';
+        
+        // Load all papers when the page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            loadAllPapers();
+        });
+        
+        // Function to load all papers from all categories
+        function loadAllPapers() {
+            const allPapersBody = document.getElementById('all-papers-body');
+            
+            // Fetch papers from all fields
+            Promise.all([
+                fetch('/api/papers/ai').then(response => response.json()),
+                fetch('/api/papers/distributed').then(response => response.json()),
+                fetch('/api/papers/image').then(response => response.json()),
+                fetch('/api/papers/security').then(response => response.json()),
+                fetch('/api/papers/software').then(response => response.json())
+            ])
+            .then(results => {
+                // Combine all papers into one array
+                allPapers = [];
+                results.forEach(papers => {
+                    allPapers = allPapers.concat(papers);
+                });
+                
+                // Clear loading indicator
+                allPapersBody.innerHTML = '';
+                
+                // Display all papers in the table
+                allPapers.forEach((paper, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>#${(index + 1).toString().padStart(5, '0')}</td>
+                        <td>
+                            <div class="paper-title">${paper.Title}</div>
+                        </td>
+                        <td><span class="badge bg-info">${paper.Category}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary view-workflow-btn" data-index="${index}">
+                                <i class="bi bi-gear-fill me-1"></i> View Workflow
+                            </button>
+                        </td>
+                    `;
+                    allPapersBody.appendChild(row);
+                });
+                
+                // Add event listeners to all View Workflow buttons
+                document.querySelectorAll('.view-workflow-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        openWorkflowModal(allPapers[index]);
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching papers:', error);
+                allPapersBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <div class="alert alert-danger">Error loading papers. Please try again.</div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        // Helper function to get field descriptions
+        function getFieldDescription(field) {
+            const descriptions = {
+                'Artificial Intelligence': 'Research papers focused on AI technologies, machine learning algorithms, neural networks, and intelligent systems that can perform tasks that typically require human intelligence.',
+                'Distributed Systems': 'Papers covering distributed computing architectures, parallel processing, cloud computing, and systems designed to work across multiple networked computers.',
+                'Image Processing': 'Research related to manipulation and analysis of digital images, computer vision, pattern recognition, and image enhancement techniques.',
+                'Networking and Cybersecurity': 'Papers on computer networks, protocols, security measures, threat detection, encryption, and protection of systems and data from cyber attacks.',
+                'Software Engineering': 'Research covering software development methodologies, design patterns, testing strategies, and best practices for building reliable and maintainable software.'
+            };
+            
+            return descriptions[field] || 'No description available.';
+        }
+        
+        // Field selection
+        document.querySelectorAll('.field-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const field = this.getAttribute('data-field');
+                console.log('Field button clicked:', field);
+                document.querySelectorAll('.field-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update selected field title
+                document.getElementById('selected-field-title').textContent = field + ' Papers';
+                
+                // Show paper list section
+                document.getElementById('paper-list-section').style.display = 'block';
+                document.getElementById('paper-processing-section').style.display = 'none';
+                
+                // Show loading indicator
+                document.getElementById('loading-papers').style.display = 'block';
+                document.getElementById('papers-container').innerHTML = '';
+                
+                // Fetch papers for the selected field
+                fetch(`/api/papers/${field}`)
+                    .then(response => response.json())
+                    .then(papers => {
+                        // Hide loading indicator
+                        document.getElementById('loading-papers').style.display = 'none';
+                        
+                        // Display papers
+                        const papersList = document.getElementById('papers-list');
+                        papersList.innerHTML = ''; // Clear previous papers
+                        
+                        if (papers.length === 0) {
+                            papersList.innerHTML = '<div class="alert alert-info">No papers found for this field.</div>';
+                        } else {
+                            // Create a table for better organization of all 300 papers
+                            const paperTable = document.createElement('table');
+                            paperTable.className = 'table table-striped table-hover';
+                            
+                            // Add table content here
+                            papersList.appendChild(paperTable);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching papers:', error);
+                        const papersList = document.getElementById('papers-list');
+                        papersList.innerHTML = '<div class="alert alert-danger">Error loading papers. Please try again.</div>';
+                    });
+            });
+        },
+        
+        // Function to open the workflow modal for a paper
+        function openWorkflowModal(paper) {
+            currentPaper = paper;
+            
+            // Set the paper details in the modal
+            document.getElementById('modal-title').value = paper.Title;
+            document.getElementById('modal-abstract').value = paper.Abstract;
+            document.getElementById('modal-category').value = paper.Category;
+            
+            // Reset workflow sections
+            document.getElementById('modal-preprocessing-section').style.display = 'none';
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('paperWorkflowModal'));
+            modal.show();
+        },
+        
+        // Modal Preprocess Button
+        document.getElementById('modal-preprocess-btn').addEventListener('click', async function() {
+            if (!currentPaper) return;
+            
+            // Get input values from the modal
+            const title = document.getElementById('modal-title').value.trim();
+            const abstract = document.getElementById('modal-abstract').value.trim();
+            
+            // Validate inputs
+            if (!title || !abstract) {
+                alert('Paper details are missing.');
+                return;
+            }
+            
+            // Show loading state
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+            
+            try {
+                // Call the preprocessing endpoint
+                const response = await fetch('/api/preprocess', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, abstract })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to preprocess text');
+                }
+                
+                const data = await response.json();
+                preprocessedText = data.preprocessed_text;
+                
+                // Show the preprocessing section with animation
+                const preprocessingSection = document.getElementById('modal-preprocessing-section');
+                preprocessingSection.style.display = 'block';
+                preprocessingSection.classList.add('animate__animated', 'animate__fadeIn');
+                
+                // Update UI with preprocessing results
+                document.getElementById('originalText').textContent = data.original;
+                document.getElementById('cleanedText').textContent = data.cleaned;
+                document.getElementById('tokensContainer').textContent = JSON.stringify(data.tokens, null, 2);
+                document.getElementById('filteredTokensContainer').textContent = JSON.stringify(data.filtered_tokens, null, 2);
+                document.getElementById('lemmatizedTokensContainer').textContent = JSON.stringify(data.lemmatized_tokens, null, 2);
+                document.getElementById('preprocessedTextContainer').textContent = data.preprocessed_text;
+                
+                // Show the preprocessing results
+                document.getElementById('preprocessing-results').style.display = 'block';
+                
+                // Enable the next step button
+                document.getElementById('calculate-tfidf-btn').disabled = false;
+                
+                // Update button state
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-gear me-2"></i> Preprocess Text';
+                
+                // Open the first accordion item to show results
+                const firstAccordionButton = document.querySelector('#preprocessingAccordion .accordion-button');
+                if (firstAccordionButton) {
+                    firstAccordionButton.click();
+                }
+                
+                // Scroll to the preprocessing section
+                document.getElementById('modal-preprocessing-section').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error during preprocessing:', error);
+                alert('An error occurred during preprocessing. Please try again.');
+                
+                // Reset button state
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-gear me-2"></i> Preprocess Text';
+            }
+        });
+        
+        // Step 2: Calculate TF-IDF
+        document.getElementById('calculate-tfidf-btn').addEventListener('click', async function() {
+            if (!preprocessedText) return;
+            
+            // Show loading state
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Calculating...';
+            
+            // Show the TF-IDF section with animation
+            const tfidfSection = document.getElementById('modal-tfidf-section');
+            tfidfSection.style.display = 'block';
+            tfidfSection.classList.add('animate__animated', 'animate__fadeIn');
+            
+            try {
+                // Call the TF-IDF calculation endpoint
+                const response = await fetch('/calculate_tfidf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        preprocessed_text: preprocessedText
+                    })
+                });
+                
+                const result = await response.json();
+                
+                // Update TF-IDF table
+                const tableBody = document.getElementById('tfidfTableBody');
+                tableBody.innerHTML = '';
+                
+                result.tfidf_words.forEach((word, index) => {
+                    if (index < 100) { // Limit to top 100 words
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${word}</td>
+                            <td>${result.tfidf_values[index].toFixed(4)}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    }
+                });
+                
+                // Create TF-IDF chart
+                const ctx = document.getElementById('tfidfChart').getContext('2d');
+                
+                // Use only top 10 words for chart
+                const topWords = result.tfidf_words.slice(0, 10);
+                const topValues = result.tfidf_values.slice(0, 10);
+                
+                // Destroy previous chart if it exists
+                if (window.tfidfChart) {
+                    window.tfidfChart.destroy();
+                }
+                
+                window.tfidfChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: topWords,
+                        datasets: [{
+                            label: 'TF-IDF Score',
+                            data: topValues,
+                            backgroundColor: 'rgba(71, 118, 230, 0.7)',
+                            borderColor: 'rgba(71, 118, 230, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Top 10 Words by TF-IDF Score'
+                            }
+                        }
+                    }
+                });
+                
+                // Show TF-IDF results
+                document.getElementById('tfidf-results').style.display = 'block';
+                
+                // Enable categorize button
+                document.getElementById('categorize-btn').disabled = false;
+                
+                // Reset button state
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-table me-2"></i> Calculate TF-IDF';
+            } catch (error) {
+                console.error('Error calculating TF-IDF:', error);
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-table me-2"></i> Calculate TF-IDF';
+                alert('Error calculating TF-IDF. Please try again.');
+            }
+        });
+        
+        // No TF-IDF search functionality needed
+        
+        // Step 3: Categorize
+        document.getElementById('categorize-btn').addEventListener('click', async function() {
+            if (!preprocessedText) return;
+            
+            // Show loading state
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Categorizing...';
+            
+            // Show the categorization section with animation
+            const categorizationSection = document.getElementById('modal-categorization-section');
+            categorizationSection.style.display = 'block';
+            categorizationSection.classList.add('animate__animated', 'animate__fadeIn');
+            
+            try {
+                const kernel = document.getElementById('kernel-type').value;
+                
+                // Call the classify endpoint
+                const response = await fetch('/classify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        preprocessed_text: preprocessedText,
+                        kernel: kernel
+                    })
+                });
+                
+                const result = await response.json();
+                
+                // Update categorization results
+                document.getElementById('resultCategory').textContent = 'Predicted Category: ' + result.category;
+                document.getElementById('resultAccuracy').innerHTML = '<i class="bi bi-graph-up me-2"></i> Accuracy: ' + result.accuracy.toFixed(2) + '%';
+                
+                // Show categorization results
+                document.getElementById('categorization-results').style.display = 'block';
+                
+                // Reset button state
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-tags me-2"></i> Categorize';
+            } catch (error) {
+                console.error('Error categorizing:', error);
+                this.disabled = false;
+                this.innerHTML = '<i class="bi bi-tags me-2"></i> Categorize';
+                alert('Error categorizing paper. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

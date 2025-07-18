@@ -151,7 +151,11 @@ poly_pipeline.fit(X_train, y_train)
 
 @app.route('/')
 def index():
-    return render_template('index.html', fields=FIELDS)
+    return render_template('home.html')
+
+@app.route('/workflow')
+def workflow():
+    return render_template('workflow.html', fields=FIELDS)
 
 @app.route('/preprocess', methods=['POST'])
 def preprocess_step():
@@ -302,6 +306,67 @@ def insights():
 @app.route('/corpus')
 def corpus():
     return render_template('corpus.html')
+
+@app.route('/explore')
+def explore():
+    return render_template('explore_dataset.html', fields=FIELDS)
+
+@app.route('/api/papers/<field>')
+def get_papers_by_field(field):
+    # Filter papers by the selected field
+    field_papers = data[data['Category'] == field]
+    
+    # Convert to a list of dictionaries for JSON response
+    papers_list = field_papers[['Title', 'Abstract', 'Category']].to_dict(orient='records')
+    
+    return jsonify(papers_list)
+
+@app.route('/api/datasets')
+def get_datasets_info():
+    # Create a mapping between categories and filenames
+    category_to_file = {
+        'Artificial Intelligence': 'ai_data.xlsx',
+        'Distributed Systems': 'distribution_data.xlsx',
+        'Image Processing': 'image_processing_data.xlsx',
+        'Networking and Cybersecurity': 'networking_cybersecurity_data.xlsx',
+        'Software Engineering': 'se_data.xlsx'
+    }
+    
+    # Get counts for each category
+    category_counts = data['Category'].value_counts().to_dict()
+    
+    # Create dataset info list
+    datasets_info = []
+    for category, filename in category_to_file.items():
+        # Get the count for this category
+        count = category_counts.get(category, 0)
+        
+        # Get file path
+        file_path = os.path.join('data', filename)
+        
+        # Check if file exists
+        file_exists = os.path.exists(file_path)
+        
+        # Get file size if it exists
+        file_size = os.path.getsize(file_path) if file_exists else 0
+        
+        # Format file size
+        if file_size < 1024:
+            formatted_size = f"{file_size} B"
+        elif file_size < 1024 * 1024:
+            formatted_size = f"{file_size / 1024:.1f} KB"
+        else:
+            formatted_size = f"{file_size / (1024 * 1024):.1f} MB"
+        
+        datasets_info.append({
+            'category': category,
+            'filename': filename,
+            'count': count,
+            'file_exists': file_exists,
+            'file_size': formatted_size
+        })
+    
+    return jsonify(datasets_info)
 
 @app.route('/corpus_data')
 def corpus_data():
