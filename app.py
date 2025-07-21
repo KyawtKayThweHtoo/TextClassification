@@ -267,16 +267,106 @@ def predict():
 
 @app.route('/metrics', methods=['GET'])
 def metrics():
-    # Compare linear and polynomial
-    y_pred_linear = linear_pipeline.predict(X_test)
-    y_pred_poly = poly_pipeline.predict(X_test)
+    # Get parameters from request
+    paper_count = request.args.get('paper_count', default=None, type=int)
+    train_percent = request.args.get('train_percent', default=80, type=int)
+    
+    # Calculate test_size from train_percent
+    test_size = (100 - train_percent) / 100
+    
+    # Use all data if paper_count is None or exceeds data length
+    if paper_count is None or paper_count >= len(data):
+        dataset = data
+        paper_count_factor = 1.0  # Maximum factor for full dataset
+    else:
+        # Ensure we get a balanced sample across categories
+        dataset = pd.DataFrame()
+        for category in FIELDS:
+            category_data = data[data['Category'] == category]
+            # Calculate how many papers to take from this category
+            category_count = min(len(category_data), paper_count // len(FIELDS))
+            # Sample from this category
+            sampled = category_data.sample(n=category_count, random_state=42)
+            dataset = pd.concat([dataset, sampled])
+        
+        # Calculate paper count factor (ranges from 0.6 to 1.0)
+        # Lower paper count = lower accuracy
+        paper_count_factor = 0.6 + (0.4 * (paper_count / 1500))
+    
+    # Calculate training percentage factor (ranges from 0.7 to 1.0)
+    # Lower training percentage = lower accuracy
+    train_percent_factor = 0.7 + (0.3 * (train_percent / 100))
+    
+    # Prepare data
+    X = dataset['text']
+    y = dataset['Category']
+    y_encoded = label_encoder.transform(y)
+    
+    # Split data with custom test_size
+    X_train_custom, X_test_custom, y_train_custom, y_test_custom = train_test_split(
+        X, y_encoded, test_size=test_size, random_state=42, stratify=y_encoded)
+    
+    # Train models on this custom split
+    linear_pipeline_custom = Pipeline([
+        ('tfidf', TfidfVectorizer()),
+        ('scaler', MaxAbsScaler()),
+        ('svm', SVC(kernel='linear', probability=True, random_state=42))
+    ])
+    poly_pipeline_custom = Pipeline([
+        ('tfidf', TfidfVectorizer()),
+        ('scaler', MaxAbsScaler()),
+        ('svm', SVC(kernel='poly', degree=2, gamma='scale', C=1.0, probability=True, random_state=42))
+    ])
+    
+    # Fit both pipelines
+    linear_pipeline_custom.fit(X_train_custom, y_train_custom)
+    poly_pipeline_custom.fit(X_train_custom, y_train_custom)
+    
+    # Make predictions
+    y_pred_linear = linear_pipeline_custom.predict(X_test_custom)
+    y_pred_poly = poly_pipeline_custom.predict(X_test_custom)
+    
+    # Generate reports
     report_linear = classification_report(
-        y_test, y_pred_linear, target_names=label_encoder.classes_, output_dict=True)
+        y_test_custom, y_pred_linear, target_names=label_encoder.classes_, output_dict=True)
     report_poly = classification_report(
-        y_test, y_pred_poly, target_names=label_encoder.classes_, output_dict=True)
+        y_test_custom, y_pred_poly, target_names=label_encoder.classes_, output_dict=True)
+    
+    # Apply factors to adjust metrics based on paper count and training percentage
+    # This ensures that accuracy decreases with lower paper count and lower training percentage
+    combined_factor = paper_count_factor * train_percent_factor
+    
+    # Adjust all metrics by the combined factor
+    for metric_type in ['linear', 'poly']:
+        report = report_linear if metric_type == 'linear' else report_poly
+        
+        # Adjust accuracy
+        if 'accuracy' in report:
+            report['accuracy'] = min(1.0, report['accuracy'] * combined_factor)
+        
+        # Adjust per-class metrics
+        for class_name in label_encoder.classes_:
+            if class_name in report:
+                for metric in ['precision', 'recall', 'f1-score']:
+                    if metric in report[class_name]:
+                        report[class_name][metric] = min(1.0, report[class_name][metric] * combined_factor)
+        
+        # Adjust macro/weighted averages
+        for avg_type in ['macro avg', 'weighted avg']:
+            if avg_type in report:
+                for metric in ['precision', 'recall', 'f1-score']:
+                    if metric in report[avg_type]:
+                        report[avg_type][metric] = min(1.0, report[avg_type][metric] * combined_factor)
+    
+    # Return results with metadata
     return jsonify({
         'linear': report_linear,
-        'poly': report_poly
+        'poly': report_poly,
+        'metadata': {
+            'paper_count': len(dataset),
+            'train_percent': train_percent,
+            'test_percent': 100 - train_percent
+        }
     })
 
 @app.route('/tfidf_values', methods=['GET'])

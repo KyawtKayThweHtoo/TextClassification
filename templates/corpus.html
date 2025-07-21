@@ -27,15 +27,25 @@
       </div>
     </nav>
     <div class="container mt-6">
-        <div class="row justify-content-center">
-            <div class="col-md-10 col-lg-8 col-xl-6">
-                <h2 class="mb-4 text-center">Corpus Preprocessing & TF-IDF Values</h2>
-                <div class="card shadow-lg p-4">
-                    <div class="mb-3">
-                      <label for="fieldSelect" class="form-label">Select Field</label>
-                      <select id="fieldSelect" class="form-select"></select>
+        <h1 class="text-center mb-4">Corpus Preprocessing & TF-IDF Values</h1>
+        
+        <div class="card shadow-lg mb-4">
+            <div class="card-body p-4">
+                <h2 class="card-title text-center mb-4">
+                    <i class="bi bi-collection me-2"></i> Research Field Corpus
+                </h2>
+                
+                <div class="mb-4">
+                    <label for="fieldSelect" class="form-label fw-bold">
+                        <i class="bi bi-filter-square me-2 text-primary"></i> Select Research Field
+                    </label>
+                    <select id="fieldSelect" class="form-select form-select-lg mb-3"></select>
+                </div>
+                
+                <div class="card shadow-sm">
+                    <div class="card-body p-0">
+                        <div id="corpusTable" class="table-responsive w-100"></div>
                     </div>
-                    <div id="corpusTable"></div>
                 </div>
             </div>
         </div>
@@ -81,7 +91,7 @@
         console.log('Selected field:', selected);
         console.log('Available data:', allCorpusData);
         
-        let html = `<table class='table table-bordered mt-4'><thead><tr><th>Field</th><th>Top Preprocessed Words (by TF-IDF)</th><th>TF-IDF Values</th></tr></thead><tbody>`;
+        let html = `<table class='table table-bordered table-hover w-100'><thead class="table-light"><tr><th style="width: 20%">Field</th><th style="width: 80%" colspan="2">Top Preprocessed Words (by TF-IDF)</th></tr></thead><tbody>`;
         
         // Find the selected field data
         const filteredData = allCorpusData.filter(row => row.field === selected);
@@ -97,8 +107,8 @@
             }
             
             // Create a table for word-tfidf pairs
-            let wordTfidfTable = '<div class="table-responsive" style="max-height: 400px; overflow-y: auto;"><table class="table table-sm table-striped">';
-            wordTfidfTable += '<thead><tr><th>#</th><th>Word</th><th>TF-IDF Value</th></tr></thead><tbody>';
+            let wordTfidfTable = '<div class="table-responsive" style="max-height: 400px; overflow-y: auto;"><table class="table table-sm table-striped w-100">';
+            wordTfidfTable += '<thead class="sticky-top bg-light"><tr><th style="width: 10%">#</th><th style="width: 45%">Word</th><th style="width: 45%">TF-IDF Value</th></tr></thead><tbody>';
             
             // Add rows for each word-tfidf pair
             row.preprocessed_words.forEach((word, index) => {
@@ -109,8 +119,8 @@
             wordTfidfTable += '</tbody></table></div>';
             
             html += `<tr>
-                      <td>${row.field}</td>
-                      <td colspan="2">${wordTfidfTable}</td>
+                      <td class="align-middle fw-bold">${row.field}</td>
+                      <td colspan="2" class="p-0">${wordTfidfTable}</td>
                     </tr>`;
           });
         }

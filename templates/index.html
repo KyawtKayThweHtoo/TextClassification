@@ -26,11 +26,13 @@
       </div>
     </nav>
     <div class="container mt-6">
-        <div class="row justify-content-center">
-            <div class="col-md-10 col-lg-8 col-xl-6">
-                <h2 class="mb-4 text-center">Paper Field Categorization</h2>
-                <div class="card shadow-lg">
-                    <form id="paperForm" class="p-4">
+        <h1 class="text-center mb-4">Research Paper Categorization</h1>
+        <div class="card shadow-lg mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">
+                    <i class="bi bi-file-earmark-text me-2"></i> Paper Analysis
+                </h2>
+                <form id="paperForm" class="p-3">
                         <div class="mb-3">
                             <label for="title" class="form-label">Paper Title</label>
                             <input type="text" class="form-control" id="title" name="title" required>
@@ -39,13 +41,20 @@
                             <label for="abstract" class="form-label">Paper Abstract</label>
                             <textarea class="form-control" id="abstract" name="abstract" rows="3" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Preprocess</button>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-gear me-2"></i> Preprocess
+                        </button>
                     </form>
                 </div>
+            </div>
                 
                 <!-- Preprocessing Steps Section -->
                 <div id="preprocessingSteps" class="mt-4" style="display: none;">
-                    <h3 class="mb-3">Text Preprocessing Steps</h3>
+                    <div class="card shadow-lg">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">
+                                <i class="bi bi-funnel me-2 text-primary"></i> Text Preprocessing Steps
+                            </h3>
                     
                     <!-- Accordion for Preprocessing Steps -->
                     <div class="accordion" id="preprocessingAccordion">
@@ -148,57 +157,18 @@
                         </button>
                     </div>
                     
-                    <!-- TF-IDF Values Section -->
-                    <div class="mt-4" id="tfidfSection" style="display: none;">
-                        <h3 class="mb-3">TF-IDF Values</h3>
-                        <div class="card shadow-sm">
+                    <!-- TF-IDF Section -->
+                    <div id="tfidfSection" class="mt-4" style="display: none;">
+                        <div class="card shadow-lg">
                             <div class="card-body">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                    <input type="text" class="form-control" id="tfidfSearch" placeholder="Search words...">
-                                </div>
-                                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                    <table class="table table-striped table-hover" id="tfidfTable">
-                                        <thead class="sticky-top bg-light">
-                                            <tr>
-                                                <th>Rank</th>
-                                                <th>Word</th>
-                                                <th>TF-IDF Value</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tfidfTableBody">
-                                            <!-- TF-IDF values will be inserted here -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Button to show Classification Options -->
-                        <div class="mt-4 text-center" id="showClassificationButtonContainer">
-                            <div class="card shadow-sm p-3">
-                                <div class="mb-3">
-                                    <label for="kernel" class="form-label">SVM Kernel</label>
-                                    <select class="form-select" id="kernel" name="kernel">
-                                        <option value="linear">Linear</option>
-                                        <option value="poly">Polynomial</option>
-                                    </select>
-                                </div>
-                                <button id="categorizeButton" class="btn btn-primary btn-lg">
-                                    <i class="bi bi-tag-fill me-2"></i> Categorize
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Classification Result Section -->
-                    <div class="mt-4 mb-5" id="classificationSection" style="display: none;">
-                        <h3 class="mb-3">Classification Result</h3>
-                        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px;">
-                            <div class="card-body text-center p-4">
-                                <div class="mb-3">
-                                    <i class="bi bi-award" style="font-size: 3rem; color: #4776E6;"></i>
-                                </div>
+                                <h3 class="card-title mb-4">
+                                    <i class="bi bi-table me-2 text-success"></i> TF-IDF Vectorization
+                                </h3>
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                        <input type="text" class="form-control" id="tfidfSearch" placeholder="Search words...">
                                 <h4 class="mb-3" id="resultCategory">Processing...</h4>
                                 <div class="d-flex justify-content-center align-items-center">
                                     <div class="accuracy-badge" id="resultAccuracy" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border-radius: 8px; padding: 8px 15px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-flex; align-items: center;">
@@ -209,9 +179,10 @@
                             </div>
                         </div>
                     </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
     </div>
     <!-- We've removed the modal as we're now showing results directly on the page -->
     <!-- Additional CSS for the preprocessing steps -->

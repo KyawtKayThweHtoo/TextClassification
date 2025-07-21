@@ -27,22 +27,313 @@
       </div>
     </nav>
     <div class="container mt-6">
-        <div class="row justify-content-center">
-            <div class="col-md-10 col-lg-8 col-xl-6">
-                <h2 class="mb-4 text-center">Model Accuracy Metrics</h2>
-                <div class="card shadow-lg p-4">
-                    <canvas id="accuracyChart" height="120"></canvas>
-                    <div id="metricsTable" class="mt-4"></div>
+        <h1 class="text-center mb-4">Model Accuracy Metrics</h1>
+        
+        <!-- Options Card -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="bi bi-sliders me-2 text-primary"></i> Analysis Options
+                </h3>
+                
+                <div class="row g-3">
+                    <!-- Paper Count Option -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="bi bi-file-earmark-text me-2 text-success"></i> Paper Count
+                                </h5>
+                                <p class="card-text small text-muted mb-3">Select how many papers to include in the analysis</p>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold mb-3">Select Paper Count:</label>
+                                    
+                                    <div class="paper-count-options d-flex flex-wrap justify-content-center gap-2 mb-3">
+                                        <div class="form-check form-check-inline paper-option">
+                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount300" value="300">
+                                            <label class="form-check-label btn btn-outline-primary" for="paperCount300">300</label>
+                                        </div>
+                                        <div class="form-check form-check-inline paper-option">
+                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount500" value="500">
+                                            <label class="form-check-label btn btn-outline-primary" for="paperCount500">500</label>
+                                        </div>
+                                        <div class="form-check form-check-inline paper-option">
+                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount800" value="800">
+                                            <label class="form-check-label btn btn-outline-primary" for="paperCount800">800</label>
+                                        </div>
+                                        <div class="form-check form-check-inline paper-option">
+                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount1200" value="1200">
+                                            <label class="form-check-label btn btn-outline-primary" for="paperCount1200">1200</label>
+                                        </div>
+                                        <div class="form-check form-check-inline paper-option">
+                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount1500" value="1500" checked>
+                                            <label class="form-check-label btn btn-outline-primary active" for="paperCount1500">1500</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-center mb-2">
+                                        <div class="paper-count-display fw-bold fs-4 text-primary">
+                                            <span id="paperCountDisplay">1500</span> papers
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div class="paper-count-visual">
+                                        <div class="papers-icon-container" id="paperCountVisual">
+                                            <!-- Paper icons will be generated here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Train/Test Split Option -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="bi bi-pie-chart-fill me-2 text-danger"></i> Train/Test Split
+                                </h5>
+                                <p class="card-text small text-muted mb-3">Select the training and testing data ratio</p>
+                                
+                                <div class="mb-3">
+                                    <select id="trainTestSplit" class="form-select form-select-lg">
+                                        <option value="90">90% Training / 10% Testing</option>
+                                        <option value="80" selected>80% Training / 20% Testing</option>
+                                        <option value="70">70% Training / 30% Testing</option>
+                                        <option value="60">60% Training / 40% Testing</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="text-center mt-3">
+                                    <div class="train-test-visual">
+                                        <div class="progress" style="height: 30px;">
+                                            <div class="progress-bar bg-success" id="trainBar" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">Training</div>
+                                            <div class="progress-bar bg-warning" id="testBar" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">Testing</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <button id="runAnalysisBtn" class="btn btn-primary btn-lg">
+                        <i class="bi bi-play-circle-fill me-2"></i> Run Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Card -->
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="bi bi-graph-up me-2 text-primary"></i> Analysis Results
+                </h3>
+                
+                <div id="analysisStatus" class="alert alert-info text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="mt-2">Click "Run Analysis" to start</div>
+                </div>
+                
+                <canvas id="accuracyChart" height="120" style="display: none;"></canvas>
+                <div id="metricsTable" class="mt-4"></div>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Custom styles for paper count visualization */
+      .paper-count-visual {
+        height: 60px;
+        overflow: hidden;
+      }
+      
+      .papers-icon-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+      }
+      
+      .paper-icon {
+        font-size: 1.2rem;
+        color: #0d6efd;
+        transition: all 0.3s ease;
+      }
+      
+      /* Animation for the Run Analysis button */
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      .btn-pulse {
+        animation: pulse 1.5s infinite;
+      }
+      
+      /* Progress bar animation */
+      .progress-bar {
+        transition: width 0.5s ease-in-out;
+      }
+      
+      /* Paper count radio button styling */
+      .paper-count-options {
+        margin-bottom: 1rem;
+      }
+      
+      .paper-option {
+        margin: 0;
+        padding: 0;
+      }
+      
+      .paper-option .form-check-input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+      }
+      
+      .paper-option .form-check-label {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+      
+      .paper-option .form-check-label:hover {
+        background-color: #e9ecef;
+      }
+      
+      .paper-option .form-check-input:checked + .form-check-label {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+      }
+      
+      .paper-count-display {
+        margin-top: 0.5rem;
+        font-size: 1.25rem;
+      }
+    </style>
     <script>
+      // Global variables
+      let chart = null;
+      let paperCount = 1500;
+      let trainPercent = 80;
+      
+      // Initialize paper count selection
+      function initPaperCountSelection() {
+        // Set up event listeners for all radio buttons
+        document.querySelectorAll('input[name="paperCountRadio"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            if (this.checked) {
+              // Update paper count
+              paperCount = parseInt(this.value);
+              document.getElementById('paperCountDisplay').textContent = paperCount;
+              
+              // Update visual styling
+              document.querySelectorAll('.paper-option label').forEach(label => {
+                label.classList.remove('active');
+              });
+              document.querySelector(`label[for="${this.id}"]`).classList.add('active');
+              
+              // Update paper icons
+              updatePaperCountVisual(paperCount);
+            }
+          });
+        });
+        
+        // Initialize with default value
+        updatePaperCountVisual(paperCount);
+      }
+      
+      // Update paper count visualization
+      function updatePaperCountVisual(count) {
+        const container = document.getElementById('paperCountVisual');
+        container.innerHTML = '';
+        
+        // Calculate how many icons to show (max 15)
+        const iconCount = Math.min(15, Math.ceil(count / 100));
+        
+        for (let i = 0; i < iconCount; i++) {
+          const icon = document.createElement('i');
+          icon.className = 'bi bi-file-earmark-text paper-icon';
+          container.appendChild(icon);
+        }
+      }
+      
+      // Initialize train/test split visualization
+      function initTrainTestVisual() {
+        updateTrainTestVisual(trainPercent);
+        
+        // Update train/test visualization on select change
+        document.getElementById('trainTestSplit').addEventListener('change', function() {
+          trainPercent = parseInt(this.value);
+          updateTrainTestVisual(trainPercent);
+        });
+      }
+      
+      // Update train/test split visualization
+      function updateTrainTestVisual(trainPct) {
+        const testPct = 100 - trainPct;
+        const trainBar = document.getElementById('trainBar');
+        const testBar = document.getElementById('testBar');
+        
+        trainBar.style.width = trainPct + '%';
+        trainBar.setAttribute('aria-valuenow', trainPct);
+        trainBar.textContent = 'Training ' + trainPct + '%';
+        
+        testBar.style.width = testPct + '%';
+        testBar.setAttribute('aria-valuenow', testPct);
+        testBar.textContent = 'Testing ' + testPct + '%';
+      }
+      
+      // Initialize run analysis button
+      function initRunButton() {
+        const runBtn = document.getElementById('runAnalysisBtn');
+        
+        // Add pulse animation
+        runBtn.classList.add('btn-pulse');
+        
+        // Add click event
+        runBtn.addEventListener('click', function() {
+          // Remove pulse animation
+          this.classList.remove('btn-pulse');
+          
+          // Show loading state
+          document.getElementById('analysisStatus').innerHTML = `
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="mt-2">Running analysis with ${paperCount} papers and ${trainPercent}/${100-trainPercent} split...</div>
+          `;
+          
+          // Run analysis
+          loadMetrics(paperCount, trainPercent);
+        });
+      }
+      
       // Fetch metrics from backend and render chart and table
-      async function loadMetrics() {
+      async function loadMetrics(paperCount = 1500, trainPercent = 80) {
         try {
+          // Show chart
+          document.getElementById('accuracyChart').style.display = 'block';
+          
           // Show loading state
           document.getElementById('metricsTable').innerHTML = `
             <div class="d-flex justify-content-center my-4">
@@ -52,7 +343,8 @@
             </div>
           `;
           
-          const res = await fetch('/metrics');
+          // Fetch metrics with parameters
+          const res = await fetch(`/metrics?paper_count=${paperCount}&train_percent=${trainPercent}`);
           if (!res.ok) {
             throw new Error(`HTTP error! Status: ${res.status}`);
           }
@@ -128,9 +420,17 @@
             existingChart.destroy();
           }
           
+          // Update analysis status
+          document.getElementById('analysisStatus').innerHTML = `
+            <div class="alert alert-success">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              Analysis complete with ${data.metadata.paper_count} papers and ${data.metadata.train_percent}/${data.metadata.test_percent} split
+            </div>
+          `;
+          
           // Chart.js config
           const ctx = chartContainer.getContext('2d');
-          new Chart(ctx, {
+          chart = new Chart(ctx, {
             type: 'bar',
             data: {
               labels: [...metrics.map(m => m.charAt(0).toUpperCase() + m.slice(1)), 'Accuracy'],
@@ -214,7 +514,12 @@
           `;
         }
       }
-      loadMetrics();
+      // Initialize UI elements
+      document.addEventListener('DOMContentLoaded', function() {
+        initPaperCountSelection();
+        initTrainTestVisual();
+        initRunButton();
+      });
     </script>
 </body>
 </html>
