@@ -113,8 +113,9 @@
                                 </div>
                                 
                                 <div class="text-center mt-4">
-                                    <button id="modal-preprocess-btn" class="btn btn-primary btn-lg px-5">
-                                        <i class="bi bi-gear me-2"></i> Preprocess Text
+                                    <button id="modal-preprocess-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
+                                            style="border-radius: 50px; font-weight: 600;">
+                                        <i class="bi bi-play-circle-fill me-3" style="font-size: 1.2rem;"></i> Preprocess Text
                                     </button>
                                 </div>
                             </div>
@@ -132,17 +133,7 @@
                                             Preprocessing
                                         </h4>
                                     </div>
-                    <!-- Step 1: Preprocessing -->
-                    <div class="step-container mb-4">
-                        <h4 class="d-flex align-items-center">
-                            <span class="badge bg-primary me-2">1</span> Preprocessing
-                        </h4>
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle-fill me-2"></i> This step performs data cleaning, tokenization, stop word removal, lowercasing, and stemming & lemmatization.
-                        </div>
-                        <button id="preprocess-btn" class="btn btn-primary mb-3">
-                            <i class="bi bi-gear me-2"></i> Run Preprocessing
-                        </button>
+                    <!-- Duplicate section removed -->
                         
                         <!-- Preprocessing Results (Initially Hidden) -->
                         <div id="preprocessing-results" style="display: none;">
@@ -245,116 +236,139 @@
                 </div>
                 
                 <!-- Step 2: TF-IDF Vectorization -->
-                <div class="card mb-4" id="modal-tfidf-section" style="display: none;">
-                    <div class="card-header bg-light">
-                        <h4 class="mb-0 d-flex align-items-center">
-                            <span class="badge rounded-pill bg-primary me-2">2</span>
-                            <i class="bi bi-table me-2 text-success"></i>
-                            TF-IDF Vectorization
+                <div class="card mb-4 border-0" id="modal-tfidf-section" style="display: none; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                    <div class="card-body p-4">
+                        <h4 class="mb-3 text-white text-center">
+                            <i class="bi bi-calculator me-2" style="color: #ffd700; font-size: 1.5rem;"></i>
+                            TF-IDF Vectorization Analysis
                         </h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-info small">
-                            <i class="bi bi-info-circle-fill me-2"></i> This step calculates the importance of each word in the document using Term Frequency-Inverse Document Frequency.
+                        <p class="text-center text-white-50 mb-4">Transform your text into numerical vectors using Term Frequency-Inverse Document Frequency</p>
+                        
+                        <div class="text-center mb-4">
+                            <button id="calculate-tfidf-btn" class="btn btn-primary btn-lg px-4 py-2 shadow-lg" disabled
+                                    style="border-radius: 50px; font-weight: 600;">
+                                <i class="bi bi-play-circle-fill me-2" style="font-size: 1.1rem;"></i> Calculate TF-IDF
+                            </button>
                         </div>
-                        <button id="calculate-tfidf-btn" class="btn btn-primary mb-3" disabled>
-                            <i class="bi bi-table me-2"></i> Calculate TF-IDF
-                        </button>
                         
                         <!-- TF-IDF Results (Initially Hidden) -->
                         <div id="tfidf-results" style="display: none;">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card shadow-sm w-100">
-                                        <div class="card-body">
-                                            <h5 class="mb-3">Top TF-IDF Terms (sorted by importance)</h5>
-                                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                                <table class="table table-striped table-hover table-sm" id="tfidfTable" style="font-size: 0.9rem; width: 100%;">
-                                                    <thead class="sticky-top bg-light">
-                                                        <tr>
-                                                            <th style="width: 10%">Rank</th>
-                                                            <th style="width: 45%">Word</th>
-                                                            <th style="width: 45%">TF-IDF Score</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="tfidfTableBody">
-                                                        <!-- TF-IDF values will be inserted here -->
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+                                <div class="card-header bg-transparent border-0 text-center py-3">
+                                    <h5 class="mb-0 text-dark">
+                                        <i class="bi bi-table me-2 text-info" style="font-size: 1.3rem;"></i>
+                                        TF-IDF Analysis Results
+                                    </h5>
+                                    <small class="text-muted">Words ranked by importance in your document</small>
                                 </div>
-                                <!-- Top Words section removed as requested -->
-                                <div style="display: none;">
-                                    <canvas id="tfidfChart"></canvas>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table table-hover mb-0" id="tfidfTable">
+                                            <div class="card shadow-lg mb-4 border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                                <tr>
+                                                    <th class="border-0 py-3 px-4" style="font-weight: 600;">
+                                                        <i class="bi bi-hash me-2"></i>Rank
+                                                    </th>
+                                                    <th class="border-0 py-3 px-4" style="font-weight: 600;">
+                                                        <i class="bi bi-type me-2"></i>Word
+                                                    </th>
+                                                    <th class="border-0 py-3 px-4" style="font-weight: 600;">
+                                                        <i class="bi bi-speedometer2 me-2"></i>TF-IDF Score
+                                                    </th>
+                                                    <th class="border-0 py-3 px-4" style="font-weight: 600;">
+                                                        <i class="bi bi-graph-up me-2"></i>Importance
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tfidfTableBody" class="text-dark">
+                                                <!-- TF-IDF values will be inserted here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Step 3: Categorization -->
                     </div>
                 </div>
                 
                 <!-- Step 3: Categorization -->
-                <div class="card mb-4" id="modal-categorization-section" style="display: none;">
-                    <div class="card-header bg-light">
-                        <h4 class="mb-0 d-flex align-items-center">
-                            <span class="badge rounded-pill bg-primary me-2">3</span>
-                            <i class="bi bi-tags me-2 text-danger"></i>
-                            Categorization
+                <div class="card mb-4 border-0" id="modal-categorization-section" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <div class="card-body p-4">
+                        <h4 class="mb-3 text-white text-center">
+                            <i class="bi bi-robot me-2" style="color: #ffd700; font-size: 1.5rem;"></i>
+                            Machine Learning Classification
                         </h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle-fill me-2"></i> This step predicts the research field category using SVM classification with your selected settings.
-                        </div>
+                        <p class="text-center text-white-50 mb-4">Train and test your SVM model to classify research papers into categories</p>
                         
-                        <div class="card shadow-sm mb-3 w-100">
-                            <div class="card-body">
-                                <div class="row g-3">
+                        <!-- Classification Configuration -->
+                        <div class="card shadow-lg border-0 mb-4" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+                            <div class="card-header bg-transparent border-0 text-center py-3">
+                                <h5 class="mb-0 text-dark">
+                                    <i class="bi bi-gear-fill me-2 text-primary" style="font-size: 1.3rem;"></i>
+                                    Model Configuration
+                                </h5>
+                                <small class="text-muted">Configure your machine learning parameters</small>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row g-4">
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="train-test-split" class="form-label fw-bold"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Select Train-Test Split Ratio</label>
-                                            <select class="form-select form-select-lg" id="train-test-split">
-                                                <option value="80">80/20</option>
-                                                <option value="70">70/30</option>
-                                                <option value="60">60/40</option>
+                                        <div class="config-option">
+                                            <label for="train-test-split" class="form-label fw-bold text-dark">
+                                                <i class="bi bi-pie-chart-fill me-2 text-info"></i>Train-Test Split
+                                            </label>
+                                            <select class="form-select form-select-lg border-0 shadow-sm" id="train-test-split" style="background: #f8f9fa;">
+                                                <option value="90">90% Training / 10% Testing</option>
+                                                <option value="80" selected>80% Training / 20% Testing</option>
+                                                <option value="70">70% Training / 30% Testing</option>
+                                                <option value="60">60% Training / 40% Testing</option>
                                             </select>
+                                            <small class="text-muted mt-1 d-block">Higher training % usually means better accuracy</small>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="kernel-type" class="form-label fw-bold"><i class="bi bi-cpu-fill me-2 text-success"></i>Choose Kernel</label>
-                                            <select class="form-select form-select-lg" id="kernel-type">
-                                                <option value="linear">Linear</option>
-                                                <option value="poly">Polynomial</option>
+                                        <div class="config-option">
+                                            <label for="kernel-type" class="form-label fw-bold text-dark">
+                                                <i class="bi bi-cpu-fill me-2 text-warning"></i>Kernel Type
+                                            </label>
+                                            <select class="form-select form-select-lg border-0 shadow-sm" id="kernel-type" style="background: #f8f9fa;">
+                                                <option value="linear" selected>Linear SVM</option>
+                                                <option value="poly">Polynomial SVM</option>
                                             </select>
+                                            <small class="text-muted mt-1 d-block">Linear is faster, Polynomial is more complex</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <button id="categorize-btn" class="btn btn-primary mb-3" disabled>
-                            <i class="bi bi-tags me-2"></i> Categorize
-                        </button>
+                        <div class="text-center mb-4">
+                            <button id="categorize-btn" class="btn btn-primary btn-lg px-4 py-2 shadow-lg" disabled
+                                    style="border-radius: 50px; font-weight: 600;">
+                                <i class="bi bi-play-circle-fill me-2" style="font-size: 1.1rem;"></i> Start Classification
+                            </button>
+                        </div>
                         
                         <!-- Categorization Results (Initially Hidden) -->
-                        <div id="categorization-results" style="display: none;" class="w-100">
-                            <div class="card shadow-lg border-0" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; width: 100%;">
+                        <div id="categorization-results" style="display: none;">
+                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
                                 <div class="card-body text-center p-5">
                                     <div class="mb-4">
-                                        <img src="/static/images/medal.png" alt="Medal" style="width: 80px; height: 80px;" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3176/3176384.png';">
+                                        <i class="bi bi-trophy-fill" style="font-size: 4rem; color: #ffd700;"></i>
                                     </div>
-                                    <h3 class="mb-4" id="resultCategory">Processing...</h3>
-                                    <div class="d-flex justify-content-center align-items-center">
-                                        <div class="accuracy-badge" id="resultAccuracy" style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); color: white; border-radius: 12px; padding: 12px 25px; font-weight: 700; font-size: 1.3rem; box-shadow: 0 6px 15px rgba(0,0,0,0.15); display: inline-flex; align-items: center;">
-                                            <i class="bi bi-graph-up-arrow me-2"></i>
+                                    <h3 class="mb-3 text-dark" id="resultCategory">Processing...</h3>
+                                    <div class="d-flex justify-content-center align-items-center mb-4">
+                                        <div class="accuracy-display" id="resultAccuracy" 
+                                             style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); 
+                                                    color: white; border-radius: 20px; padding: 15px 30px; 
+                                                    font-weight: 700; font-size: 1.3rem; 
+                                                    box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+                                                    display: inline-flex; align-items: center;">
+                                            <i class="bi bi-graph-up-arrow me-3" style="font-size: 1.5rem;"></i>
                                             Accuracy: 0%
                                         </div>
                                     </div>
+                                    
+
                                 </div>
                             </div>
                         </div>
@@ -729,68 +743,72 @@
                 const result = await response.json();
                 console.log('TF-IDF calculation successful, received data:', result ? 'Data received' : 'No data');
                 
-                // Update TF-IDF table
-                const tableBody = document.getElementById('tfidfTableBody');
-                tableBody.innerHTML = '';
-                
-                result.tfidf_words.forEach((word, index) => {
-                    if (index < 100) { // Limit to top 100 words
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td style="font-size: 0.9rem;">${index + 1}</td>
-                            <td style="font-size: 0.9rem;">${word}</td>
-                            <td style="font-size: 0.9rem;">${result.tfidf_values[index].toFixed(4)}</td>
-                        `;
-                        tableBody.appendChild(row);
-                    }
-                });
-                
-                // Create TF-IDF chart
-                const ctx = document.getElementById('tfidfChart').getContext('2d');
-                
-                // Use only top 10 words for chart
-                const topWords = result.tfidf_words.slice(0, 10);
-                const topValues = result.tfidf_values.slice(0, 10);
-                
-                // Destroy previous chart if it exists
-                if (window.tfidfChart && typeof window.tfidfChart.destroy === 'function') {
-                    window.tfidfChart.destroy();
-                } else {
-                    // Clear the canvas if chart can't be destroyed
-                    const canvas = document.getElementById('tfidfChart');
-                    const ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Validate the result data
+                if (!result || !result.tfidf_words || !result.tfidf_values || 
+                    !Array.isArray(result.tfidf_words) || !Array.isArray(result.tfidf_values) ||
+                    result.tfidf_words.length === 0 || result.tfidf_values.length === 0) {
+                    throw new Error('Invalid TF-IDF data received from server');
                 }
                 
-                window.tfidfChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: topWords,
-                        datasets: [{
-                            label: 'TF-IDF Score',
-                            data: topValues,
-                            backgroundColor: 'rgba(71, 118, 230, 0.7)',
-                            borderColor: 'rgba(71, 118, 230, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            title: {
-                                display: true,
-                                text: 'Top 10 Words by TF-IDF Score'
-                            }
-                        }
+                // Update TF-IDF table with enhanced styling
+                let tfidfTableHtml = '';
+                const maxScore = Math.max(...result.tfidf_values);
+                
+                for (let i = 0; i < Math.min(result.tfidf_words.length, 100); i++) {
+                    const score = result.tfidf_values[i];
+                    const importance = score / maxScore;
+                    let importanceLevel = '';
+                    let importanceColor = '';
+                    let rankBadge = '';
+                    
+                    // Determine importance level and colors
+                    if (importance >= 0.8) {
+                        importanceLevel = 'Very High';
+                        importanceColor = 'text-danger';
+                        rankBadge = 'badge bg-danger';
+                    } else if (importance >= 0.6) {
+                        importanceLevel = 'High';
+                        importanceColor = 'text-warning';
+                        rankBadge = 'badge bg-warning';
+                    } else if (importance >= 0.4) {
+                        importanceLevel = 'Medium';
+                        importanceColor = 'text-info';
+                        rankBadge = 'badge bg-info';
+                    } else {
+                        importanceLevel = 'Low';
+                        importanceColor = 'text-secondary';
+                        rankBadge = 'badge bg-secondary';
                     }
-                });
+                    
+                    tfidfTableHtml += `
+                        <tr class="table-row-hover" style="transition: all 0.2s ease;">
+                            <td class="px-4 py-3">
+                                <span class="${rankBadge} rounded-pill px-2 py-1">${i + 1}</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <strong class="text-primary">${result.tfidf_words[i]}</strong>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="badge bg-light text-dark px-3 py-2" style="font-family: monospace; font-size: 0.9rem;">
+                                    ${score.toFixed(4)}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="progress me-2" style="width: 80px; height: 8px;">
+                                        <div class="progress-bar ${importanceColor.replace('text-', 'bg-')}" 
+                                             style="width: ${(importance * 100).toFixed(0)}%"></div>
+                                    </div>
+                                    <small class="${importanceColor} fw-bold">${importanceLevel}</small>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+                document.getElementById('tfidfTableBody').innerHTML = tfidfTableHtml;
+                
+                // Skip chart creation since canvas is hidden in this layout
+                // Chart functionality is not needed in the explore dataset modal
                 
                 // Show TF-IDF results
                 document.getElementById('tfidf-results').style.display = 'block';
@@ -801,11 +819,11 @@
                 
                 // Reset button state
                 this.disabled = false;
-                this.innerHTML = '<i class="bi bi-table me-2"></i> Calculate TF-IDF';
+                this.innerHTML = '<i class="bi bi-play-circle-fill me-2" style="font-size: 1.1rem;"></i> Calculate TF-IDF';
             } catch (error) {
                 console.error('Error calculating TF-IDF:', error);
                 this.disabled = false;
-                this.innerHTML = '<i class="bi bi-table me-2"></i> Calculate TF-IDF';
+                this.innerHTML = '<i class="bi bi-play-circle-fill me-2" style="font-size: 1.1rem;"></i> Calculate TF-IDF';
                 
                 // More detailed error message
                 if (error.message && error.message.includes('404')) {

@@ -36,62 +36,9 @@
                     <i class="bi bi-sliders me-2 text-primary"></i> Analysis Options
                 </h3>
                 
-                <div class="row g-3">
-                    <!-- Paper Count Option -->
-                    <div class="col-md-6">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <i class="bi bi-file-earmark-text me-2 text-success"></i> Paper Count
-                                </h5>
-                                <p class="card-text small text-muted mb-3">Select how many papers to include in the analysis</p>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold mb-3">Select Paper Count:</label>
-                                    
-                                    <div class="paper-count-options d-flex flex-wrap justify-content-center gap-2 mb-3">
-                                        <div class="form-check form-check-inline paper-option">
-                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount300" value="300">
-                                            <label class="form-check-label btn btn-outline-primary" for="paperCount300">300</label>
-                                        </div>
-                                        <div class="form-check form-check-inline paper-option">
-                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount500" value="500">
-                                            <label class="form-check-label btn btn-outline-primary" for="paperCount500">500</label>
-                                        </div>
-                                        <div class="form-check form-check-inline paper-option">
-                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount800" value="800">
-                                            <label class="form-check-label btn btn-outline-primary" for="paperCount800">800</label>
-                                        </div>
-                                        <div class="form-check form-check-inline paper-option">
-                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount1200" value="1200">
-                                            <label class="form-check-label btn btn-outline-primary" for="paperCount1200">1200</label>
-                                        </div>
-                                        <div class="form-check form-check-inline paper-option">
-                                            <input class="form-check-input" type="radio" name="paperCountRadio" id="paperCount1500" value="1500" checked>
-                                            <label class="form-check-label btn btn-outline-primary active" for="paperCount1500">1500</label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="text-center mb-2">
-                                        <div class="paper-count-display fw-bold fs-4 text-primary">
-                                            <span id="paperCountDisplay">1500</span> papers
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-center">
-                                    <div class="paper-count-visual">
-                                        <div class="papers-icon-container" id="paperCountVisual">
-                                            <!-- Paper icons will be generated here -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
+                <div class="row justify-content-center">
                     <!-- Train/Test Split Option -->
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title">
@@ -122,8 +69,9 @@
                 </div>
                 
                 <div class="d-grid gap-2 mt-4">
-                    <button id="runAnalysisBtn" class="btn btn-primary btn-lg">
-                        <i class="bi bi-play-circle-fill me-2"></i> Run Analysis
+                    <button id="runAnalysisBtn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
+                            style="border-radius: 50px; font-weight: 600;">
+                        <i class="bi bi-play-circle-fill me-3" style="font-size: 1.2rem;"></i> Run Analysis
                     </button>
                 </div>
             </div>
@@ -151,25 +99,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-      /* Custom styles for paper count visualization */
-      .paper-count-visual {
-        height: 60px;
-        overflow: hidden;
-      }
-      
-      .papers-icon-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 5px;
-      }
-      
-      .paper-icon {
-        font-size: 1.2rem;
-        color: #0d6efd;
-        transition: all 0.3s ease;
-      }
-      
       /* Animation for the Run Analysis button */
       @keyframes pulse {
         0% { transform: scale(1); }
@@ -186,17 +115,8 @@
         transition: width 0.5s ease-in-out;
       }
       
-      /* Paper count radio button styling */
-      .paper-count-options {
-        margin-bottom: 1rem;
-      }
-      
-      .paper-option {
-        margin: 0;
-        padding: 0;
-      }
-      
-      .paper-option .form-check-input {
+      /* Form input styling */
+      .form-check-input {
         position: absolute;
         opacity: 0;
         cursor: pointer;
@@ -204,7 +124,7 @@
         width: 0;
       }
       
-      .paper-option .form-check-label {
+      .form-check-label {
         display: inline-block;
         padding: 0.5rem 1rem;
         margin: 0;
@@ -516,7 +436,6 @@
       }
       // Initialize UI elements
       document.addEventListener('DOMContentLoaded', function() {
-        initPaperCountSelection();
         initTrainTestVisual();
         initRunButton();
       });
