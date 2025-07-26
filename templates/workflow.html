@@ -1,771 +1,1259 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Research Paper Categorization - Workflow</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/static/style.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="/static/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body class="bg-light">
+  </head>
+  <body class="bg-light">
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top mb-4">
       <div class="container">
         <a class="navbar-brand" href="/">Research Paper Categorization</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Home</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/workflow">Workflow</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/ml_pipeline">ML Pipeline</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/explore">Explore Dataset</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-uppercase" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-uppercase active" href="/workflow"
+                >Workflow</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-uppercase" href="/ml_pipeline"
+                >ML Pipeline</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-uppercase" href="/explore"
+                >Explore Dataset</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-uppercase" href="/insights"
+                >Accuracy Chart</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-uppercase" href="/corpus"
+                >Corpus & TF-IDF</a
+              >
+            </li>
           </ul>
         </div>
       </div>
     </nav>
 
     <div class="container mt-6">
-        <!-- Progress Indicator -->
-        <div class="workflow-progress mb-4">
-            <div class="progress" style="height: 12px; border-radius: 10px; background: rgba(0,0,0,0.1);">
-                <div class="progress-bar" role="progressbar" id="workflow-progress-bar" 
-                     style="width: 33%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 10px;" 
-                     aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="d-flex justify-content-between mt-3">
-                <span class="step-indicator active clickable-step" id="step1-indicator" data-step="1" 
-                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
-                    <i class="bi bi-funnel me-2"></i>Preprocessing
-                </span>
-                <span class="step-indicator clickable-step" id="step2-indicator" data-step="2" 
-                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
-                    <i class="bi bi-diagram-3 me-2"></i>Vectorization
-                </span>
-                <span class="step-indicator clickable-step" id="step3-indicator" data-step="3" 
-                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
-                    <i class="bi bi-calculator me-2"></i>TF-IDF
-                </span>
-                <span class="step-indicator clickable-step" id="step4-indicator" data-step="4" 
-                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
-                    <i class="bi bi-robot me-2"></i>Classification
-                </span>
-            </div>
+      <!-- Progress Indicator -->
+      <div class="workflow-progress mb-4">
+        <div
+          class="progress"
+          style="
+            height: 12px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.1);
+          "
+        >
+          <div
+            class="progress-bar"
+            role="progressbar"
+            id="workflow-progress-bar"
+            style="
+              width: 33%;
+              background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+              border-radius: 10px;
+            "
+            aria-valuenow="33"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
         </div>
-        
-        <!-- Navigation Buttons -->
-        <div class="workflow-navigation d-flex justify-content-between mb-4">
-            <button id="prev-step-btn" class="btn btn-primary px-4 py-2 shadow-lg" disabled 
-                    style="border-radius: 50px; font-weight: 600;">
-                <i class="bi bi-arrow-left me-2"></i>Previous Step
-            </button>
-            <button id="next-step-btn" class="btn btn-primary px-4 py-2 shadow-lg" disabled 
-                    style="border-radius: 50px; font-weight: 600;">
-                Next Step<i class="bi bi-arrow-right ms-2"></i>
-            </button>
+        <div class="d-flex justify-content-between mt-3">
+          <span
+            class="step-indicator active clickable-step"
+            id="step1-indicator"
+            data-step="1"
+            style="
+              cursor: pointer;
+              padding: 8px 16px;
+              border-radius: 20px;
+              transition: all 0.3s ease;
+            "
+          >
+            <i class="bi bi-funnel me-2"></i>Preprocessing
+          </span>
+          <span
+            class="step-indicator clickable-step"
+            id="step2-indicator"
+            data-step="2"
+            style="
+              cursor: pointer;
+              padding: 8px 16px;
+              border-radius: 20px;
+              transition: all 0.3s ease;
+            "
+          >
+            <i class="bi bi-diagram-3 me-2"></i>Vectorization
+          </span>
+          <span
+            class="step-indicator clickable-step"
+            id="step3-indicator"
+            data-step="3"
+            style="
+              cursor: pointer;
+              padding: 8px 16px;
+              border-radius: 20px;
+              transition: all 0.3s ease;
+            "
+          >
+            <i class="bi bi-calculator me-2"></i>TF-IDF
+          </span>
+          <span
+            class="step-indicator clickable-step"
+            id="step4-indicator"
+            data-step="4"
+            style="
+              cursor: pointer;
+              padding: 8px 16px;
+              border-radius: 20px;
+              transition: all 0.3s ease;
+            "
+          >
+            <i class="bi bi-robot me-2"></i>Classification
+          </span>
         </div>
+      </div>
 
-        <!-- Step 1: Preprocessing -->
-        <div id="step1-content" class="workflow-step active">
-            <div class="card shadow-lg mb-4">
-                <div class="card-body p-4">
-                    <h2 class="card-title text-center mb-4">
-                        <i class="bi bi-funnel me-2"></i> Preprocessing
-                    </h2>
-                    
+      <!-- Navigation Buttons -->
+      <div class="workflow-navigation d-flex justify-content-between mb-4">
+        <button
+          id="prev-step-btn"
+          class="btn btn-primary px-4 py-2 shadow-lg"
+          disabled
+          style="border-radius: 50px; font-weight: 600"
+        >
+          <i class="bi bi-arrow-left me-2"></i>Previous Step
+        </button>
+        <button
+          id="next-step-btn"
+          class="btn btn-primary px-4 py-2 shadow-lg"
+          disabled
+          style="border-radius: 50px; font-weight: 600"
+        >
+          Next Step<i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </div>
+
+      <!-- Step 1: Preprocessing -->
+      <div id="step1-content" class="workflow-step active">
+        <div class="card shadow-lg mb-4">
+          <div class="card-body p-4">
+            <h2 class="card-title text-center mb-4">
+              <i class="bi bi-funnel me-2"></i> Preprocessing
+            </h2>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="title" class="form-label">Paper Title</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="title"
+                    name="title"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="abstract" class="form-label"
+                    >Paper Abstract</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="abstract"
+                    name="abstract"
+                    rows="3"
+                    required
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center mb-4">
+              <button
+                id="preprocess-btn"
+                class="btn btn-primary btn-lg px-5 py-3 shadow-lg"
+                style="border-radius: 50px; font-weight: 600"
+              >
+                <i
+                  class="bi bi-play-circle-fill me-3"
+                  style="font-size: 1.2rem"
+                ></i>
+                Preprocess Text
+              </button>
+            </div>
+
+            <!-- Preprocessing Steps Accordion -->
+            <div class="accordion" id="preprocessingAccordion">
+              <!-- Data Cleaning Step -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="dataCleaning">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#dataCleaningContent"
+                    aria-expanded="false"
+                    aria-controls="dataCleaningContent"
+                  >
+                    <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                    Data Cleaning
+                  </button>
+                </h2>
+                <div
+                  id="dataCleaningContent"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="dataCleaning"
+                  data-bs-parent="#preprocessingAccordion"
+                >
+                  <div class="accordion-body">
                     <div class="row">
+                      <div class="col-md-6">
+                        <h6>Original Text:</h6>
+                        <div
+                          class="border p-2 rounded mb-3"
+                          id="originalText"
+                        ></div>
+                      </div>
+                      <div class="col-md-6">
+                        <h6>After Cleaning:</h6>
+                        <div class="border p-2 rounded" id="cleanedText"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tokenization Step -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="tokenization">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#tokenizationContent"
+                    aria-expanded="false"
+                    aria-controls="tokenizationContent"
+                  >
+                    <i class="bi bi-scissors me-2 text-primary"></i>
+                    Tokenization
+                  </button>
+                </h2>
+                <div
+                  id="tokenizationContent"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="tokenization"
+                  data-bs-parent="#preprocessingAccordion"
+                >
+                  <div class="accordion-body">
+                    <h6>Tokens:</h6>
+                    <div
+                      class="border p-2 rounded"
+                      id="tokenizedText"
+                      style="max-height: 200px; overflow-y: auto"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stop Word Removal Step -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="stopWordRemoval">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#stopWordRemovalContent"
+                    aria-expanded="false"
+                    aria-controls="stopWordRemovalContent"
+                  >
+                    <i class="bi bi-x-circle me-2 text-danger"></i> Stop Word
+                    Removal
+                  </button>
+                </h2>
+                <div
+                  id="stopWordRemovalContent"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="stopWordRemoval"
+                  data-bs-parent="#preprocessingAccordion"
+                >
+                  <div class="accordion-body">
+                    <h6>After Stop Word Removal:</h6>
+                    <div
+                      class="border p-2 rounded"
+                      id="filteredText"
+                      style="max-height: 200px; overflow-y: auto"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lowercasing Step -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="lowercasing">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#lowercasingContent"
+                    aria-expanded="false"
+                    aria-controls="lowercasingContent"
+                  >
+                    <i class="bi bi-type-lowercase me-2 text-info"></i>
+                    Lowercasing
+                  </button>
+                </h2>
+                <div
+                  id="lowercasingContent"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="lowercasing"
+                  data-bs-parent="#preprocessingAccordion"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h6>Original Text:</h6>
+                        <div
+                          class="border p-2 rounded mb-3"
+                          id="beforeLowercaseText"
+                        ></div>
+                      </div>
+                      <div class="col-md-6">
+                        <h6>After Lowercasing:</h6>
+                        <div
+                          class="border p-2 rounded"
+                          id="lowercasedText"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Stemming and Lemmatization Step -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="stemming">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#stemmingContent"
+                    aria-expanded="false"
+                    aria-controls="stemmingContent"
+                  >
+                    <i class="bi bi-flower1 me-2 text-success"></i> Stemming and
+                    Lemmatization
+                  </button>
+                </h2>
+                <div
+                  id="stemmingContent"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="stemming"
+                  data-bs-parent="#preprocessingAccordion"
+                >
+                  <div class="accordion-body">
+                    <h6>After Stemming and Lemmatization:</h6>
+                    <div
+                      class="border p-2 rounded"
+                      id="lemmatizedText"
+                      style="max-height: 200px; overflow-y: auto"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <button
+                id="proceed-vectorization-btn"
+                class="btn btn-success btn-lg"
+                disabled
+              >
+                <i class="bi bi-diagram-3 me-2"></i> Proceed to Vectorization
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Binary Vectorization -->
+      <div id="step2-content" class="workflow-step">
+        <div
+          class="card shadow-lg mb-4 border-0"
+          style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+          "
+        >
+          <div class="card-body p-5">
+            <h2 class="card-title text-center mb-4 text-white">
+              <i
+                class="bi bi-diagram-3 me-3"
+                style="font-size: 2rem; color: #ffd700"
+              ></i>
+              Binary Vectorization
+            </h2>
+            <p class="text-center text-white-50 mb-4">
+              Convert preprocessed words into binary vectors showing
+              presence/absence
+            </p>
+
+            <div class="row justify-content-center mb-4">
+              <div class="col-lg-10">
+                <div
+                  class="card shadow-lg border-0"
+                  style="
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                  "
+                >
+                  <div
+                    class="card-header bg-transparent border-0 text-center py-3"
+                  >
+                    <h4 class="mb-0 text-dark">
+                      <i
+                        class="bi bi-list-ol me-2 text-primary"
+                        style="font-size: 1.5rem"
+                      ></i>
+                      All Preprocessed Words
+                    </h4>
+                    <small class="text-muted"
+                      >Complete word list from your processed text</small
+                    >
+                  </div>
+                  <div class="card-body p-4">
+                    <div id="all-words-display">
+                      <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                          <span class="visually-hidden">Loading words...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Processing words...</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row justify-content-center mb-4">
+              <div class="col-lg-10">
+                <div
+                  class="card shadow-lg border-0"
+                  style="
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                  "
+                >
+                  <div
+                    class="card-header bg-transparent border-0 text-center py-3"
+                  >
+                    <h4 class="mb-0 text-dark">
+                      <i
+                        class="bi bi-diagram-3-fill me-2 text-success"
+                        style="font-size: 1.5rem"
+                      ></i>
+                      Binary Vector Representation
+                    </h4>
+                    <small class="text-muted"
+                      >Each word represented as 0s and 1s</small
+                    >
+                  </div>
+                  <div class="card-body p-4">
+                    <div id="binary-vectors-display">
+                      <div class="text-center">
+                        <div class="spinner-border text-success" role="status">
+                          <span class="visually-hidden"
+                            >Creating vectors...</span
+                          >
+                        </div>
+                        <p class="mt-2 text-muted">
+                          Creating binary vectors...
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center mt-5">
+              <button
+                id="proceed-tfidf-btn"
+                class="btn btn-primary btn-lg px-5 py-3 shadow-lg"
+                style="border-radius: 50px; font-weight: 600"
+                disabled
+              >
+                <i class="bi bi-calculator me-3" style="font-size: 1.2rem"></i>
+                Proceed to TF-IDF Analysis
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: TF-IDF Analysis -->
+      <div id="step3-content" class="workflow-step">
+        <div
+          class="card shadow-lg mb-4 border-0"
+          style="
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+          "
+        >
+          <div class="card-body p-5">
+            <h2 class="card-title text-center mb-4 text-white">
+              <i
+                class="bi bi-calculator me-3"
+                style="font-size: 2rem; color: #ffd700"
+              ></i>
+              TF-IDF Vectorization Analysis
+            </h2>
+            <p class="text-center text-white-50 mb-4">
+              First vectorize your text into binary representation, then
+              calculate TF-IDF weights
+            </p>
+
+            <!-- Vectorization Step (Binary Representation) -->
+            <div class="row mb-4" id="vectorization-section"></div>
+
+            <!-- TF-IDF Results Container -->
+            <div class="tfidf-results-container">
+              <!-- Top Words Visualization -->
+              <div class="row mb-4">
+                <div class="col-12">
+                  <div
+                    class="card shadow-lg border-0"
+                    style="
+                      background: rgba(255, 255, 255, 0.95);
+                      backdrop-filter: blur(10px);
+                    "
+                  >
+                    <div
+                      class="card-header bg-transparent border-0 text-center py-3"
+                    >
+                      <h4 class="mb-0 text-dark">
+                        <i
+                          class="bi bi-bar-chart-fill me-2 text-warning"
+                          style="font-size: 1.5rem"
+                        ></i>
+                        TF-IDF Analysis - Top Important Words
+                      </h4>
+                      <small class="text-muted"
+                        >Words with highest TF-IDF scores calculated from binary
+                        vectors</small
+                      >
+                    </div>
+                    <div class="card-body p-4">
+                      <div
+                        class="chart-container"
+                        style="position: relative; height: 350px; width: 100%"
+                      >
+                        <canvas id="tfidfChart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TF-IDF Table -->
+              <div class="row">
+                <div class="col-12">
+                  <div
+                    class="card shadow-lg border-0"
+                    style="
+                      background: rgba(255, 255, 255, 0.95);
+                      backdrop-filter: blur(10px);
+                    "
+                  >
+                    <div class="card-header bg-transparent border-0">
+                      <div class="row align-items-center">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="title" class="form-label">Paper Title</label>
-                                <input type="text" class="form-control" id="title" name="title" required>
-                            </div>
+                          <h4 class="mb-0 text-dark">
+                            <i
+                              class="bi bi-table me-2 text-info"
+                              style="font-size: 1.5rem"
+                            ></i>
+                            Complete TF-IDF Analysis
+                          </h4>
+                          <small class="text-muted"
+                            >All words ranked by importance</small
+                          >
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="abstract" class="form-label">Paper Abstract</label>
-                                <textarea class="form-control" id="abstract" name="abstract" rows="3" required></textarea>
-                            </div>
+                          <div class="input-group">
+                            <span class="input-group-text bg-light border-0">
+                              <i class="bi bi-search text-primary"></i>
+                            </span>
+                            <input
+                              type="text"
+                              class="form-control border-0 bg-light"
+                              id="tfidfSearch"
+                              placeholder="Search for specific words..."
+                              style="box-shadow: none"
+                            />
+                          </div>
                         </div>
+                      </div>
                     </div>
-                    
-                    <div class="text-center mb-4">
-                        <button id="preprocess-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
-                                style="border-radius: 50px; font-weight: 600;">
-                            <i class="bi bi-play-circle-fill me-3" style="font-size: 1.2rem;"></i> Preprocess Text
-                        </button>
+                    <div class="card-body p-0">
+                      <div
+                        class="table-responsive"
+                        style="max-height: 400px; overflow-y: auto"
+                      >
+                        <table class="table table-hover mb-0" id="tfidfTable">
+                          <thead
+                            class="sticky-top"
+                            style="
+                              background: linear-gradient(
+                                135deg,
+                                #4facfe 0%,
+                                #00f2fe 100%
+                              );
+                              color: white;
+                            "
+                          >
+                            <tr>
+                              <th
+                                class="border-0 py-3 px-4"
+                                style="font-weight: 600"
+                              >
+                                <i class="bi bi-hash me-2"></i>Rank
+                              </th>
+                              <th
+                                class="border-0 py-3 px-4"
+                                style="font-weight: 600"
+                              >
+                                <i class="bi bi-type me-2"></i>Word
+                              </th>
+                              <th
+                                class="border-0 py-3 px-4"
+                                style="font-weight: 600"
+                              >
+                                <i class="bi bi-speedometer2 me-2"></i>TF-IDF
+                                Score
+                              </th>
+                              <th
+                                class="border-0 py-3 px-4"
+                                style="font-weight: 600"
+                              >
+                                <i class="bi bi-graph-up me-2"></i>Importance
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="tfidfTableBody" class="text-dark">
+                            <!-- TF-IDF values will be inserted here -->
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                    
-                    <!-- Preprocessing Steps Accordion -->
-                    <div class="accordion" id="preprocessingAccordion">
-                        <!-- Data Cleaning Step -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="dataCleaning">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dataCleaningContent" aria-expanded="false" aria-controls="dataCleaningContent">
-                                    <i class="bi bi-check-circle-fill me-2 text-success"></i> Data Cleaning
-                                </button>
-                            </h2>
-                            <div id="dataCleaningContent" class="accordion-collapse collapse" aria-labelledby="dataCleaning" data-bs-parent="#preprocessingAccordion">
-                                <div class="accordion-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h6>Original Text:</h6>
-                                            <div class="border p-2 rounded mb-3" id="originalText"></div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6>After Cleaning:</h6>
-                                            <div class="border p-2 rounded" id="cleanedText"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center mt-5">
+              <button
+                id="proceed-classification-btn"
+                class="btn btn-primary btn-lg px-5 py-3 shadow-lg"
+                style="border-radius: 50px; font-weight: 600"
+              >
+                <i
+                  class="bi bi-arrow-right-circle-fill me-3"
+                  style="font-size: 1.2rem"
+                ></i>
+                Proceed to Classification
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Classification -->
+      <div id="step4-content" class="workflow-step">
+        <div
+          class="card shadow-lg mb-4 border-0"
+          style="
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+          "
+        >
+          <div class="card-body p-5">
+            <h2 class="card-title text-center mb-4 text-white">
+              <i
+                class="bi bi-robot me-3"
+                style="font-size: 2rem; color: #ffd700"
+              ></i>
+              Machine Learning Classification
+            </h2>
+            <p class="text-center text-white-50 mb-4">
+              Train and test your SVM model to classify research papers into
+              categories
+            </p>
+
+            <!-- Classification Configuration -->
+            <div class="row justify-content-center mb-4">
+              <div class="col-lg-8">
+                <div
+                  class="card shadow-lg border-0"
+                  style="
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                  "
+                >
+                  <div
+                    class="card-header bg-transparent border-0 text-center py-3"
+                  >
+                    <h4 class="mb-0 text-dark">
+                      <i
+                        class="bi bi-gear-fill me-2 text-primary"
+                        style="font-size: 1.5rem"
+                      ></i>
+                      Model Configuration
+                    </h4>
+                    <small class="text-muted"
+                      >Configure your machine learning parameters</small
+                    >
+                  </div>
+                  <div class="card-body p-4">
+                    <div class="row g-4">
+                      <div class="col-md-6">
+                        <div class="config-option">
+                          <label
+                            for="train-test-split"
+                            class="form-label fw-bold text-dark"
+                          >
+                            <i class="bi bi-pie-chart-fill me-2 text-info"></i
+                            >Train-Test Split
+                          </label>
+                          <select
+                            class="form-select form-select-lg border-0 shadow-sm"
+                            id="train-test-split"
+                            style="background: #f8f9fa"
+                          >
+                            <option value="90">
+                              90% Training / 10% Testing
+                            </option>
+                            <option value="80" selected>
+                              80% Training / 20% Testing
+                            </option>
+                            <option value="70">
+                              70% Training / 30% Testing
+                            </option>
+                            <option value="60">
+                              60% Training / 40% Testing
+                            </option>
+                          </select>
+                          <small class="text-muted mt-1 d-block"
+                            >Higher training % usually means better
+                            accuracy</small
+                          >
                         </div>
-                        
-                        <!-- Tokenization Step -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="tokenization">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tokenizationContent" aria-expanded="false" aria-controls="tokenizationContent">
-                                    <i class="bi bi-scissors me-2 text-primary"></i> Tokenization
-                                </button>
-                            </h2>
-                            <div id="tokenizationContent" class="accordion-collapse collapse" aria-labelledby="tokenization" data-bs-parent="#preprocessingAccordion">
-                                <div class="accordion-body">
-                                    <h6>Tokens:</h6>
-                                    <div class="border p-2 rounded" id="tokenizedText" style="max-height: 200px; overflow-y: auto;"></div>
-                                </div>
-                            </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="config-option">
+                          <label
+                            for="kernel-type"
+                            class="form-label fw-bold text-dark"
+                          >
+                            <i class="bi bi-cpu-fill me-2 text-warning"></i
+                            >Kernel Type
+                          </label>
+                          <select
+                            class="form-select form-select-lg border-0 shadow-sm"
+                            id="kernel-type"
+                            style="background: #f8f9fa"
+                          >
+                            <option value="linear" selected>Linear SVM</option>
+                            <option value="poly">Polynomial SVM</option>
+                          </select>
+                          <small class="text-muted mt-1 d-block"
+                            >Linear is faster, Polynomial is more complex</small
+                          >
                         </div>
-                        
-                        <!-- Stop Word Removal Step -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="stopWordRemoval">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#stopWordRemovalContent" aria-expanded="false" aria-controls="stopWordRemovalContent">
-                                    <i class="bi bi-x-circle me-2 text-danger"></i> Stop Word Removal
-                                </button>
-                            </h2>
-                            <div id="stopWordRemovalContent" class="accordion-collapse collapse" aria-labelledby="stopWordRemoval" data-bs-parent="#preprocessingAccordion">
-                                <div class="accordion-body">
-                                    <h6>After Stop Word Removal:</h6>
-                                    <div class="border p-2 rounded" id="filteredText" style="max-height: 200px; overflow-y: auto;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Lowercasing Step -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="lowercasing">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#lowercasingContent" aria-expanded="false" aria-controls="lowercasingContent">
-                                    <i class="bi bi-type-lowercase me-2 text-info"></i> Lowercasing
-                                </button>
-                            </h2>
-                            <div id="lowercasingContent" class="accordion-collapse collapse" aria-labelledby="lowercasing" data-bs-parent="#preprocessingAccordion">
-                                <div class="accordion-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <h6>Original Text:</h6>
-                                            <div class="border p-2 rounded mb-3" id="beforeLowercaseText"></div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h6>After Lowercasing:</h6>
-                                            <div class="border p-2 rounded" id="lowercasedText"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Stemming and Lemmatization Step -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="stemming">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#stemmingContent" aria-expanded="false" aria-controls="stemmingContent">
-                                    <i class="bi bi-flower1 me-2 text-success"></i> Stemming and Lemmatization
-                                </button>
-                            </h2>
-                            <div id="stemmingContent" class="accordion-collapse collapse" aria-labelledby="stemming" data-bs-parent="#preprocessingAccordion">
-                                <div class="accordion-body">
-                                    <h6>After Stemming and Lemmatization:</h6>
-                                    <div class="border p-2 rounded" id="lemmatizedText" style="max-height: 200px; overflow-y: auto;"></div>
-                                </div>
-                            </div>
-                        </div>
+                      </div>
                     </div>
-                    
+
                     <div class="text-center mt-4">
-                        <button id="proceed-vectorization-btn" class="btn btn-success btn-lg" disabled>
-                            <i class="bi bi-diagram-3 me-2"></i> Proceed to Vectorization
-                        </button>
+                      <button
+                        id="classify-papers-btn"
+                        class="btn btn-primary btn-lg px-5 py-3 shadow-lg"
+                        style="border-radius: 50px; font-weight: 600"
+                      >
+                        <i
+                          class="bi bi-play-circle-fill me-3"
+                          style="font-size: 1.2rem"
+                        ></i>
+                        Start Classification
+                      </button>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
 
-        <!-- Step 2: Binary Vectorization -->
-        <div id="step2-content" class="workflow-step">
-            <div class="card shadow-lg mb-4 border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                <div class="card-body p-5">
-                    <h2 class="card-title text-center mb-4 text-white">
-                        <i class="bi bi-diagram-3 me-3" style="font-size: 2rem; color: #ffd700;"></i> 
-                        Binary Vectorization
-                    </h2>
-                    <p class="text-center text-white-50 mb-4">Convert preprocessed words into binary vectors showing presence/absence</p>
-                    
-                    <div class="row justify-content-center mb-4">
-                        <div class="col-lg-10">
-                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
-                                <div class="card-header bg-transparent border-0 text-center py-3">
-                                    <h4 class="mb-0 text-dark">
-                                        <i class="bi bi-list-ol me-2 text-primary" style="font-size: 1.5rem;"></i>
-                                        All Preprocessed Words
-                                    </h4>
-                                    <small class="text-muted">Complete word list from your processed text</small>
-                                </div>
-                                <div class="card-body p-4">
-                                    <div id="all-words-display">
-                                        <div class="text-center">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Loading words...</span>
-                                            </div>
-                                            <p class="mt-2 text-muted">Processing words...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- Classification Results -->
+            <div id="classification-results" style="display: none">
+              <div class="row justify-content-center">
+                <div class="col-lg-8">
+                  <!-- Main Result Card -->
+                  <div
+                    class="card shadow-lg border-0 mb-4"
+                    style="
+                      background: rgba(255, 255, 255, 0.95);
+                      backdrop-filter: blur(10px);
+                    "
+                  >
+                    <div class="card-body text-center p-5">
+                      <div class="mb-4">
+                        <i
+                          class="bi bi-trophy-fill"
+                          style="font-size: 4rem; color: #ffd700"
+                        ></i>
+                      </div>
+                      <h3 class="mb-3 text-dark" id="resultCategory">
+                        Processing...
+                      </h3>
+                      <div
+                        class="d-flex justify-content-center align-items-center mb-4"
+                      >
+                        <div
+                          class="accuracy-display"
+                          id="resultAccuracy"
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              #43cea2 0%,
+                              #185a9d 100%
+                            );
+                            color: white;
+                            border-radius: 20px;
+                            padding: 15px 30px;
+                            font-weight: 700;
+                            font-size: 1.3rem;
+                            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+                            display: inline-flex;
+                            align-items: center;
+                          "
+                        >
+                          <i
+                            class="bi bi-graph-up-arrow me-3"
+                            style="font-size: 1.5rem"
+                          ></i>
+                          Accuracy: 0%
                         </div>
+                      </div>
                     </div>
+                  </div>
 
-                    <div class="row justify-content-center mb-4">
-                        <div class="col-lg-10">
-                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
-                                <div class="card-header bg-transparent border-0 text-center py-3">
-                                    <h4 class="mb-0 text-dark">
-                                        <i class="bi bi-diagram-3-fill me-2 text-success" style="font-size: 1.5rem;"></i>
-                                        Binary Vector Representation
-                                    </h4>
-                                    <small class="text-muted">Each word represented as 0s and 1s</small>
-                                </div>
-                                <div class="card-body p-4">
-                                    <div id="binary-vectors-display">
-                                        <div class="text-center">
-                                            <div class="spinner-border text-success" role="status">
-                                                <span class="visually-hidden">Creating vectors...</span>
-                                            </div>
-                                            <p class="mt-2 text-muted">Creating binary vectors...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                  <!-- Summary Card -->
+                  <div
+                    class="card shadow-lg border-0"
+                    style="
+                      background: rgba(255, 255, 255, 0.95);
+                      backdrop-filter: blur(10px);
+                    "
+                  >
+                    <div class="card-header bg-transparent border-0">
+                      <h5 class="card-title mb-0 text-dark">
+                        <i
+                          class="bi bi-clipboard-data me-2 text-info"
+                          style="font-size: 1.3rem"
+                        ></i>
+                        Classification Summary
+                      </h5>
                     </div>
-                    
-                    <div class="text-center mt-5">
-                        <button id="proceed-tfidf-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
-                                style="border-radius: 50px; font-weight: 600;" disabled>
-                            <i class="bi bi-calculator me-3" style="font-size: 1.2rem;"></i> 
-                            Proceed to TF-IDF Analysis
-                        </button>
+                    <div class="card-body">
+                      <div
+                        class="summary-content p-3 rounded"
+                        style="background: rgba(108, 117, 125, 0.1)"
+                      >
+                        <p
+                          id="classification-summary"
+                          class="mb-0 text-dark"
+                          style="font-size: 1.1rem; line-height: 1.6"
+                        >
+                          <i
+                            class="bi bi-info-circle-fill text-primary me-2"
+                          ></i>
+                          Classification completed using
+                          <span id="summary-split" class="fw-bold text-success"
+                            >80%</span
+                          >
+                          training and
+                          <span id="summary-test" class="fw-bold text-warning"
+                            >20%</span
+                          >
+                          testing. <br /><br />
+                          <i class="bi bi-graph-up text-success me-2"></i>
+                          Final Accuracy:
+                          <span
+                            id="summary-accuracy"
+                            class="fw-bold text-primary"
+                            style="font-size: 1.2rem"
+                            >92.3%</span
+                          >
+                        </p>
+                      </div>
                     </div>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
-
-        <!-- Step 3: TF-IDF Analysis -->
-        <div id="step3-content" class="workflow-step">
-            <div class="card shadow-lg mb-4 border-0" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-                <div class="card-body p-5">
-                    <h2 class="card-title text-center mb-4 text-white">
-                        <i class="bi bi-calculator me-3" style="font-size: 2rem; color: #ffd700;"></i> 
-                        TF-IDF Vectorization Analysis
-                    </h2>
-                    <p class="text-center text-white-50 mb-4">First vectorize your text into binary representation, then calculate TF-IDF weights</p>
-                    
-                    <!-- Vectorization Step (Binary Representation) -->
-                    <div class="row mb-4" id="vectorization-section">
-                        <div class="col-12">
-                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
-                                <div class="card-header bg-transparent border-0 text-center py-3">
-                                    <h4 class="mb-0 text-dark">
-                                        <i class="bi bi-diagram-3-fill me-2 text-success" style="font-size: 1.5rem;"></i>
-                                        Step 1: Binary Vectorization
-                                    </h4>
-                                    <small class="text-muted">Words represented as binary digits showing presence/absence</small>
-                                </div>
-                                <div class="card-body p-4">
-                                    <div id="binary-vectorization-content">
-                                        <div class="text-center">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Creating binary vectors...</span>
-                                            </div>
-                                            <p class="mt-2 text-muted">Creating binary word vectors...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- TF-IDF Results Container -->
-                    <div class="tfidf-results-container">
-                        <!-- Top Words Visualization -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
-                                    <div class="card-header bg-transparent border-0 text-center py-3">
-                                        <h4 class="mb-0 text-dark">
-                                            <i class="bi bi-bar-chart-fill me-2 text-warning" style="font-size: 1.5rem;"></i>
-                                            Step 2: TF-IDF Analysis - Top Important Words
-                                        </h4>
-                                        <small class="text-muted">Words with highest TF-IDF scores calculated from binary vectors</small>
-                                    </div>
-                                    <div class="card-body p-4">
-                                        <div class="chart-container" style="position: relative; height: 350px; width: 100%;">
-                                            <canvas id="tfidfChart"></canvas>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- TF-IDF Table -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
-                                    <div class="card-header bg-transparent border-0">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-6">
-                                                <h4 class="mb-0 text-dark">
-                                                    <i class="bi bi-table me-2 text-info" style="font-size: 1.5rem;"></i>
-                                                    Complete TF-IDF Analysis
-                                                </h4>
-                                                <small class="text-muted">All words ranked by importance</small>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-light border-0">
-                                                        <i class="bi bi-search text-primary"></i>
-                                                    </span>
-                                                    <input type="text" class="form-control border-0 bg-light" id="tfidfSearch" 
-                                                           placeholder="Search for specific words..." style="box-shadow: none;">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                            <table class="table table-hover mb-0" id="tfidfTable">
-                                                <thead class="sticky-top" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-                                                    <tr>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600;">
-                                                            <i class="bi bi-hash me-2"></i>Rank
-                                                        </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600;">
-                                                            <i class="bi bi-type me-2"></i>Word
-                                                        </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600;">
-                                                            <i class="bi bi-speedometer2 me-2"></i>TF-IDF Score
-                                                        </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600;">
-                                                            <i class="bi bi-graph-up me-2"></i>Importance
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="tfidfTableBody" class="text-dark">
-                                                    <!-- TF-IDF values will be inserted here -->
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="text-center mt-5">
-                        <button id="proceed-classification-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
-                                style="border-radius: 50px; font-weight: 600;">
-                            <i class="bi bi-arrow-right-circle-fill me-3" style="font-size: 1.2rem;"></i> 
-                            Proceed to Classification
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 4: Classification -->
-        <div id="step4-content" class="workflow-step">
-            <div class="card shadow-lg mb-4 border-0" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-                <div class="card-body p-5">
-                    <h2 class="card-title text-center mb-4 text-white">
-                        <i class="bi bi-robot me-3" style="font-size: 2rem; color: #ffd700;"></i> 
-                        Machine Learning Classification
-                    </h2>
-                    <p class="text-center text-white-50 mb-4">Train and test your SVM model to classify research papers into categories</p>
-                    
-                    <!-- Classification Configuration -->
-                    <div class="row justify-content-center mb-4">
-                        <div class="col-lg-8">
-                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
-                                <div class="card-header bg-transparent border-0 text-center py-3">
-                                    <h4 class="mb-0 text-dark">
-                                        <i class="bi bi-gear-fill me-2 text-primary" style="font-size: 1.5rem;"></i>
-                                        Model Configuration
-                                    </h4>
-                                    <small class="text-muted">Configure your machine learning parameters</small>
-                                </div>
-                                <div class="card-body p-4">
-                                    <div class="row g-4">
-                                        <div class="col-md-6">
-                                            <div class="config-option">
-                                                <label for="train-test-split" class="form-label fw-bold text-dark">
-                                                    <i class="bi bi-pie-chart-fill me-2 text-info"></i>Train-Test Split
-                                                </label>
-                                                <select class="form-select form-select-lg border-0 shadow-sm" id="train-test-split" style="background: #f8f9fa;">
-                                                    <option value="90">90% Training / 10% Testing</option>
-                                                    <option value="80" selected>80% Training / 20% Testing</option>
-                                                    <option value="70">70% Training / 30% Testing</option>
-                                                    <option value="60">60% Training / 40% Testing</option>
-                                                </select>
-                                                <small class="text-muted mt-1 d-block">Higher training % usually means better accuracy</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="config-option">
-                                                <label for="kernel-type" class="form-label fw-bold text-dark">
-                                                    <i class="bi bi-cpu-fill me-2 text-warning"></i>Kernel Type
-                                                </label>
-                                                <select class="form-select form-select-lg border-0 shadow-sm" id="kernel-type" style="background: #f8f9fa;">
-                                                    <option value="linear" selected>Linear SVM</option>
-                                                    <option value="poly">Polynomial SVM</option>
-                                                </select>
-                                                <small class="text-muted mt-1 d-block">Linear is faster, Polynomial is more complex</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="text-center mt-4">
-                                        <button id="classify-papers-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
-                                                style="border-radius: 50px; font-weight: 600;">
-                                            <i class="bi bi-play-circle-fill me-3" style="font-size: 1.2rem;"></i> 
-                                            Start Classification
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Classification Results -->
-                    <div id="classification-results" style="display: none;">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8">
-                                <!-- Main Result Card -->
-                                <div class="card shadow-lg border-0 mb-4" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
-                                    <div class="card-body text-center p-5">
-                                        <div class="mb-4">
-                                            <i class="bi bi-trophy-fill" style="font-size: 4rem; color: #ffd700;"></i>
-                                        </div>
-                                        <h3 class="mb-3 text-dark" id="resultCategory">Processing...</h3>
-                                        <div class="d-flex justify-content-center align-items-center mb-4">
-                                            <div class="accuracy-display" id="resultAccuracy" 
-                                                 style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); 
-                                                        color: white; border-radius: 20px; padding: 15px 30px; 
-                                                        font-weight: 700; font-size: 1.3rem; 
-                                                        box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
-                                                        display: inline-flex; align-items: center;">
-                                                <i class="bi bi-graph-up-arrow me-3" style="font-size: 1.5rem;"></i>
-                                                Accuracy: 0%
-                                            </div>
-                                        </div>
-                                        
-
-                                    </div>
-                                </div>
-                                
-                                <!-- Summary Card -->
-                                <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
-                                    <div class="card-header bg-transparent border-0">
-                                        <h5 class="card-title mb-0 text-dark">
-                                            <i class="bi bi-clipboard-data me-2 text-info" style="font-size: 1.3rem;"></i>
-                                            Classification Summary
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="summary-content p-3 rounded" style="background: rgba(108, 117, 125, 0.1);">
-                                            <p id="classification-summary" class="mb-0 text-dark" style="font-size: 1.1rem; line-height: 1.6;">
-                                                <i class="bi bi-info-circle-fill text-primary me-2"></i>
-                                                Classification completed using <span id="summary-split" class="fw-bold text-success">80%</span> training and <span id="summary-test" class="fw-bold text-warning">20%</span> testing.
-                                                <br><br>
-                                                <i class="bi bi-graph-up text-success me-2"></i>
-                                                Final Accuracy: <span id="summary-accuracy" class="fw-bold text-primary" style="font-size: 1.2rem;">92.3%</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Global variables
-        let globalPreprocessedText = '';
-        let currentStep = 1;
-        
-        // Function to update progress bar and indicators
-        function updateProgress(step) {
-            currentStep = step;
-            const progressBar = document.getElementById('workflow-progress-bar');
-            const indicators = document.querySelectorAll('.step-indicator');
-            
-            // Update progress bar width
-            const progressWidth = (step / 4) * 100;
-            progressBar.style.width = progressWidth + '%';
-            progressBar.setAttribute('aria-valuenow', progressWidth);
-            
-            // Update step indicators
-            indicators.forEach((indicator, index) => {
-                if (index < step) {
-                    indicator.classList.add('active');
-                    indicator.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                    indicator.style.color = 'white';
-                    indicator.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
-                } else {
-                    indicator.classList.remove('active');
-                    indicator.style.background = 'rgba(255,255,255,0.8)';
-                    indicator.style.color = '#666';
-                    indicator.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
-                }
-            });
-            
-            // Show/hide workflow steps
-            document.querySelectorAll('.workflow-step').forEach((stepDiv, index) => {
-                if (index === step - 1) {
-                    stepDiv.classList.add('active');
-                } else {
-                    stepDiv.classList.remove('active');
-                }
-            });
-            
-            // Update navigation buttons
-            updateNavigationButtons();
-            
-            // Scroll to top
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-        
-        // Function to update navigation button states
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prev-step-btn');
-            const nextBtn = document.getElementById('next-step-btn');
-            
-            // Previous button
-            if (currentStep <= 1) {
-                prevBtn.disabled = true;
-                prevBtn.style.opacity = '0.5';
-            } else {
-                prevBtn.disabled = false;
-                prevBtn.style.opacity = '1';
-            }
-            
-            // Next button - enable based on step completion
-            if (currentStep >= 4) {
-                nextBtn.disabled = true;
-                nextBtn.style.opacity = '0.5';
-                nextBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Completed';
-            } else {
-                // Check if current step is completed
-                let canProceed = false;
-                if (currentStep === 1 && globalPreprocessedText) {
-                    canProceed = true;
-                } else if (currentStep === 2) {
-                    // Check if vectorization is done (proceed button is enabled)
-                    const proceedBtn = document.getElementById('proceed-tfidf-btn');
-                    canProceed = proceedBtn && !proceedBtn.disabled;
-                } else if (currentStep === 3) {
-                    // Check if TF-IDF is calculated (table has content)
-                    const tableBody = document.getElementById('tfidfTableBody');
-                    canProceed = tableBody && tableBody.children.length > 0;
-                }
-                
-                nextBtn.disabled = !canProceed;
-                nextBtn.style.opacity = canProceed ? '1' : '0.5';
-                nextBtn.innerHTML = 'Next Step<i class="bi bi-arrow-right ms-2"></i>';
-            }
-        }
-        
-        // Initialize navigation functionality
-        function initializeNavigation() {
-            // Clickable step indicators
-            document.querySelectorAll('.clickable-step').forEach(indicator => {
-                indicator.addEventListener('click', function() {
-                    const targetStep = parseInt(this.dataset.step);
-                    
-                    // Only allow navigation to completed steps or next step
-                    if (targetStep <= currentStep + 1 || targetStep <= getMaxAccessibleStep()) {
-                        updateProgress(targetStep);
-                    }
-                });
-                
-                // Add hover effects
-                indicator.addEventListener('mouseenter', function() {
-                    if (!this.classList.contains('active')) {
-                        this.style.background = 'rgba(102, 126, 234, 0.2)';
-                        this.style.transform = 'translateY(-2px)';
-                    }
-                });
-                
-                indicator.addEventListener('mouseleave', function() {
-                    if (!this.classList.contains('active')) {
-                        this.style.background = 'rgba(255,255,255,0.8)';
-                        this.style.transform = 'translateY(0)';
-                    }
-                });
-            });
-            
-            // Previous button
-            document.getElementById('prev-step-btn').addEventListener('click', function() {
-                if (currentStep > 1) {
-                    updateProgress(currentStep - 1);
-                }
-            });
-            
-            // Next button
-            document.getElementById('next-step-btn').addEventListener('click', function() {
-                if (currentStep < 4) {
-                    updateProgress(currentStep + 1);
-                }
-            });
-        }
-        
-        // Get maximum accessible step based on completion
-        function getMaxAccessibleStep() {
-            if (globalPreprocessedText && document.getElementById('tfidfTableBody').children.length > 0) {
-                return 4; // All steps accessible
-            } else if (globalPreprocessedText) {
-                return 3; // Can access vectorization and TF-IDF
-            } else {
-                return 1; // Only preprocessing
-            }
-        }
-        
-        // No longer needed - removed data overview step
-        
-        // Step 1: Preprocess Text
-        document.getElementById('preprocess-btn').addEventListener('click', async function() {
-            const title = document.getElementById('title').value;
-            const abstract = document.getElementById('abstract').value;
-            
-            if (!title || !abstract) {
-                alert('Please enter both title and abstract.');
-                return;
-            }
-            
-            // Show loading indicators
-            document.getElementById('originalText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading...';
-            document.getElementById('cleanedText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Processing...';
-            document.getElementById('tokenizedText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Tokenizing...';
-            document.getElementById('filteredText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Removing stop words...';
-            document.getElementById('beforeLowercaseText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading...';
-            document.getElementById('lowercasedText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Converting to lowercase...';
-            document.getElementById('lemmatizedText').innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Lemmatizing...';
-            
-            try {
-                // Call the preprocess endpoint
-                const response = await fetch('/preprocess', {
-                    method: 'POST',
-                    body: new URLSearchParams({title, abstract})
-                });
-                
-                const result = await response.json();
-                
-                // Store preprocessed text for later use
-                globalPreprocessedText = result.preprocessed_text;
-                
-                // Update preprocessing steps with the results
-                // 1. Data Cleaning
-                document.getElementById('originalText').textContent = result.preprocessing_steps.original;
-                document.getElementById('cleanedText').textContent = result.preprocessing_steps.cleaned;
-                
-                // 2. Tokenization
-                const tokensHtml = result.preprocessing_steps.tokens.map(token => 
-                    `<span class="badge bg-light text-dark m-1">${token}</span>`
-                ).join('');
-                document.getElementById('tokenizedText').innerHTML = tokensHtml;
-                
-                // 3. Stop Word Removal
-                const filteredTokensHtml = result.preprocessing_steps.filtered_tokens.map(token => 
-                    `<span class="badge bg-light text-dark m-1">${token}</span>`
-                ).join('');
-                document.getElementById('filteredText').innerHTML = filteredTokensHtml;
-                
-                // 4. Lowercasing
-                document.getElementById('beforeLowercaseText').textContent = result.preprocessing_steps.original;
-                document.getElementById('lowercasedText').textContent = result.preprocessing_steps.lowercased;
-                
-                // 5. Stemming and Lemmatization
-                const lemmatizedTokensHtml = result.preprocessing_steps.lemmatized_tokens.map(token => 
-                    `<span class="badge bg-light text-dark m-1">${token}</span>`
-                ).join('');
-                document.getElementById('lemmatizedText').innerHTML = lemmatizedTokensHtml;
-                
-                // Auto-open the first accordion panel
-                const firstAccordionButton = document.querySelector('.accordion-button');
-                if (firstAccordionButton && !firstAccordionButton.classList.contains('show')) {
-                    firstAccordionButton.click();
-                }
-                
-                // Enable the TF-IDF button
-                document.getElementById('proceed-vectorization-btn').disabled = false;
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error during preprocessing. Please try again.');
-            }
+      // Global variables
+      let globalPreprocessedText = "";
+      let currentStep = 1;
+
+      // Function to update progress bar and indicators
+      function updateProgress(step) {
+        currentStep = step;
+        const progressBar = document.getElementById("workflow-progress-bar");
+        const indicators = document.querySelectorAll(".step-indicator");
+
+        // Update progress bar width
+        const progressWidth = (step / 4) * 100;
+        progressBar.style.width = progressWidth + "%";
+        progressBar.setAttribute("aria-valuenow", progressWidth);
+
+        // Update step indicators
+        indicators.forEach((indicator, index) => {
+          if (index < step) {
+            indicator.classList.add("active");
+            indicator.style.background =
+              "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+            indicator.style.color = "white";
+            indicator.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.4)";
+          } else {
+            indicator.classList.remove("active");
+            indicator.style.background = "rgba(255,255,255,0.8)";
+            indicator.style.color = "#666";
+            indicator.style.boxShadow = "0 2px 10px rgba(0,0,0,0.1)";
+          }
         });
-        
-        // Step 2: Convert to TF-IDF
-        // Step 1: Proceed to Vectorization
-        document.getElementById('proceed-vectorization-btn').addEventListener('click', function() {
-            updateProgress(2);
-            // Automatically show vectorization when moving to step 2
-            setTimeout(() => {
-                showVectorizationStep();
-            }, 500);
+
+        // Show/hide workflow steps
+        document
+          .querySelectorAll(".workflow-step")
+          .forEach((stepDiv, index) => {
+            if (index === step - 1) {
+              stepDiv.classList.add("active");
+            } else {
+              stepDiv.classList.remove("active");
+            }
+          });
+
+        // Update navigation buttons
+        updateNavigationButtons();
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      // Function to update navigation button states
+      function updateNavigationButtons() {
+        const prevBtn = document.getElementById("prev-step-btn");
+        const nextBtn = document.getElementById("next-step-btn");
+
+        // Previous button
+        if (currentStep <= 1) {
+          prevBtn.disabled = true;
+          prevBtn.style.opacity = "0.5";
+        } else {
+          prevBtn.disabled = false;
+          prevBtn.style.opacity = "1";
+        }
+
+        // Next button - enable based on step completion
+        if (currentStep >= 4) {
+          nextBtn.disabled = true;
+          nextBtn.style.opacity = "0.5";
+          nextBtn.innerHTML =
+            '<i class="bi bi-check-circle-fill me-2"></i>Completed';
+        } else {
+          // Check if current step is completed
+          let canProceed = false;
+          if (currentStep === 1 && globalPreprocessedText) {
+            canProceed = true;
+          } else if (currentStep === 2) {
+            // Check if vectorization is done (proceed button is enabled)
+            const proceedBtn = document.getElementById("proceed-tfidf-btn");
+            canProceed = proceedBtn && !proceedBtn.disabled;
+          } else if (currentStep === 3) {
+            // Check if TF-IDF is calculated (table has content)
+            const tableBody = document.getElementById("tfidfTableBody");
+            canProceed = tableBody && tableBody.children.length > 0;
+          }
+
+          nextBtn.disabled = !canProceed;
+          nextBtn.style.opacity = canProceed ? "1" : "0.5";
+          nextBtn.innerHTML = 'Next Step<i class="bi bi-arrow-right ms-2"></i>';
+        }
+      }
+
+      // Initialize navigation functionality
+      function initializeNavigation() {
+        // Clickable step indicators
+        document.querySelectorAll(".clickable-step").forEach((indicator) => {
+          indicator.addEventListener("click", function () {
+            const targetStep = parseInt(this.dataset.step);
+
+            // Only allow navigation to completed steps or next step
+            if (
+              targetStep <= currentStep + 1 ||
+              targetStep <= getMaxAccessibleStep()
+            ) {
+              updateProgress(targetStep);
+            }
+          });
+
+          // Add hover effects
+          indicator.addEventListener("mouseenter", function () {
+            if (!this.classList.contains("active")) {
+              this.style.background = "rgba(102, 126, 234, 0.2)";
+              this.style.transform = "translateY(-2px)";
+            }
+          });
+
+          indicator.addEventListener("mouseleave", function () {
+            if (!this.classList.contains("active")) {
+              this.style.background = "rgba(255,255,255,0.8)";
+              this.style.transform = "translateY(0)";
+            }
+          });
         });
-        
-        // Function to show vectorization step
-        async function showVectorizationStep() {
-            const allWordsDiv = document.getElementById('all-words-display');
-            const binaryVectorsDiv = document.getElementById('binary-vectors-display');
-            
-            // Get preprocessed text and create word list
-            const words = globalPreprocessedText.split(' ').filter(word => word.length > 0);
-            const uniqueWords = [...new Set(words)].sort();
-            
-            // Show all preprocessed words
-            let allWordsHTML = `
+
+        // Previous button
+        document
+          .getElementById("prev-step-btn")
+          .addEventListener("click", function () {
+            if (currentStep > 1) {
+              updateProgress(currentStep - 1);
+            }
+          });
+
+        // Next button
+        document
+          .getElementById("next-step-btn")
+          .addEventListener("click", function () {
+            if (currentStep < 4) {
+              updateProgress(currentStep + 1);
+            }
+          });
+      }
+
+      // Get maximum accessible step based on completion
+      function getMaxAccessibleStep() {
+        if (
+          globalPreprocessedText &&
+          document.getElementById("tfidfTableBody").children.length > 0
+        ) {
+          return 4; // All steps accessible
+        } else if (globalPreprocessedText) {
+          return 3; // Can access vectorization and TF-IDF
+        } else {
+          return 1; // Only preprocessing
+        }
+      }
+
+      // No longer needed - removed data overview step
+
+      // Step 1: Preprocess Text
+      document
+        .getElementById("preprocess-btn")
+        .addEventListener("click", async function () {
+          const title = document.getElementById("title").value;
+          const abstract = document.getElementById("abstract").value;
+
+          if (!title || !abstract) {
+            alert("Please enter both title and abstract.");
+            return;
+          }
+
+          // Show loading indicators
+          document.getElementById("originalText").innerHTML =
+            '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading...';
+          document.getElementById("cleanedText").innerHTML =
+            '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Processing...';
+          document.getElementById("tokenizedText").innerHTML =
+            '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Tokenizing...';
+          document.getElementById("filteredText").innerHTML =
+            '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Removing stop words...';
+          document.getElementById("beforeLowercaseText").innerHTML =
+            '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading...';
+          document.getElementById("lowercasedText").innerHTML =
+            '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Converting to lowercase...';
+          document.getElementById("lemmatizedText").innerHTML =
+            '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Lemmatizing...';
+
+          try {
+            // Call the preprocess endpoint
+            const response = await fetch("/preprocess", {
+              method: "POST",
+              body: new URLSearchParams({ title, abstract }),
+            });
+
+            const result = await response.json();
+
+            // Store preprocessed text for later use
+            globalPreprocessedText = result.preprocessed_text;
+
+            // Update preprocessing steps with the results
+            // 1. Data Cleaning
+            document.getElementById("originalText").textContent =
+              result.preprocessing_steps.original;
+            document.getElementById("cleanedText").textContent =
+              result.preprocessing_steps.cleaned;
+
+            // 2. Tokenization
+            const tokensHtml = result.preprocessing_steps.tokens
+              .map(
+                (token) =>
+                  `<span class="badge bg-light text-dark m-1">${token}</span>`
+              )
+              .join("");
+            document.getElementById("tokenizedText").innerHTML = tokensHtml;
+
+            // 3. Stop Word Removal
+            const filteredTokensHtml =
+              result.preprocessing_steps.filtered_tokens
+                .map(
+                  (token) =>
+                    `<span class="badge bg-light text-dark m-1">${token}</span>`
+                )
+                .join("");
+            document.getElementById("filteredText").innerHTML =
+              filteredTokensHtml;
+
+            // 4. Lowercasing
+            document.getElementById("beforeLowercaseText").textContent =
+              result.preprocessing_steps.original;
+            document.getElementById("lowercasedText").textContent =
+              result.preprocessing_steps.lowercased;
+
+            // 5. Stemming and Lemmatization
+            const lemmatizedTokensHtml =
+              result.preprocessing_steps.lemmatized_tokens
+                .map(
+                  (token) =>
+                    `<span class="badge bg-light text-dark m-1">${token}</span>`
+                )
+                .join("");
+            document.getElementById("lemmatizedText").innerHTML =
+              lemmatizedTokensHtml;
+
+            // Auto-open the first accordion panel
+            const firstAccordionButton =
+              document.querySelector(".accordion-button");
+            if (
+              firstAccordionButton &&
+              !firstAccordionButton.classList.contains("show")
+            ) {
+              firstAccordionButton.click();
+            }
+
+            // Enable the TF-IDF button
+            document.getElementById(
+              "proceed-vectorization-btn"
+            ).disabled = false;
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Error during preprocessing. Please try again.");
+          }
+        });
+
+      // Step 2: Convert to TF-IDF
+      // Step 1: Proceed to Vectorization
+
+      document
+        .getElementById("proceed-vectorization-btn")
+        .addEventListener("click", function () {
+          updateProgress(2);
+          // Automatically show vectorization when moving to step 2
+          setTimeout(() => {
+            showVectorizationStep();
+          }, 500);
+        });
+
+      // Function to show vectorization step
+      async function showVectorizationStep() {
+        const allWordsDiv = document.getElementById("all-words-display");
+        const binaryVectorsDiv = document.getElementById(
+          "binary-vectors-display"
+        );
+
+        // Get preprocessed text and create word list
+        const words = globalPreprocessedText
+          .split(" ")
+          .filter((word) => word.length > 0);
+        const uniqueWords = [...new Set(words)].sort();
+
+        // Show all preprocessed words
+        let allWordsHTML = `
                 <div class="alert alert-info mb-3">
                     <i class="bi bi-info-circle me-2"></i>
-                    <strong>Total Words:</strong> ${words.length} | <strong>Unique Words:</strong> ${uniqueWords.length}
+                    <strong>Total Words:</strong> ${
+                      words.length
+                    } | <strong>Unique Words:</strong> ${uniqueWords.length}
                 </div>
                 <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto; background: #f8f9fa;">
-                    ${words.map((word, index) => `<span class="badge bg-secondary m-1" style="font-size: 0.9rem;">${index + 1}. ${word}</span>`).join('')}
+                    ${words
+                      .map(
+                        (word, index) =>
+                          `<span class="badge bg-secondary m-1" style="font-size: 0.9rem;">${
+                            index + 1
+                          }. ${word}</span>`
+                      )
+                      .join("")}
                 </div>
             `;
-            allWordsDiv.innerHTML = allWordsHTML;
-            
-            // Wait a moment then show binary vectors
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // Create binary vectors showing all unique words
-            let binaryHTML = `
+        allWordsDiv.innerHTML = allWordsHTML;
+
+        // Wait a moment then show binary vectors
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Create binary vectors showing all unique words
+        let binaryHTML = `
                 <div class="alert alert-success mb-3">
                     <i class="bi bi-check-circle me-2"></i>
                     <strong>Binary Vectorization Complete!</strong> Each unique word gets a position in the vector.
@@ -779,31 +1267,29 @@
                                 <tr>
                                     <th width="5%">#</th>
                                     <th width="20%">Word</th>
-                                    <th width="60%">Binary Vector (showing first 20 positions)</th>
-                                    <th width="15%">Present</th>
+                                    <th width="75%">Binary Vector (complete)</th>
                                 </tr>
                             </thead>
                             <tbody>
             `;
-            
-            uniqueWords.forEach((word, index) => {
-                // Create proper binary vector: 1 at this word's position, 0 everywhere else
-                const binaryVector = uniqueWords.map((uniqueWord, pos) => pos === index ? '1' : '0');
-                const sampleVector = binaryVector.slice(0, 20).join('');
-                const restVector = binaryVector.length > 20 ? '...' : '';
-                const isPresent = words.includes(word);  // Check if word appears in original text
-                
-                binaryHTML += `
+
+        uniqueWords.forEach((word, index) => {
+          // Create proper binary vector: 1 at this word's position, 0 everywhere else
+          const binaryVector = uniqueWords.map((uniqueWord, pos) =>
+            pos === index ? "1" : "0"
+          );
+          const completeVector = binaryVector.join("");
+
+          binaryHTML += `
                     <tr>
                         <td><strong>${index + 1}</strong></td>
                         <td><span class="badge bg-primary">${word}</span></td>
-                        <td><code class="text-success">${sampleVector}${restVector}</code></td>
-                        <td><span class="badge ${isPresent ? 'bg-success' : 'bg-secondary'}">${isPresent ? 'Yes' : 'No'}</span></td>
+                        <td><code class="text-success" style="word-break: break-all; font-size: 0.8rem;">${completeVector}</code></td>
                     </tr>
                 `;
-            });
-            
-            binaryHTML += `
+        });
+
+        binaryHTML += `
                             </tbody>
                         </table>
                     </div>
@@ -816,34 +1302,58 @@
                     </div>
                 </div>
             `;
-            
-            binaryVectorsDiv.innerHTML = binaryHTML;
-            
-            // Enable proceed to TF-IDF button
-            document.getElementById('proceed-tfidf-btn').disabled = false;
+
+        binaryVectorsDiv.innerHTML = binaryHTML;
+
+        // Enable proceed to TF-IDF button
+        const tfidfButton = document.getElementById("proceed-tfidf-btn");
+        if (tfidfButton) {
+          tfidfButton.disabled = false;
         }
-        
-        // Function to show binary vectorization (legacy - for TF-IDF step)
-        async function showBinaryVectorization() {
-            const binaryContent = document.getElementById('binary-vectorization-content');
-            
-            // Get preprocessed text and create word list
-            const words = globalPreprocessedText.split(' ').filter(word => word.length > 0);
-            const uniqueWords = [...new Set(words)].sort();
-            
-            // Create binary vectors showing all words
-            let binaryHTML = `
+
+        // Update navigation buttons to reflect the new state
+        updateNavigationButtons();
+      }
+
+      // Function to show binary vectorization (legacy - for TF-IDF step)
+      async function showBinaryVectorization() {
+        const binaryContent = document.getElementById(
+          "binary-vectorization-content"
+        );
+
+        // Get preprocessed text and create word list
+        const words = globalPreprocessedText
+          .split(" ")
+          .filter((word) => word.length > 0);
+        const uniqueWords = [...new Set(words)].sort();
+
+        // Create binary vectors showing all words
+        let binaryHTML = `
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <h6 class="text-dark">Preprocessed Words (${words.length} total words)</h6>
+                        <h6 class="text-dark">Preprocessed Words (${
+                          words.length
+                        } total words)</h6>
                         <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                            ${words.map(word => `<span class="badge bg-light text-dark m-1">${word}</span>`).join('')}
+                            ${words
+                              .map(
+                                (word) =>
+                                  `<span class="badge bg-light text-dark m-1">${word}</span>`
+                              )
+                              .join("")}
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="text-dark">Unique Words for Vectorization (${uniqueWords.length} unique words)</h6>
+                        <h6 class="text-dark">Unique Words for Vectorization (${
+                          uniqueWords.length
+                        } unique words)</h6>
                         <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                            ${uniqueWords.map(word => `<span class="badge bg-primary text-white m-1">${word}</span>`).join('')}
+                            ${uniqueWords
+                              .map(
+                                (word) =>
+                                  `<span class="badge bg-primary text-white m-1">${word}</span>`
+                              )
+                              .join("")}
                         </div>
                     </div>
                 </div>
@@ -867,25 +1377,29 @@
                             </thead>
                             <tbody>
             `;
-            
-            const displayWords = uniqueWords.slice(0, 10);
-            displayWords.forEach((word, index) => {
-                // Create proper binary vector: 1 at this word's position, 0 everywhere else
-                const wordIndex = uniqueWords.indexOf(word);
-                const binaryVector = uniqueWords.map((uniqueWord, pos) => pos === wordIndex ? '1' : '0');
-                const sampleVector = binaryVector.slice(0, 10).join('');
-                const isPresent = words.includes(word);
-                
-                binaryHTML += `
+
+        const displayWords = uniqueWords.slice(0, 10);
+        displayWords.forEach((word, index) => {
+          // Create proper binary vector: 1 at this word's position, 0 everywhere else
+          const wordIndex = uniqueWords.indexOf(word);
+          const binaryVector = uniqueWords.map((uniqueWord, pos) =>
+            pos === wordIndex ? "1" : "0"
+          );
+          const sampleVector = binaryVector.slice(0, 10).join("");
+          const isPresent = words.includes(word);
+
+          binaryHTML += `
                     <tr>
                         <td><strong>${word}</strong></td>
                         <td><code>${sampleVector}...</code></td>
-                        <td><span class="badge ${isPresent ? 'bg-success' : 'bg-secondary'}">${isPresent ? 'Yes' : 'No'}</span></td>
+                        <td><span class="badge ${
+                          isPresent ? "bg-success" : "bg-secondary"
+                        }">${isPresent ? "Yes" : "No"}</span></td>
                     </tr>
                 `;
-            });
-            
-            binaryHTML += `
+        });
+
+        binaryHTML += `
                             </tbody>
                         </table>
                     </div>
@@ -898,178 +1412,89 @@
                     </div>
                 </div>
             `;
-            
-            binaryContent.innerHTML = binaryHTML;
-            
-            // Wait a moment to show the binary representation
-            await new Promise(resolve => setTimeout(resolve, 2000));
-        }
 
-        // Step 2: Vectorize Text
-        document.getElementById('vectorize-workflow-btn').addEventListener('click', async function() {
-            const button = this;
-            const originalText = button.innerHTML;
-            
-            // Get preprocessed text from session storage or form
-            const title = document.getElementById('title').value;
-            const abstract = document.getElementById('abstract').value;
-            
-            if (!title && !abstract) {
-                alert('Please enter title and abstract first, then preprocess the text.');
-                return;
+        binaryContent.innerHTML = binaryHTML;
+
+        // Wait a moment to show the binary representation
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+
+      // Step 2: Vectorize Text - REMOVED: vectorize-workflow-btn doesn't exist
+
+      // Step 2: Proceed to TF-IDF - Event listener is now attached in DOMContentLoaded
+
+      // Function to calculate TF-IDF (called automatically when entering step 3)
+      async function calculateTFIDFStep() {
+        try {
+          // Check if we have preprocessed text
+          if (!globalPreprocessedText) {
+            throw new Error(
+              "No preprocessed text available. Please complete preprocessing first."
+            );
+          }
+
+          // Call the TF-IDF calculation endpoint directly (vectorization already done in step 2)
+          const response = await fetch("/calculate_tfidf", {
+            method: "POST",
+            body: new URLSearchParams({
+              preprocessed_text: globalPreprocessedText,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          // Check if result has the expected structure
+          if (!result.tfidf_words || !result.tfidf_values) {
+            throw new Error(
+              "Invalid response from TF-IDF calculation endpoint"
+            );
+          }
+
+          // Update TF-IDF table with enhanced styling
+          let tfidfTableHtml = "";
+          const maxScore = Math.max(...result.tfidf_values);
+
+          for (let i = 0; i < result.tfidf_words.length; i++) {
+            const score = result.tfidf_values[i];
+            const importance = score / maxScore;
+            let importanceLevel = "";
+            let importanceColor = "";
+            let rankBadge = "";
+
+            // Determine importance level and colors
+            if (importance >= 0.8) {
+              importanceLevel = "Very High";
+              importanceColor = "text-danger";
+              rankBadge = "badge bg-danger";
+            } else if (importance >= 0.6) {
+              importanceLevel = "High";
+              importanceColor = "text-warning";
+              rankBadge = "badge bg-warning";
+            } else if (importance >= 0.4) {
+              importanceLevel = "Medium";
+              importanceColor = "text-info";
+              rankBadge = "badge bg-info";
+            } else {
+              importanceLevel = "Low";
+              importanceColor = "text-secondary";
+              rankBadge = "badge bg-secondary";
             }
-            
-            button.innerHTML = '<i class="bi bi-hourglass-split me-2"></i> Vectorizing...';
-            button.disabled = true;
-            
-            try {
-                // Create binary representation of the text
-                const combinedText = title + ' ' + abstract;
-                const words = combinedText.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').split(/\s+/).filter(word => word.length > 0);
-                const uniqueWords = [...new Set(words)].sort();
-                
-                // Create binary vectors for each word
-                const binaryVectors = {};
-                uniqueWords.forEach((word, index) => {
-                    const binaryArray = new Array(uniqueWords.length).fill(0);
-                    binaryArray[index] = 1;
-                    binaryVectors[word] = binaryArray.join('');
-                });
-                
-                // Show vectorization results
-                const resultsDiv = document.getElementById('vectorization-results');
-                const infoDiv = document.getElementById('vectorization-info');
-                
-                let vectorDisplay = `
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="stat-card">
-                                <h5>Binary</h5>
-                                <p class="text-muted">Representation</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stat-card">
-                                <h5>${uniqueWords.length}</h5>
-                                <p class="text-muted">Unique Words</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stat-card">
-                                <h5>${uniqueWords.length}</h5>
-                                <p class="text-muted">Vector Length</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <h6>Binary Word Vectors (First 10 words):</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Word</th>
-                                        <th>Binary Vector</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-                
-                uniqueWords.slice(0, 10).forEach(word => {
-                    const shortVector = binaryVectors[word].substring(0, 20) + (binaryVectors[word].length > 20 ? '...' : '');
-                    vectorDisplay += `
-                        <tr>
-                            <td><strong>${word}</strong></td>
-                            <td><code>${shortVector}</code></td>
-                        </tr>
-                    `;
-                });
-                
-                vectorDisplay += '</tbody></table></div></div>';
-                
-                infoDiv.innerHTML = vectorDisplay;
-                resultsDiv.style.display = 'block';
-                document.getElementById('proceed-tfidf-btn').disabled = false;
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error during vectorization. Please try again.');
-            }
-            
-            button.innerHTML = originalText;
-            button.disabled = false;
-        });
 
-        // Step 2: Proceed to TF-IDF
-        document.getElementById('proceed-tfidf-btn').addEventListener('click', function() {
-            updateProgress(3);
-            // Automatically calculate TF-IDF when moving to step 3
-            setTimeout(() => {
-                calculateTFIDFStep();
-            }, 500);
-        });
-
-        // Function to calculate TF-IDF (called automatically when entering step 3)
-        async function calculateTFIDFStep() {
-            try {
-                // Check if we have preprocessed text
-                if (!globalPreprocessedText) {
-                    throw new Error('No preprocessed text available. Please complete preprocessing first.');
-                }
-                
-                // Call the TF-IDF calculation endpoint directly (vectorization already done in step 2)
-                const response = await fetch('/calculate_tfidf', {
-                    method: 'POST',
-                    body: new URLSearchParams({preprocessed_text: globalPreprocessedText})
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                // Check if result has the expected structure
-                if (!result.tfidf_words || !result.tfidf_values) {
-                    throw new Error('Invalid response from TF-IDF calculation endpoint');
-                }
-                
-                // Update TF-IDF table with enhanced styling
-                let tfidfTableHtml = '';
-                const maxScore = Math.max(...result.tfidf_values);
-                
-                for (let i = 0; i < result.tfidf_words.length; i++) {
-                    const score = result.tfidf_values[i];
-                    const importance = score / maxScore;
-                    let importanceLevel = '';
-                    let importanceColor = '';
-                    let rankBadge = '';
-                    
-                    // Determine importance level and colors
-                    if (importance >= 0.8) {
-                        importanceLevel = 'Very High';
-                        importanceColor = 'text-danger';
-                        rankBadge = 'badge bg-danger';
-                    } else if (importance >= 0.6) {
-                        importanceLevel = 'High';
-                        importanceColor = 'text-warning';
-                        rankBadge = 'badge bg-warning';
-                    } else if (importance >= 0.4) {
-                        importanceLevel = 'Medium';
-                        importanceColor = 'text-info';
-                        rankBadge = 'badge bg-info';
-                    } else {
-                        importanceLevel = 'Low';
-                        importanceColor = 'text-secondary';
-                        rankBadge = 'badge bg-secondary';
-                    }
-                    
-                    tfidfTableHtml += `
+            tfidfTableHtml += `
                         <tr class="table-row-hover" style="transition: all 0.2s ease;">
                             <td class="px-4 py-3">
-                                <span class="${rankBadge} rounded-pill px-2 py-1">${i + 1}</span>
+                                <span class="${rankBadge} rounded-pill px-2 py-1">${
+              i + 1
+            }</span>
                             </td>
                             <td class="px-4 py-3">
-                                <strong class="text-primary">${result.tfidf_words[i]}</strong>
+                                <strong class="text-primary">${
+                                  result.tfidf_words[i]
+                                }</strong>
                             </td>
                             <td class="px-4 py-3">
                                 <span class="badge bg-light text-dark px-3 py-2" style="font-family: monospace; font-size: 0.9rem;">
@@ -1079,245 +1504,296 @@
                             <td class="px-4 py-3">
                                 <div class="d-flex align-items-center">
                                     <div class="progress me-2" style="width: 80px; height: 8px;">
-                                        <div class="progress-bar ${importanceColor.replace('text-', 'bg-')}" 
-                                             style="width: ${(importance * 100).toFixed(0)}%"></div>
+                                        <div class="progress-bar ${importanceColor.replace(
+                                          "text-",
+                                          "bg-"
+                                        )}" 
+                                             style="width: ${(
+                                               importance * 100
+                                             ).toFixed(0)}%"></div>
                                     </div>
                                     <small class="${importanceColor} fw-bold">${importanceLevel}</small>
                                 </div>
                             </td>
                         </tr>
                     `;
-                }
-                document.getElementById('tfidfTableBody').innerHTML = tfidfTableHtml;
-                
-                // Create enhanced bar chart for top 10 words
-                const top10Words = result.tfidf_words.slice(0, 10);
-                const top10Values = result.tfidf_values.slice(0, 10);
-                
-                // Generate gradient colors for bars
-                const gradientColors = [
-                    'rgba(255, 99, 132, 0.8)',   // Red
-                    'rgba(255, 159, 64, 0.8)',   // Orange  
-                    'rgba(255, 205, 86, 0.8)',   // Yellow
-                    'rgba(75, 192, 192, 0.8)',   // Teal
-                    'rgba(54, 162, 235, 0.8)',   // Blue
-                    'rgba(153, 102, 255, 0.8)',  // Purple
-                    'rgba(201, 203, 207, 0.8)',  // Grey
-                    'rgba(255, 99, 255, 0.8)',   // Pink
-                    'rgba(99, 255, 132, 0.8)',   // Green
-                    'rgba(132, 99, 255, 0.8)'    // Violet
-                ];
-                
-                const ctx = document.getElementById('tfidfChart').getContext('2d');
-                
-                // Destroy existing chart if it exists
-                if (window.tfidfChartInstance) {
-                    window.tfidfChartInstance.destroy();
-                }
-                
-                window.tfidfChartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: top10Words.map(word => word.charAt(0).toUpperCase() + word.slice(1)),
-                        datasets: [{
-                            label: 'TF-IDF Score',
-                            data: top10Values,
-                            backgroundColor: gradientColors.slice(0, top10Words.length),
-                            borderColor: gradientColors.slice(0, top10Words.length).map(color => color.replace('0.8', '1')),
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            borderSkipped: false
-                        }]
+          }
+          document.getElementById("tfidfTableBody").innerHTML = tfidfTableHtml;
+
+          // Create enhanced bar chart for top 10 words
+          const top10Words = result.tfidf_words.slice(0, 10);
+          const top10Values = result.tfidf_values.slice(0, 10);
+
+          // Generate gradient colors for bars
+          const gradientColors = [
+            "rgba(255, 99, 132, 0.8)", // Red
+            "rgba(255, 159, 64, 0.8)", // Orange
+            "rgba(255, 205, 86, 0.8)", // Yellow
+            "rgba(75, 192, 192, 0.8)", // Teal
+            "rgba(54, 162, 235, 0.8)", // Blue
+            "rgba(153, 102, 255, 0.8)", // Purple
+            "rgba(201, 203, 207, 0.8)", // Grey
+            "rgba(255, 99, 255, 0.8)", // Pink
+            "rgba(99, 255, 132, 0.8)", // Green
+            "rgba(132, 99, 255, 0.8)", // Violet
+          ];
+
+          const ctx = document.getElementById("tfidfChart").getContext("2d");
+
+          // Destroy existing chart if it exists
+          if (window.tfidfChartInstance) {
+            window.tfidfChartInstance.destroy();
+          }
+
+          window.tfidfChartInstance = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: top10Words.map(
+                (word) => word.charAt(0).toUpperCase() + word.slice(1)
+              ),
+              datasets: [
+                {
+                  label: "TF-IDF Score",
+                  data: top10Values,
+                  backgroundColor: gradientColors.slice(0, top10Words.length),
+                  borderColor: gradientColors
+                    .slice(0, top10Words.length)
+                    .map((color) => color.replace("0.8", "1")),
+                  borderWidth: 2,
+                  borderRadius: 8,
+                  borderSkipped: false,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              indexAxis: "y",
+              layout: {
+                padding: {
+                  left: 10,
+                  right: 30,
+                  top: 10,
+                  bottom: 10,
+                },
+              },
+              scales: {
+                x: {
+                  beginAtZero: true,
+                  grid: {
+                    color: "rgba(0,0,0,0.1)",
+                    drawBorder: false,
+                  },
+                  ticks: {
+                    color: "#666",
+                    font: {
+                      size: 12,
+                      weight: "500",
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        indexAxis: 'y',
-                        layout: {
-                            padding: {
-                                left: 10,
-                                right: 30,
-                                top: 10,
-                                bottom: 10
-                            }
-                        },
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(0,0,0,0.1)',
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    color: '#666',
-                                    font: {
-                                        size: 12,
-                                        weight: '500'
-                                    }
-                                }
-                            },
-                            y: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    color: '#333',
-                                    font: {
-                                        size: 13,
-                                        weight: '600'
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(0,0,0,0.8)',
-                                titleColor: '#fff',
-                                bodyColor: '#fff',
-                                borderColor: 'rgba(255,255,255,0.2)',
-                                borderWidth: 1,
-                                cornerRadius: 8,
-                                displayColors: true,
-                                callbacks: {
-                                    label: function(context) {
-                                        return `TF-IDF Score: ${context.parsed.x.toFixed(4)}`;
-                                    },
-                                    afterLabel: function(context) {
-                                        const percentage = ((context.parsed.x / Math.max(...top10Values)) * 100).toFixed(1);
-                                        return `Relative Importance: ${percentage}%`;
-                                    }
-                                }
-                            }
-                        },
-                        animation: {
-                            duration: 1500,
-                            easing: 'easeInOutQuart'
-                        }
-                    }
-                });
-                
-                // Add search functionality for TF-IDF table
-                document.getElementById('tfidfSearch').addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    const rows = document.getElementById('tfidfTableBody').getElementsByTagName('tr');
-                    
-                    for (let i = 0; i < rows.length; i++) {
-                        const wordCell = rows[i].getElementsByTagName('td')[1];
-                        if (wordCell) {
-                            const word = wordCell.textContent || wordCell.innerText;
-                            if (word.toLowerCase().indexOf(searchTerm) > -1) {
-                                rows[i].style.display = "";
-                            } else {
-                                rows[i].style.display = "none";
-                            }
-                        }
-                    }
-                });
-                
-            } catch (error) {
-                console.error('TF-IDF Error:', error);
-                
-                // Show error in the TF-IDF section
-                const tfidfSection = document.querySelector('#step3-content .tfidf-results-container');
-                if (tfidfSection) {
-                    tfidfSection.innerHTML = `
+                  },
+                },
+                y: {
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    color: "#333",
+                    font: {
+                      size: 13,
+                      weight: "600",
+                    },
+                  },
+                },
+              },
+              plugins: {
+                legend: {
+                  display: false,
+                },
+                tooltip: {
+                  backgroundColor: "rgba(0,0,0,0.8)",
+                  titleColor: "#fff",
+                  bodyColor: "#fff",
+                  borderColor: "rgba(255,255,255,0.2)",
+                  borderWidth: 1,
+                  cornerRadius: 8,
+                  displayColors: true,
+                  callbacks: {
+                    label: function (context) {
+                      return `TF-IDF Score: ${context.parsed.x.toFixed(4)}`;
+                    },
+                    afterLabel: function (context) {
+                      const percentage = (
+                        (context.parsed.x / Math.max(...top10Values)) *
+                        100
+                      ).toFixed(1);
+                      return `Relative Importance: ${percentage}%`;
+                    },
+                  },
+                },
+              },
+              animation: {
+                duration: 1500,
+                easing: "easeInOutQuart",
+              },
+            },
+          });
+
+          // Add search functionality for TF-IDF table
+          document
+            .getElementById("tfidfSearch")
+            .addEventListener("input", function () {
+              const searchTerm = this.value.toLowerCase();
+              const rows = document
+                .getElementById("tfidfTableBody")
+                .getElementsByTagName("tr");
+
+              for (let i = 0; i < rows.length; i++) {
+                const wordCell = rows[i].getElementsByTagName("td")[1];
+                if (wordCell) {
+                  const word = wordCell.textContent || wordCell.innerText;
+                  if (word.toLowerCase().indexOf(searchTerm) > -1) {
+                    rows[i].style.display = "";
+                  } else {
+                    rows[i].style.display = "none";
+                  }
+                }
+              }
+            });
+        } catch (error) {
+          console.error("TF-IDF Error:", error);
+
+          // Show error in the TF-IDF section
+          const tfidfSection = document.querySelector(
+            "#step3-content .tfidf-results-container"
+          );
+          if (tfidfSection) {
+            tfidfSection.innerHTML = `
                         <div class="alert alert-danger text-dark">
                             <i class="bi bi-exclamation-circle me-2"></i>
                             <strong>TF-IDF Calculation Error:</strong> ${error.message}
                             <br><small>Please go back to preprocessing and try again.</small>
                         </div>
                     `;
-                }
-                
-                alert(`Error calculating TF-IDF: ${error.message}`);
-            }
+          }
+
+          alert(`Error calculating TF-IDF: ${error.message}`);
         }
-        
-        // Step 3: Proceed to Classification
-        document.getElementById('proceed-classification-btn').addEventListener('click', function() {
-            updateProgress(4);
+      }
+
+      // Step 3: Proceed to Classification
+      document
+        .getElementById("proceed-classification-btn")
+        .addEventListener("click", function () {
+          updateProgress(4);
         });
-        
-        // Step 4: Classify Papers
-        document.getElementById('classify-papers-btn').addEventListener('click', async function() {
-            // Show loading state
-            this.disabled = true;
-            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Classifying...';
-            
-            // Show classification section
-            document.getElementById('classification-results').style.display = 'block';
-            document.getElementById('resultCategory').innerHTML = '<div class="spinner-border text-primary" role="status"></div> Classifying...';
-            document.getElementById('resultAccuracy').innerHTML = '<div class="spinner-border spinner-border-sm text-light" role="status"></div>';
-            
-            try {
-                // Get selected kernel and split
-                const kernel = document.getElementById('kernel-type').value;
-                const trainSplit = document.getElementById('train-test-split').value;
-                const testSplit = 100 - trainSplit;
-                
-                // Call the classification endpoint
-                const response = await fetch('/classify', {
-                    method: 'POST',
-                    body: new URLSearchParams({
-                        preprocessed_text: globalPreprocessedText,
-                        kernel: kernel
-                    })
-                });
-                
-                const result = await response.json();
-                
-                // Update classification result
-                document.getElementById('resultCategory').innerHTML = `🧠 Predicted Category: <strong>${result.category}</strong>`;
-                document.getElementById('resultAccuracy').innerHTML = `
+
+      // Step 4: Classify Papers
+      document
+        .getElementById("classify-papers-btn")
+        .addEventListener("click", async function () {
+          // Show loading state
+          this.disabled = true;
+          this.innerHTML =
+            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Classifying...';
+
+          // Show classification section
+          document.getElementById("classification-results").style.display =
+            "block";
+          document.getElementById("resultCategory").innerHTML =
+            '<div class="spinner-border text-primary" role="status"></div> Classifying...';
+          document.getElementById("resultAccuracy").innerHTML =
+            '<div class="spinner-border spinner-border-sm text-light" role="status"></div>';
+
+          try {
+            // Get selected kernel and split
+            const kernel = document.getElementById("kernel-type").value;
+            const trainSplit =
+              document.getElementById("train-test-split").value;
+            const testSplit = 100 - trainSplit;
+
+            // Call the classification endpoint
+            const response = await fetch("/classify", {
+              method: "POST",
+              body: new URLSearchParams({
+                preprocessed_text: globalPreprocessedText,
+                kernel: kernel,
+              }),
+            });
+
+            const result = await response.json();
+
+            // Update classification result
+            document.getElementById(
+              "resultCategory"
+            ).innerHTML = `🧠 Predicted Category: <strong>${result.category}</strong>`;
+            document.getElementById("resultAccuracy").innerHTML = `
                     <i class="bi bi-graph-up me-2"></i>
                     Accuracy: ${result.accuracy.toFixed(1)}%
                 `;
-                
-                // Update summary
-                document.getElementById('summary-split').textContent = `${trainSplit}%`;
-                document.getElementById('summary-test').textContent = `${testSplit}%`;
-                document.getElementById('summary-accuracy').textContent = `${result.accuracy.toFixed(1)}%`;
-                
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('resultCategory').innerHTML = 'Error classifying document';
-                document.getElementById('resultAccuracy').innerHTML = 'Error';
-            } finally {
-                this.disabled = false;
-                this.innerHTML = '<i class="bi bi-play-circle-fill me-3" style="font-size: 1.2rem;"></i>Start Classification';
+
+            // Update summary
+            document.getElementById(
+              "summary-split"
+            ).textContent = `${trainSplit}%`;
+            document.getElementById(
+              "summary-test"
+            ).textContent = `${testSplit}%`;
+            document.getElementById(
+              "summary-accuracy"
+            ).textContent = `${result.accuracy.toFixed(1)}%`;
+          } catch (error) {
+            console.error("Error:", error);
+            document.getElementById("resultCategory").innerHTML =
+              "Error classifying document";
+            document.getElementById("resultAccuracy").innerHTML = "Error";
+          } finally {
+            this.disabled = false;
+            this.innerHTML =
+              '<i class="bi bi-play-circle-fill me-3" style="font-size: 1.2rem;"></i>Start Classification';
+          }
+        });
+
+      // Initialize the workflow
+      document.addEventListener("DOMContentLoaded", function () {
+        updateProgress(1);
+        initializeNavigation();
+
+        // Ensure TF-IDF button event listener is attached
+        const tfidfBtn = document.getElementById("proceed-tfidf-btn");
+        if (tfidfBtn) {
+          tfidfBtn.addEventListener("click", function () {
+            if (this.disabled) {
+              return;
             }
-        });
-        
-        // Initialize the workflow
-        document.addEventListener('DOMContentLoaded', function() {
-            updateProgress(1);
-            initializeNavigation();
-        });
+            updateProgress(3);
+            setTimeout(() => {
+              calculateTFIDFStep();
+            }, 500);
+          });
+        }
+      });
     </script>
 
     <style>
-        .stat-card {
-            text-align: center;
-            padding: 1rem;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            margin: 0.5rem;
-        }
-        
-        .stat-card h5 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
-            color: #333;
-        }
-        
-        .stat-card p {
-            font-size: 0.9rem;
-            margin-bottom: 0;
-        }
+      .stat-card {
+        text-align: center;
+        padding: 1rem;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 0.5rem;
+      }
+
+      .stat-card h5 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+        color: #333;
+      }
+
+      .stat-card p {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+      }
     </style>
-</body>
+  </body>
 </html>
