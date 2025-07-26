@@ -116,25 +116,12 @@
               transition: all 0.3s ease;
             "
           >
-            <i class="bi bi-diagram-3 me-2"></i>Vectorization
+            <i class="bi bi-calculator me-2"></i>TF-IDF
           </span>
           <span
             class="step-indicator clickable-step"
             id="step3-indicator"
             data-step="3"
-            style="
-              cursor: pointer;
-              padding: 8px 16px;
-              border-radius: 20px;
-              transition: all 0.3s ease;
-            "
-          >
-            <i class="bi bi-calculator me-2"></i>TF-IDF
-          </span>
-          <span
-            class="step-indicator clickable-step"
-            id="step4-indicator"
-            data-step="4"
             style="
               cursor: pointer;
               padding: 8px 16px;
@@ -291,6 +278,48 @@
                 </div>
               </div>
 
+              <!-- Lowercasing Step -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="lowercasing">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#lowercasingContent"
+                    aria-expanded="false"
+                    aria-controls="lowercasingContent"
+                  >
+                    <i class="bi bi-alphabet me-2"></i>
+                    Lowercasing
+                  </button>
+                </h2>
+                <div
+                  id="lowercasingContent"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="lowercasing"
+                  data-bs-parent="#preprocessingAccordion"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h6>Original Text:</h6>
+                        <div
+                          class="border p-2 rounded mb-3"
+                          id="beforeLowercaseText"
+                        ></div>
+                      </div>
+                      <div class="col-md-6">
+                        <h6>After Lowercasing:</h6>
+                        <div
+                          class="border p-2 rounded"
+                          id="lowercasedText"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Stop Word Removal Step -->
               <div class="accordion-item">
                 <h2 class="accordion-header" id="stopWordRemoval">
@@ -319,48 +348,6 @@
                       id="filteredText"
                       style="max-height: 200px; overflow-y: auto"
                     ></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Lowercasing Step -->
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="lowercasing">
-                  <button
-                    class="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#lowercasingContent"
-                    aria-expanded="false"
-                    aria-controls="lowercasingContent"
-                  >
-                    <i class="bi bi-type-lowercase me-2 text-info"></i>
-                    Lowercasing
-                  </button>
-                </h2>
-                <div
-                  id="lowercasingContent"
-                  class="accordion-collapse collapse"
-                  aria-labelledby="lowercasing"
-                  data-bs-parent="#preprocessingAccordion"
-                >
-                  <div class="accordion-body">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <h6>Original Text:</h6>
-                        <div
-                          class="border p-2 rounded mb-3"
-                          id="beforeLowercaseText"
-                        ></div>
-                      </div>
-                      <div class="col-md-6">
-                        <h6>After Lowercasing:</h6>
-                        <div
-                          class="border p-2 rounded"
-                          id="lowercasedText"
-                        ></div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -400,134 +387,19 @@
 
             <div class="text-center mt-4">
               <button
-                id="proceed-vectorization-btn"
+                id="proceed-tfidf-btn"
                 class="btn btn-success btn-lg"
                 disabled
               >
-                <i class="bi bi-diagram-3 me-2"></i> Proceed to Vectorization
+                <i class="bi bi-calculator me-2"></i> Proceed to TF-IDF
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Step 2: Binary Vectorization -->
+      <!-- Step 2: TF-IDF Analysis -->
       <div id="step2-content" class="workflow-step">
-        <div
-          class="card shadow-lg mb-4 border-0"
-          style="
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-          "
-        >
-          <div class="card-body p-5">
-            <h2 class="card-title text-center mb-4 text-white">
-              <i
-                class="bi bi-diagram-3 me-3"
-                style="font-size: 2rem; color: #ffd700"
-              ></i>
-              Binary Vectorization
-            </h2>
-            <p class="text-center text-white-50 mb-4">
-              Convert preprocessed words into binary vectors showing
-              presence/absence
-            </p>
-
-            <div class="row justify-content-center mb-4">
-              <div class="col-lg-10">
-                <div
-                  class="card shadow-lg border-0"
-                  style="
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(10px);
-                  "
-                >
-                  <div
-                    class="card-header bg-transparent border-0 text-center py-3"
-                  >
-                    <h4 class="mb-0 text-dark">
-                      <i
-                        class="bi bi-list-ol me-2 text-primary"
-                        style="font-size: 1.5rem"
-                      ></i>
-                      All Preprocessed Words
-                    </h4>
-                    <small class="text-muted"
-                      >Complete word list from your processed text</small
-                    >
-                  </div>
-                  <div class="card-body p-4">
-                    <div id="all-words-display">
-                      <div class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                          <span class="visually-hidden">Loading words...</span>
-                        </div>
-                        <p class="mt-2 text-muted">Processing words...</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row justify-content-center mb-4">
-              <div class="col-lg-10">
-                <div
-                  class="card shadow-lg border-0"
-                  style="
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(10px);
-                  "
-                >
-                  <div
-                    class="card-header bg-transparent border-0 text-center py-3"
-                  >
-                    <h4 class="mb-0 text-dark">
-                      <i
-                        class="bi bi-diagram-3-fill me-2 text-success"
-                        style="font-size: 1.5rem"
-                      ></i>
-                      Binary Vector Representation
-                    </h4>
-                    <small class="text-muted"
-                      >Each word represented as 0s and 1s</small
-                    >
-                  </div>
-                  <div class="card-body p-4">
-                    <div id="binary-vectors-display">
-                      <div class="text-center">
-                        <div class="spinner-border text-success" role="status">
-                          <span class="visually-hidden"
-                            >Creating vectors...</span
-                          >
-                        </div>
-                        <p class="mt-2 text-muted">
-                          Creating binary vectors...
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="text-center mt-5">
-              <button
-                id="proceed-tfidf-btn"
-                class="btn btn-primary btn-lg px-5 py-3 shadow-lg"
-                style="border-radius: 50px; font-weight: 600"
-                disabled
-              >
-                <i class="bi bi-calculator me-3" style="font-size: 1.2rem"></i>
-                Proceed to TF-IDF Analysis
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 3: TF-IDF Analysis -->
-      <div id="step3-content" class="workflow-step">
         <div
           class="card shadow-lg mb-4 border-0"
           style="
@@ -544,12 +416,9 @@
               TF-IDF Vectorization Analysis
             </h2>
             <p class="text-center text-white-50 mb-4">
-              First vectorize your text into binary representation, then
-              calculate TF-IDF weights
+              Calculate TF-IDF weights to identify the most important words in
+              your text
             </p>
-
-            <!-- Vectorization Step (Binary Representation) -->
-            <div class="row mb-4" id="vectorization-section"></div>
 
             <!-- TF-IDF Results Container -->
             <div class="tfidf-results-container">
@@ -574,8 +443,7 @@
                         TF-IDF Analysis - Top Important Words
                       </h4>
                       <small class="text-muted"
-                        >Words with highest TF-IDF scores calculated from binary
-                        vectors</small
+                        >Words with highest TF-IDF scores in your text</small
                       >
                     </div>
                     <div class="card-body p-4">
@@ -703,8 +571,8 @@
         </div>
       </div>
 
-      <!-- Step 4: Classification -->
-      <div id="step4-content" class="workflow-step">
+      <!-- Step 3: Classification -->
+      <div id="step3-content" class="workflow-step">
         <div
           class="card shadow-lg mb-4 border-0"
           style="
@@ -952,7 +820,7 @@
         const indicators = document.querySelectorAll(".step-indicator");
 
         // Update progress bar width
-        const progressWidth = (step / 4) * 100;
+        const progressWidth = (step / 3) * 100;
         progressBar.style.width = progressWidth + "%";
         progressBar.setAttribute("aria-valuenow", progressWidth);
 
@@ -1005,7 +873,7 @@
         }
 
         // Next button - enable based on step completion
-        if (currentStep >= 4) {
+        if (currentStep >= 3) {
           nextBtn.disabled = true;
           nextBtn.style.opacity = "0.5";
           nextBtn.innerHTML =
@@ -1016,10 +884,6 @@
           if (currentStep === 1 && globalPreprocessedText) {
             canProceed = true;
           } else if (currentStep === 2) {
-            // Check if vectorization is done (proceed button is enabled)
-            const proceedBtn = document.getElementById("proceed-tfidf-btn");
-            canProceed = proceedBtn && !proceedBtn.disabled;
-          } else if (currentStep === 3) {
             // Check if TF-IDF is calculated (table has content)
             const tableBody = document.getElementById("tfidfTableBody");
             canProceed = tableBody && tableBody.children.length > 0;
@@ -1076,7 +940,7 @@
         document
           .getElementById("next-step-btn")
           .addEventListener("click", function () {
-            if (currentStep < 4) {
+            if (currentStep < 3) {
               updateProgress(currentStep + 1);
             }
           });
@@ -1088,9 +952,9 @@
           globalPreprocessedText &&
           document.getElementById("tfidfTableBody").children.length > 0
         ) {
-          return 4; // All steps accessible
+          return 3; // All steps accessible
         } else if (globalPreprocessedText) {
-          return 3; // Can access vectorization and TF-IDF
+          return 2; // Can access TF-IDF
         } else {
           return 1; // Only preprocessing
         }
@@ -1193,235 +1057,24 @@
             }
 
             // Enable the TF-IDF button
-            document.getElementById(
-              "proceed-vectorization-btn"
-            ).disabled = false;
+            document.getElementById("proceed-tfidf-btn").disabled = false;
           } catch (error) {
             console.error("Error:", error);
             alert("Error during preprocessing. Please try again.");
           }
         });
 
-      // Step 2: Convert to TF-IDF
-      // Step 1: Proceed to Vectorization
+      // Step 1: Proceed to TF-IDF
 
       document
-        .getElementById("proceed-vectorization-btn")
+        .getElementById("proceed-tfidf-btn")
         .addEventListener("click", function () {
           updateProgress(2);
-          // Automatically show vectorization when moving to step 2
+          // Automatically calculate TF-IDF when moving to step 2
           setTimeout(() => {
-            showVectorizationStep();
+            calculateTFIDFStep();
           }, 500);
         });
-
-      // Function to show vectorization step
-      async function showVectorizationStep() {
-        const allWordsDiv = document.getElementById("all-words-display");
-        const binaryVectorsDiv = document.getElementById(
-          "binary-vectors-display"
-        );
-
-        // Get preprocessed text and create word list
-        const words = globalPreprocessedText
-          .split(" ")
-          .filter((word) => word.length > 0);
-        const uniqueWords = [...new Set(words)].sort();
-
-        // Show all preprocessed words
-        let allWordsHTML = `
-                <div class="alert alert-info mb-3">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Total Words:</strong> ${
-                      words.length
-                    } | <strong>Unique Words:</strong> ${uniqueWords.length}
-                </div>
-                <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto; background: #f8f9fa;">
-                    ${words
-                      .map(
-                        (word, index) =>
-                          `<span class="badge bg-secondary m-1" style="font-size: 0.9rem;">${
-                            index + 1
-                          }. ${word}</span>`
-                      )
-                      .join("")}
-                </div>
-            `;
-        allWordsDiv.innerHTML = allWordsHTML;
-
-        // Wait a moment then show binary vectors
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Create binary vectors showing all unique words
-        let binaryHTML = `
-                <div class="alert alert-success mb-3">
-                    <i class="bi bi-check-circle me-2"></i>
-                    <strong>Binary Vectorization Complete!</strong> Each unique word gets a position in the vector.
-                </div>
-                
-                <div class="mb-3">
-                    <h6 class="text-dark">Binary Vector Representation:</h6>
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-sm table-striped">
-                            <thead class="table-dark sticky-top">
-                                <tr>
-                                    <th width="5%">#</th>
-                                    <th width="20%">Word</th>
-                                    <th width="75%">Binary Vector (complete)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            `;
-
-        uniqueWords.forEach((word, index) => {
-          // Create proper binary vector: 1 at this word's position, 0 everywhere else
-          const binaryVector = uniqueWords.map((uniqueWord, pos) =>
-            pos === index ? "1" : "0"
-          );
-          const completeVector = binaryVector.join("");
-
-          binaryHTML += `
-                    <tr>
-                        <td><strong>${index + 1}</strong></td>
-                        <td><span class="badge bg-primary">${word}</span></td>
-                        <td><code class="text-success" style="word-break: break-all; font-size: 0.8rem;">${completeVector}</code></td>
-                    </tr>
-                `;
-        });
-
-        binaryHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div class="text-center">
-                    <div class="alert alert-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <strong>Vectorization Complete!</strong> All ${uniqueWords.length} unique words have been converted to binary vectors.
-                    </div>
-                </div>
-            `;
-
-        binaryVectorsDiv.innerHTML = binaryHTML;
-
-        // Enable proceed to TF-IDF button
-        const tfidfButton = document.getElementById("proceed-tfidf-btn");
-        if (tfidfButton) {
-          tfidfButton.disabled = false;
-        }
-
-        // Update navigation buttons to reflect the new state
-        updateNavigationButtons();
-      }
-
-      // Function to show binary vectorization (legacy - for TF-IDF step)
-      async function showBinaryVectorization() {
-        const binaryContent = document.getElementById(
-          "binary-vectorization-content"
-        );
-
-        // Get preprocessed text and create word list
-        const words = globalPreprocessedText
-          .split(" ")
-          .filter((word) => word.length > 0);
-        const uniqueWords = [...new Set(words)].sort();
-
-        // Create binary vectors showing all words
-        let binaryHTML = `
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <h6 class="text-dark">Preprocessed Words (${
-                          words.length
-                        } total words)</h6>
-                        <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                            ${words
-                              .map(
-                                (word) =>
-                                  `<span class="badge bg-light text-dark m-1">${word}</span>`
-                              )
-                              .join("")}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-dark">Unique Words for Vectorization (${
-                          uniqueWords.length
-                        } unique words)</h6>
-                        <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                            ${uniqueWords
-                              .map(
-                                (word) =>
-                                  `<span class="badge bg-primary text-white m-1">${word}</span>`
-                              )
-                              .join("")}
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Binary Representation:</strong> Each unique word gets a position in the vector. 
-                    For each document, we set 1 if the word appears, 0 if it doesn't.
-                </div>
-                
-                <div class="mb-3">
-                    <h6 class="text-dark">Sample Binary Vectors (first 10 unique words):</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Word</th>
-                                    <th>Binary Vector (first 10 positions)</th>
-                                    <th>Present in Text</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            `;
-
-        const displayWords = uniqueWords.slice(0, 10);
-        displayWords.forEach((word, index) => {
-          // Create proper binary vector: 1 at this word's position, 0 everywhere else
-          const wordIndex = uniqueWords.indexOf(word);
-          const binaryVector = uniqueWords.map((uniqueWord, pos) =>
-            pos === wordIndex ? "1" : "0"
-          );
-          const sampleVector = binaryVector.slice(0, 10).join("");
-          const isPresent = words.includes(word);
-
-          binaryHTML += `
-                    <tr>
-                        <td><strong>${word}</strong></td>
-                        <td><code>${sampleVector}...</code></td>
-                        <td><span class="badge ${
-                          isPresent ? "bg-success" : "bg-secondary"
-                        }">${isPresent ? "Yes" : "No"}</span></td>
-                    </tr>
-                `;
-        });
-
-        binaryHTML += `
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div class="text-center">
-                    <div class="alert alert-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        Binary vectorization complete! Proceeding to TF-IDF calculation...
-                    </div>
-                </div>
-            `;
-
-        binaryContent.innerHTML = binaryHTML;
-
-        // Wait a moment to show the binary representation
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
-
-      // Step 2: Vectorize Text - REMOVED: vectorize-workflow-btn doesn't exist
-
-      // Step 2: Proceed to TF-IDF - Event listener is now attached in DOMContentLoaded
 
       // Function to calculate TF-IDF (called automatically when entering step 3)
       async function calculateTFIDFStep() {
@@ -1680,14 +1333,14 @@
         }
       }
 
-      // Step 3: Proceed to Classification
+      // Step 2: Proceed to Classification
       document
         .getElementById("proceed-classification-btn")
         .addEventListener("click", function () {
-          updateProgress(4);
+          updateProgress(3);
         });
 
-      // Step 4: Classify Papers
+      // Step 3: Classify Papers
       document
         .getElementById("classify-papers-btn")
         .addEventListener("click", async function () {
@@ -1758,19 +1411,7 @@
         updateProgress(1);
         initializeNavigation();
 
-        // Ensure TF-IDF button event listener is attached
-        const tfidfBtn = document.getElementById("proceed-tfidf-btn");
-        if (tfidfBtn) {
-          tfidfBtn.addEventListener("click", function () {
-            if (this.disabled) {
-              return;
-            }
-            updateProgress(3);
-            setTimeout(() => {
-              calculateTFIDFStep();
-            }, 500);
-          });
-        }
+        // Note: TF-IDF button event listener is already attached above
       });
     </script>
 
