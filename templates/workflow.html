@@ -290,7 +290,47 @@
                   </div>
                 </div>
               </div>
-
+              <!-- Lowercasing Step -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="lowercasing">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#lowercasingContent"
+                    aria-expanded="false"
+                    aria-controls="lowercasingContent"
+                  >
+                    <i class="bi bi-alphabet me-2"></i>
+                    Lowercasing
+                  </button>
+                </h2>
+                <div
+                  id="lowercasingContent"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="lowercasing"
+                  data-bs-parent="#preprocessingAccordion"
+                >
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h6>Original Text:</h6>
+                        <div
+                          class="border p-2 rounded mb-3"
+                          id="beforeLowercaseText"
+                        ></div>
+                      </div>
+                      <div class="col-md-6">
+                        <h6>After Lowercasing:</h6>
+                        <div
+                          class="border p-2 rounded"
+                          id="lowercasedText"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <!-- Stop Word Removal Step -->
               <div class="accordion-item">
                 <h2 class="accordion-header" id="stopWordRemoval">
@@ -319,48 +359,6 @@
                       id="filteredText"
                       style="max-height: 200px; overflow-y: auto"
                     ></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Lowercasing Step -->
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="lowercasing">
-                  <button
-                    class="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#lowercasingContent"
-                    aria-expanded="false"
-                    aria-controls="lowercasingContent"
-                  >
-                    <i class="bi bi-type-lowercase me-2 text-info"></i>
-                    Lowercasing
-                  </button>
-                </h2>
-                <div
-                  id="lowercasingContent"
-                  class="accordion-collapse collapse"
-                  aria-labelledby="lowercasing"
-                  data-bs-parent="#preprocessingAccordion"
-                >
-                  <div class="accordion-body">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <h6>Original Text:</h6>
-                        <div
-                          class="border p-2 rounded mb-3"
-                          id="beforeLowercaseText"
-                        ></div>
-                      </div>
-                      <div class="col-md-6">
-                        <h6>After Lowercasing:</h6>
-                        <div
-                          class="border p-2 rounded"
-                          id="lowercasedText"
-                        ></div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -504,6 +502,54 @@
                         <p class="mt-2 text-muted">
                           Creating binary vectors...
                         </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Word2Vec Section -->
+            <div class="row justify-content-center mb-4">
+              <div class="col-lg-10">
+                <div
+                  class="card shadow-lg border-0"
+                  style="
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                  "
+                >
+                  <div
+                    class="card-header bg-transparent border-0 text-center py-3"
+                  >
+                    <h4 class="mb-0 text-dark">
+                      <i
+                        class="bi bi-vector-pen me-2 text-warning"
+                        style="font-size: 1.5rem"
+                      ></i>
+                      Word2Vec Representation
+                    </h4>
+                    <small class="text-muted"
+                      >Dense vector representation showing semantic
+                      relationships</small
+                    >
+                  </div>
+                  <div class="card-body p-4">
+                    <div class="mb-3 text-center">
+                      <button
+                        id="show-word2vec-btn"
+                        class="btn btn-warning btn-lg px-4 py-2 shadow-sm"
+                        style="border-radius: 25px; font-weight: 600"
+                      >
+                        <i class="bi bi-play-circle-fill me-2"></i>
+                        Generate Word2Vec Vectors
+                      </button>
+                    </div>
+                    <div id="word2vec-display">
+                      <div class="text-center text-muted">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Click the button above to generate Word2Vec vectors for
+                        all words
                       </div>
                     </div>
                   </div>
@@ -1315,6 +1361,187 @@
         updateNavigationButtons();
       }
 
+      // Function to show Word2Vec representation
+      async function showWord2VecStep() {
+        const word2vecDiv = document.getElementById("word2vec-display");
+
+        // Show loading spinner
+        word2vecDiv.innerHTML = `
+          <div class="text-center">
+            <div class="spinner-border text-warning" role="status">
+              <span class="visually-hidden">Generating Word2Vec vectors...</span>
+            </div>
+            <p class="mt-2 text-muted">Generating Word2Vec vectors...</p>
+          </div>
+        `;
+
+        try {
+          // Call the Word2Vec endpoint
+          const response = await fetch("/word2vec_vectorization", {
+            method: "POST",
+            body: new URLSearchParams({
+              preprocessed_text: globalPreprocessedText,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Display Word2Vec results
+            let word2vecHTML = `
+              <div class="alert alert-success mb-3">
+                <i class="bi bi-check-circle me-2"></i>
+                <strong>${result.method} Complete!</strong> Generated ${
+              result.vector_dimensions
+            }-dimensional vectors for ${result.unique_words} unique words.
+              </div>
+              
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <h6 class="text-dark">Word2Vec Statistics:</h6>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Total Words:</span>
+                      <span class="badge bg-primary">${
+                        result.total_words
+                      }</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Unique Words:</span>
+                      <span class="badge bg-success">${
+                        result.unique_words
+                      }</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>Vector Dimensions:</span>
+                      <span class="badge bg-info">${
+                        result.vector_dimensions
+                      }</span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-dark">Sample Vector (${
+                    result.word_list[0] || "N/A"
+                  }):</h6>
+                  <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto; background: #f8f9fa;">
+                    <code class="text-dark" style="font-size: 0.7rem;">
+                      [${result.sample_vector
+                        .slice(0, 10)
+                        .map((v) => v.toFixed(3))
+                        .join(", ")}...]
+                    </code>
+                  </div>
+                  <small class="text-muted">Showing first 10 of ${
+                    result.vector_dimensions
+                  } dimensions</small>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <h6 class="text-dark">Word Similarity Analysis (Top 10 words):</h6>
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                  <table class="table table-sm table-striped">
+                    <thead class="table-warning sticky-top">
+                      <tr>
+                        <th width="20%">Word</th>
+                        <th width="80%">Similar Words (with scores)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Add similar words data
+            for (const [word, similarities] of Object.entries(
+              result.similar_words
+            )) {
+              const similarityBadges = similarities
+                .map(
+                  ([simWord, score]) =>
+                    `<span class="badge bg-light text-dark me-1" style="font-size: 0.8rem;">${simWord} (${score})</span>`
+                )
+                .join("");
+
+              word2vecHTML += `
+                <tr>
+                  <td><strong class="text-primary">${word}</strong></td>
+                  <td>${
+                    similarityBadges ||
+                    '<span class="text-muted">No similar words found</span>'
+                  }</td>
+                </tr>
+              `;
+            }
+
+            word2vecHTML += `
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <h6 class="text-dark">All Words with Vector Dimensions:</h6>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                  <table class="table table-sm table-hover">
+                    <thead class="table-warning sticky-top">
+                      <tr>
+                        <th width="5%">#</th>
+                        <th width="25%">Word</th>
+                        <th width="70%">Vector (first 20 dimensions)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Show vectors for all words
+            result.word_list.forEach((word, index) => {
+              const vector = result.word_vectors[word] || [];
+              const vectorPreview = vector
+                .slice(0, 20)
+                .map((v) => v.toFixed(2))
+                .join(", ");
+
+              word2vecHTML += `
+                <tr>
+                  <td><span class="badge bg-warning text-dark">${
+                    index + 1
+                  }</span></td>
+                  <td><strong class="text-primary">${word}</strong></td>
+                  <td><code class="text-success" style="font-size: 0.7rem;">[${vectorPreview}...]</code></td>
+                </tr>
+              `;
+            });
+
+            word2vecHTML += `
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <div class="text-center">
+                <div class="alert alert-info">
+                  <i class="bi bi-lightbulb me-2"></i>
+                  <strong>Word2Vec Benefits:</strong> Unlike binary vectors, Word2Vec captures semantic relationships between words, 
+                  allowing similar words to have similar vector representations.
+                </div>
+              </div>
+            `;
+
+            word2vecDiv.innerHTML = word2vecHTML;
+          } else {
+            throw new Error("Failed to generate Word2Vec vectors");
+          }
+        } catch (error) {
+          console.error("Word2Vec Error:", error);
+          word2vecDiv.innerHTML = `
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-circle me-2"></i>
+              <strong>Error:</strong> Failed to generate Word2Vec vectors. ${error.message}
+            </div>
+          `;
+        }
+      }
+
       // Function to show binary vectorization (legacy - for TF-IDF step)
       async function showBinaryVectorization() {
         const binaryContent = document.getElementById(
@@ -1769,6 +1996,18 @@
             setTimeout(() => {
               calculateTFIDFStep();
             }, 500);
+          });
+        }
+
+        // Attach Word2Vec button event listener
+        const word2vecBtn = document.getElementById("show-word2vec-btn");
+        if (word2vecBtn) {
+          word2vecBtn.addEventListener("click", function () {
+            if (!globalPreprocessedText) {
+              alert("Please complete preprocessing first.");
+              return;
+            }
+            showWord2VecStep();
           });
         }
       });

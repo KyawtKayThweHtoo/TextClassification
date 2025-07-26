@@ -187,6 +187,97 @@ def preprocess_step():
         'preprocessed_text': preprocessed_text
     })
 
+@app.route('/word2vec_vectorization', methods=['POST'])
+def word2vec_vectorization():
+    # Get the preprocessed text from the request
+    preprocessed_text = request.form.get('preprocessed_text', '')
+    
+    # Split text into words
+    words = preprocessed_text.split()
+    unique_words = list(set(words))
+    
+    if GENSIM_AVAILABLE and len(words) > 1:
+        try:
+            # Create Word2Vec model with the text
+            # For single text, we'll use a small window and create synthetic sentences
+            sentences = []
+            for i in range(0, len(words), 5):  # Create sentences of 5 words each
+                sentence = words[i:i+5]
+                if len(sentence) > 1:
+                    sentences.append(sentence)
+            
+            # Add the full text as a sentence too
+            sentences.append(words)
+            
+            # Train Word2Vec model
+            model = Word2Vec(sentences, vector_size=100, window=3, min_count=1, workers=1, seed=42)
+            
+            # Get vectors for each unique word
+            word_vectors = {}
+            for word in unique_words:
+                if word in model.wv:
+                    vector = model.wv[word].tolist()
+                    word_vectors[word] = vector
+            
+            # Find similar words for demonstration
+            similar_words = {}
+            for word in unique_words[:10]:  # Only show for first 10 words
+                if word in model.wv:
+                    try:
+                        similar = model.wv.most_similar(word, topn=3)
+                        similar_words[word] = [(w, float(score)) for w, score in similar]
+                    except:
+                        similar_words[word] = []
+            
+            return jsonify({
+                'success': True,
+                'method': 'Word2Vec',
+                'total_words': len(words),
+                'unique_words': len(unique_words),
+                'word_list': unique_words,
+                'vector_dimensions': 100,
+                'word_vectors': word_vectors,
+                'similar_words': similar_words,
+                'sample_vector': word_vectors.get(unique_words[0], []) if unique_words else []
+            })
+            
+        except Exception as e:
+            # Fallback to simulated Word2Vec if real one fails
+            pass
+    
+    # Fallback: Simulated Word2Vec representation
+    import random
+    random.seed(42)  # For consistent results
+    
+    word_vectors = {}
+    for word in unique_words:
+        # Generate a consistent "vector" based on word characters
+        vector = []
+        word_hash = hash(word) % 1000000
+        random.seed(word_hash)
+        for _ in range(100):
+            vector.append(round(random.uniform(-1, 1), 4))
+        word_vectors[word] = vector
+    
+    # Simulate similar words based on word length and first letter
+    similar_words = {}
+    for word in unique_words[:10]:
+        similar_candidates = [w for w in unique_words if w != word and 
+                            (len(w) == len(word) or w[0] == word[0])][:3]
+        similar_words[word] = [(w, round(random.uniform(0.3, 0.9), 3)) for w in similar_candidates]
+    
+    return jsonify({
+        'success': True,
+        'method': 'Word2Vec (Simulated)',
+        'total_words': len(words),
+        'unique_words': len(unique_words),
+        'word_list': unique_words,
+        'vector_dimensions': 100,
+        'word_vectors': word_vectors,
+        'similar_words': similar_words,
+        'sample_vector': word_vectors.get(unique_words[0], []) if unique_words else []
+    })
+
 @app.route('/calculate_tfidf', methods=['POST'])
 def calculate_tfidf():
     # Get the preprocessed text from the request
