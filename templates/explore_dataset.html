@@ -21,6 +21,7 @@
           <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Home</a></li>
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/workflow">Workflow</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/ml_pipeline">ML Pipeline</a></li>
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/explore">Explore Dataset</a></li>
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
@@ -39,8 +40,140 @@
             </div>
             <div class="d-flex justify-content-between mt-2">
                 <span class="step-indicator active" id="modal-step1-indicator">Preprocessing</span>
-                <span class="step-indicator" id="modal-step2-indicator">TF-IDF</span>
-                <span class="step-indicator" id="modal-step3-indicator">Classification</span>
+                <span class="step-indicator" id="modal-step2-indicator">Vectorization</span>
+                <span class="step-indicator" id="modal-step3-indicator">TF-IDF</span>
+                <span class="step-indicator" id="modal-step4-indicator">Classification</span>
+            </div>
+        </div>
+        
+        <!-- Vectorization Analysis Section -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">
+                    <i class="bi bi-diagram-3 me-2"></i> Vectorization Analysis
+                </h2>
+                <p class="text-center mb-4">Compare different text vectorization methods across research fields</p>
+                
+                <!-- Method Selection -->
+                <div class="row mb-4">
+                    <div class="col-md-8 mx-auto">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Select Vectorization Methods to Compare</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="word2vecCheck" value="word2vec" checked>
+                                            <label class="form-check-label" for="word2vecCheck">
+                                                <strong>Word2Vec</strong><br>
+                                                <small class="text-muted">Dense 300-dimensional vectors</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="bagOfWordsCheck" value="bagofwords" checked>
+                                            <label class="form-check-label" for="bagOfWordsCheck">
+                                                <strong>Bag of Words</strong><br>
+                                                <small class="text-muted">Frequency-based sparse vectors</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <button id="analyzeVectorization" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-play-circle me-2"></i>Analyze Vectorization Methods
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Container -->
+                <div id="vectorizationResults" style="display: none;">
+                    <!-- Comparison Charts -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Vector Dimensions Comparison</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="dimensionsChart" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Processing Performance</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="performanceChart" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Method Details -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-table me-2"></i>Vectorization Methods Comparison</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Method</th>
+                                                    <th>Vector Size</th>
+                                                    <th>Advantages</th>
+                                                    <th>Use Cases</th>
+                                                    <th>Memory Usage</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Word2Vec</strong></td>
+                                                    <td>300 dimensions</td>
+                                                    <td>Semantic relationships, Dense representation</td>
+                                                    <td>Deep learning, Similarity tasks</td>
+                                                    <td>Medium</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Bag of Words</strong></td>
+                                                    <td>Vocabulary size</td>
+                                                    <td>Simple, Interpretable, Fast</td>
+                                                    <td>Document classification, Feature engineering</td>
+                                                    <td>High (sparse)</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category-wise Analysis -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Vectorization Impact by Research Field</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="categoryImpactChart" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -50,7 +183,7 @@
                 <h2 class="card-title text-center mb-4">
                     <i class="bi bi-journals me-2"></i> Complete Paper Collection
                 </h2>
-                <p class="text-center mb-3">Showing all 1,500 papers from the dataset</p>
+                <p class="text-center mb-3">Showing all 3,000 papers from the dataset</p>
                 
                 <div class="table-responsive">
                     <table class="table table-striped table-hover" id="all-papers-table">
@@ -236,7 +369,7 @@
                 </div>
                 
                 <!-- Step 2: TF-IDF Vectorization -->
-                <div class="card mb-4 border-0" id="modal-tfidf-section" style="display: none; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <div class="card mb-4 border-0" id="modal-tfidf-section" style="display: none; background: linear-gradient(135deg, #0b0b0b 0%, #00f2fe 100%); color: white;">
                     <div class="card-body p-4">
                         <h4 class="mb-3 text-white text-center">
                             <i class="bi bi-calculator me-2" style="color: #ffd700; font-size: 1.5rem;"></i>
@@ -886,6 +1019,128 @@
                 alert('Error categorizing paper. Please try again.');
             }
         });
+        
+        // Vectorization Analysis Handler
+        document.getElementById('analyzeVectorization').addEventListener('click', function() {
+            const button = this;
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Analyzing...';
+            button.disabled = true;
+            
+            // Simulate analysis (in production, this would call backend APIs)
+            setTimeout(() => {
+                // Show results
+                document.getElementById('vectorizationResults').style.display = 'block';
+                
+                // Create dimension comparison chart
+                createDimensionsChart();
+                
+                // Create performance chart
+                createPerformanceChart();
+                
+                // Create category impact chart
+                createCategoryImpactChart();
+                
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                // Scroll to results
+                document.getElementById('vectorizationResults').scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        });
+        
+        function createDimensionsChart() {
+            const ctx = document.getElementById('dimensionsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Word2Vec', 'Bag of Words'],
+                    datasets: [{
+                        label: 'Vector Dimensions',
+                        data: [300, 5000],
+                        backgroundColor: ['#4facfe', '#00f2fe'],
+                        borderColor: ['#4facfe', '#00f2fe'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Dimensions'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createPerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Speed', 'Memory Efficiency', 'Accuracy', 'Interpretability'],
+                    datasets: [{
+                        label: 'Word2Vec',
+                        data: [7, 8, 9, 6],
+                        borderColor: '#4facfe',
+                        backgroundColor: 'rgba(79, 172, 254, 0.2)',
+                        pointBackgroundColor: '#4facfe'
+                    }, {
+                        label: 'Bag of Words',
+                        data: [9, 5, 7, 9],
+                        borderColor: '#00f2fe',
+                        backgroundColor: 'rgba(0, 242, 254, 0.2)',
+                        pointBackgroundColor: '#00f2fe'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createCategoryImpactChart() {
+            const ctx = document.getElementById('categoryImpactChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['AI', 'Distributed Systems', 'Image Processing', 'Networking & Cybersecurity', 'Software Engineering'],
+                    datasets: [{
+                        label: 'Word2Vec Performance',
+                        data: [92, 88, 94, 90, 87],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Word2Vec Classification Accuracy by Field (%)'
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>

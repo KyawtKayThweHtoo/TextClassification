@@ -1,18 +1,27 @@
 import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, MaxAbsScaler
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import re
 import pickle
+import json
+
+# Optional import for Word2Vec (for demonstration purposes)
+try:
+    from gensim.models import Word2Vec
+    GENSIM_AVAILABLE = True
+except ImportError:
+    GENSIM_AVAILABLE = False
+    print("Note: gensim not available, Word2Vec will be simulated")
 
 # Ensure NLTK data is downloaded
 nltk.download('punkt')
@@ -20,6 +29,9 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key-here'  # Change this in production
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
 
 # Thesis fields
 FIELDS = [
@@ -397,6 +409,10 @@ def insights():
 def corpus():
     return render_template('corpus.html')
 
+@app.route('/ml_pipeline')
+def ml_pipeline():
+    return render_template('ml_pipeline.html', fields=FIELDS)
+
 @app.route('/explore')
 def explore():
     return render_template('explore_dataset.html', fields=FIELDS)
@@ -514,6 +530,374 @@ def corpus_data():
             })
     
     return jsonify(result)
+
+# --- New Data Loading Pipeline Endpoints ---
+
+@app.route('/api/upload_data', methods=['POST'])
+def upload_data():
+    """Handle file upload and store data in session"""
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    try:
+        # Read Excel file
+        df = pd.read_excel(file)
+        
+        # Validate required columns
+        required_columns = ['Title', 'Abstract', 'Category']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        
+        if missing_columns:
+            return jsonify({'error': f'Missing columns: {missing_columns}'}), 400
+        
+        # Handle NaN values
+        df['Title'] = df['Title'].fillna('').astype(str)
+        df['Abstract'] = df['Abstract'].fillna('').astype(str)
+        df['Category'] = df['Category'].fillna('Unknown').astype(str)
+        
+        # Convert to JSON for session storage with proper NaN handling
+        data_json = df.to_json(orient='records', force_ascii=False)
+        session['uploaded_data'] = data_json
+        session.permanent = True  # Make session permanent
+        print(f"Stored data in session with {len(df)} records")  # Debug upload
+        print(f"Session ID: {session.get('_permanent')}")  # Debug session
+        
+        # Return summary statistics
+        category_counts = df['Category'].value_counts().to_dict()
+        
+        # Prepare sample data with proper handling
+        sample_data = df.head(10).copy()
+        sample_data = sample_data.fillna('')  # Replace any remaining NaN with empty strings
+        
+        return jsonify({
+            'success': True,
+            'total_papers': len(df),
+            'categories': len(category_counts),
+            'category_distribution': category_counts,
+            'sample_data': sample_data.to_dict(orient='records')
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/preprocess_data', methods=['POST'])
+def preprocess_data_pipeline():
+    """Preprocess the uploaded data"""
+    print(f"Session keys: {list(session.keys())}")  # Debug session
+    print(f"Session permanent: {session.permanent}")  # Debug session
+    print(f"Session contents length: {len(str(session))}")  # Debug session
+    
+    if 'uploaded_data' not in session:
+        # Try to provide more helpful error information
+        if len(session.keys()) == 0:
+            error_msg = 'Session is empty. Your browser may have cleared session data. Please upload the file again.'
+        else:
+            error_msg = f'No uploaded data found. Session contains: {list(session.keys())}. Please upload an Excel file first.'
+        return jsonify({'error': error_msg}), 400
+    
+    try:
+        # Load data from session
+        df = pd.read_json(session['uploaded_data'])
+        
+        # Handle NaN values by converting to string and replacing
+        df['Title'] = df['Title'].fillna('').astype(str)
+        df['Abstract'] = df['Abstract'].fillna('').astype(str)
+        
+        # Create combined text
+        df['combined_text'] = df['Title'] + ' ' + df['Abstract']
+        
+        # Preprocess each text
+        preprocessed_texts = []
+        for text in df['combined_text']:
+            preprocessed = preprocess_simple(str(text))
+            preprocessed_texts.append(preprocessed)
+        
+        df['preprocessed_text'] = preprocessed_texts
+        
+        # Store in session with proper handling of NaN values
+        session['preprocessed_data'] = df.to_json(orient='records', force_ascii=False)
+        
+        # Return sample before/after comparison
+        sample_original = str(df['combined_text'].iloc[0])[:200] + '...'
+        sample_preprocessed = str(df['preprocessed_text'].iloc[0])[:200] + '...'
+        
+        return jsonify({
+            'success': True,
+            'sample_original': sample_original,
+            'sample_preprocessed': sample_preprocessed,
+            'total_processed': len(df)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/vectorize_data', methods=['POST'])
+def vectorize_data():
+    """Vectorize the preprocessed data using binary representation"""
+    if 'preprocessed_data' not in session:
+        return jsonify({'error': 'No preprocessed data available'}), 400
+    
+    try:
+        df = pd.read_json(session['preprocessed_data'])
+        
+        # Create binary vectorization
+        all_words = []
+        for text in df['preprocessed_text']:
+            words = str(text).split()
+            all_words.extend(words)
+        
+        # Get unique vocabulary
+        vocabulary = sorted(list(set(all_words)))
+        
+        # Create binary vectors
+        binary_vectors = []
+        for text in df['preprocessed_text']:
+            words = str(text).split()
+            binary_vector = [1 if word in words else 0 for word in vocabulary]
+            binary_vectors.append(binary_vector)
+        
+        vector_info = {
+            'method': 'Binary Representation',
+            'dimensions': len(vocabulary),
+            'vocabulary_size': len(vocabulary),
+            'sample_words': vocabulary[:10]  # First 10 words for display
+        }
+        
+        # Store vectorization method in session
+        session['vectorization_method'] = 'binary'
+        session['vector_info'] = vector_info
+        session['binary_vectors'] = binary_vectors
+        
+        return jsonify({
+            'success': True,
+            'vector_info': vector_info,
+            'papers_processed': len(df),
+            'sample_binary_vectors': {
+                word: ''.join(map(str, [1 if word == vocabulary[i] else 0 for i in range(min(20, len(vocabulary)))])) 
+                for word in vocabulary[:5]
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/calculate_text_representation', methods=['POST'])
+def calculate_text_representation():
+    """Calculate text representation (TF-IDF, Count, etc.)"""
+    if 'preprocessed_data' not in session:
+        return jsonify({'error': 'No preprocessed data available'}), 400
+    
+    try:
+        method = request.json.get('method', 'tfidf')
+        df = pd.read_json(session['preprocessed_data'])
+        
+        if method == 'tfidf':
+            vectorizer = TfidfVectorizer(max_features=500)
+            vectors = vectorizer.fit_transform(df['preprocessed_text'])
+            feature_names = vectorizer.get_feature_names_out()
+        elif method == 'count':
+            vectorizer = CountVectorizer(max_features=500)
+            vectors = vectorizer.fit_transform(df['preprocessed_text'])
+            feature_names = vectorizer.get_feature_names_out()
+        else:  # ngram
+            vectorizer = TfidfVectorizer(max_features=500, ngram_range=(1, 2))
+            vectors = vectorizer.fit_transform(df['preprocessed_text'])
+            feature_names = vectorizer.get_feature_names_out()
+        
+        # Store in session
+        session['text_representation_method'] = method
+        session['feature_count'] = len(feature_names)
+        
+        # Get top features
+        feature_importance = np.asarray(vectors.mean(axis=0)).flatten()
+        top_indices = feature_importance.argsort()[-10:][::-1]
+        top_features = [feature_names[i] for i in top_indices]
+        
+        return jsonify({
+            'success': True,
+            'method': method,
+            'feature_count': len(feature_names),
+            'top_features': top_features,
+            'papers_processed': len(df)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/train_svm', methods=['POST'])
+def train_svm():
+    """Train SVM classifier"""
+    if 'preprocessed_data' not in session:
+        return jsonify({'error': 'No preprocessed data available'}), 400
+    
+    try:
+        kernel = request.json.get('kernel', 'linear')
+        df = pd.read_json(session['preprocessed_data'])
+        
+        # Prepare data
+        X = df['preprocessed_text']
+        y = df['Category']
+        
+        # Label encoding
+        label_encoder = LabelEncoder()
+        y_encoded = label_encoder.fit_transform(y)
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
+        )
+        
+        # Create pipeline
+        if kernel == 'linear':
+            pipeline = Pipeline([
+                ('tfidf', TfidfVectorizer()),
+                ('scaler', MaxAbsScaler()),
+                ('svm', SVC(kernel='linear', probability=True, random_state=42))
+            ])
+        else:  # polynomial
+            pipeline = Pipeline([
+                ('tfidf', TfidfVectorizer()),
+                ('scaler', MaxAbsScaler()),
+                ('svm', SVC(kernel='poly', degree=2, gamma='scale', C=1.0, probability=True, random_state=42))
+            ])
+        
+        # Train model
+        pipeline.fit(X_train, y_train)
+        
+        # Store in session
+        session['trained_model'] = {
+            'kernel': kernel,
+            'training_samples': len(X_train),
+            'test_samples': len(X_test)
+        }
+        session['label_encoder_classes'] = label_encoder.classes_.tolist()
+        
+        return jsonify({
+            'success': True,
+            'kernel': kernel,
+            'training_samples': len(X_train),
+            'test_samples': len(X_test),
+            'total_features': pipeline.named_steps['tfidf'].get_feature_names_out().shape[0]
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/test_session', methods=['GET'])
+def test_session():
+    """Test session functionality"""
+    session['test_data'] = 'test_value'
+    session.permanent = True
+    return jsonify({
+        'message': 'Session test data stored',
+        'session_keys': list(session.keys()),
+        'permanent': session.permanent
+    })
+
+@app.route('/api/check_session', methods=['GET'])
+def check_session():
+    """Check session data"""
+    return jsonify({
+        'session_keys': list(session.keys()),
+        'has_uploaded_data': 'uploaded_data' in session,
+        'has_test_data': 'test_data' in session,
+        'permanent': session.permanent,
+        'session_size': len(str(session))
+    })
+
+@app.route('/api/evaluate_model', methods=['POST'])
+def evaluate_model():
+    """Evaluate the trained model"""
+    if 'preprocessed_data' not in session or 'trained_model' not in session:
+        return jsonify({'error': 'No trained model available'}), 400
+    
+    try:
+        df = pd.read_json(session['preprocessed_data'])
+        kernel = session['trained_model']['kernel']
+        
+        # Prepare data
+        X = df['preprocessed_text']
+        y = df['Category']
+        
+        # Label encoding
+        label_encoder = LabelEncoder()
+        y_encoded = label_encoder.fit_transform(y)
+        
+        # Split data (same as training)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
+        )
+        
+        # Recreate and train model
+        if kernel == 'linear':
+            pipeline = Pipeline([
+                ('tfidf', TfidfVectorizer()),
+                ('scaler', MaxAbsScaler()),
+                ('svm', SVC(kernel='linear', probability=True, random_state=42))
+            ])
+        else:
+            pipeline = Pipeline([
+                ('tfidf', TfidfVectorizer()),
+                ('scaler', MaxAbsScaler()),
+                ('svm', SVC(kernel='poly', degree=2, gamma='scale', C=1.0, probability=True, random_state=42))
+            ])
+        
+        pipeline.fit(X_train, y_train)
+        
+        # Make predictions
+        y_pred = pipeline.predict(X_test)
+        
+        # Calculate metrics
+        accuracy = accuracy_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred, average='weighted')
+        recall = recall_score(y_test, y_pred, average='weighted')
+        f1 = f1_score(y_test, y_pred, average='weighted')
+        
+        # Classification report
+        report = classification_report(y_test, y_pred, target_names=label_encoder.classes_, output_dict=True)
+        
+        # Confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+        
+        # Convert confusion matrix to list for JSON serialization
+        confusion_matrix_data = []
+        for i in range(len(label_encoder.classes_)):
+            for j in range(len(label_encoder.classes_)):
+                confusion_matrix_data.append({
+                    'actual': label_encoder.classes_[i],
+                    'predicted': label_encoder.classes_[j],
+                    'count': int(cm[i][j])
+                })
+        
+        # Per-category metrics
+        category_metrics = []
+        for category in label_encoder.classes_:
+            if category in report:
+                category_metrics.append({
+                    'category': category,
+                    'precision': round(report[category]['precision'], 3),
+                    'recall': round(report[category]['recall'], 3),
+                    'f1_score': round(report[category]['f1-score'], 3),
+                    'support': report[category]['support']
+                })
+        
+        return jsonify({
+            'success': True,
+            'accuracy': round(accuracy, 3),
+            'precision': round(precision, 3),
+            'recall': round(recall, 3),
+            'f1_score': round(f1, 3),
+            'confusion_matrix': confusion_matrix_data,
+            'category_metrics': category_metrics,
+            'test_samples': len(y_test)
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -21,6 +21,7 @@
           <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Home</a></li>
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/workflow">Workflow</a></li>
+            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/ml_pipeline">ML Pipeline</a></li>
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/explore">Explore Dataset</a></li>
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
             <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
@@ -44,9 +45,13 @@
                 </span>
                 <span class="step-indicator clickable-step" id="step2-indicator" data-step="2" 
                       style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
-                    <i class="bi bi-calculator me-2"></i>TF-IDF
+                    <i class="bi bi-diagram-3 me-2"></i>Vectorization
                 </span>
                 <span class="step-indicator clickable-step" id="step3-indicator" data-step="3" 
+                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
+                    <i class="bi bi-calculator me-2"></i>TF-IDF
+                </span>
+                <span class="step-indicator clickable-step" id="step4-indicator" data-step="4" 
                       style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
                     <i class="bi bi-robot me-2"></i>Classification
                 </span>
@@ -190,23 +195,117 @@
                     </div>
                     
                     <div class="text-center mt-4">
-                        <button id="convert-tfidf-btn" class="btn btn-success btn-lg" disabled>
-                            <i class="bi bi-table me-2"></i> Convert to TF-IDF
+                        <button id="proceed-vectorization-btn" class="btn btn-success btn-lg" disabled>
+                            <i class="bi bi-diagram-3 me-2"></i> Proceed to Vectorization
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Step 2: TF-IDF Vectorization -->
+        <!-- Step 2: Binary Vectorization -->
         <div id="step2-content" class="workflow-step">
+            <div class="card shadow-lg mb-4 border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4 text-white">
+                        <i class="bi bi-diagram-3 me-3" style="font-size: 2rem; color: #ffd700;"></i> 
+                        Binary Vectorization
+                    </h2>
+                    <p class="text-center text-white-50 mb-4">Convert preprocessed words into binary vectors showing presence/absence</p>
+                    
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-lg-10">
+                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+                                <div class="card-header bg-transparent border-0 text-center py-3">
+                                    <h4 class="mb-0 text-dark">
+                                        <i class="bi bi-list-ol me-2 text-primary" style="font-size: 1.5rem;"></i>
+                                        All Preprocessed Words
+                                    </h4>
+                                    <small class="text-muted">Complete word list from your processed text</small>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div id="all-words-display">
+                                        <div class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading words...</span>
+                                            </div>
+                                            <p class="mt-2 text-muted">Processing words...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-lg-10">
+                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+                                <div class="card-header bg-transparent border-0 text-center py-3">
+                                    <h4 class="mb-0 text-dark">
+                                        <i class="bi bi-diagram-3-fill me-2 text-success" style="font-size: 1.5rem;"></i>
+                                        Binary Vector Representation
+                                    </h4>
+                                    <small class="text-muted">Each word represented as 0s and 1s</small>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div id="binary-vectors-display">
+                                        <div class="text-center">
+                                            <div class="spinner-border text-success" role="status">
+                                                <span class="visually-hidden">Creating vectors...</span>
+                                            </div>
+                                            <p class="mt-2 text-muted">Creating binary vectors...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-5">
+                        <button id="proceed-tfidf-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
+                                style="border-radius: 50px; font-weight: 600;" disabled>
+                            <i class="bi bi-calculator me-3" style="font-size: 1.2rem;"></i> 
+                            Proceed to TF-IDF Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: TF-IDF Analysis -->
+        <div id="step3-content" class="workflow-step">
             <div class="card shadow-lg mb-4 border-0" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
                 <div class="card-body p-5">
                     <h2 class="card-title text-center mb-4 text-white">
                         <i class="bi bi-calculator me-3" style="font-size: 2rem; color: #ffd700;"></i> 
                         TF-IDF Vectorization Analysis
                     </h2>
-                    <p class="text-center text-white-50 mb-4">Transform your text into numerical vectors using Term Frequency-Inverse Document Frequency</p>
+                    <p class="text-center text-white-50 mb-4">First vectorize your text into binary representation, then calculate TF-IDF weights</p>
+                    
+                    <!-- Vectorization Step (Binary Representation) -->
+                    <div class="row mb-4" id="vectorization-section">
+                        <div class="col-12">
+                            <div class="card shadow-lg border-0" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
+                                <div class="card-header bg-transparent border-0 text-center py-3">
+                                    <h4 class="mb-0 text-dark">
+                                        <i class="bi bi-diagram-3-fill me-2 text-success" style="font-size: 1.5rem;"></i>
+                                        Step 1: Binary Vectorization
+                                    </h4>
+                                    <small class="text-muted">Words represented as binary digits showing presence/absence</small>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div id="binary-vectorization-content">
+                                        <div class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Creating binary vectors...</span>
+                                            </div>
+                                            <p class="mt-2 text-muted">Creating binary word vectors...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <!-- TF-IDF Results Container -->
                     <div class="tfidf-results-container">
@@ -217,9 +316,9 @@
                                     <div class="card-header bg-transparent border-0 text-center py-3">
                                         <h4 class="mb-0 text-dark">
                                             <i class="bi bi-bar-chart-fill me-2 text-warning" style="font-size: 1.5rem;"></i>
-                                            Top 10 Most Important Words
+                                            Step 2: TF-IDF Analysis - Top Important Words
                                         </h4>
-                                        <small class="text-muted">Words with highest TF-IDF scores in your document</small>
+                                        <small class="text-muted">Words with highest TF-IDF scores calculated from binary vectors</small>
                                     </div>
                                     <div class="card-body p-4">
                                         <div class="chart-container" style="position: relative; height: 350px; width: 100%;">
@@ -295,8 +394,8 @@
             </div>
         </div>
 
-        <!-- Step 3: Classification -->
-        <div id="step3-content" class="workflow-step">
+        <!-- Step 4: Classification -->
+        <div id="step4-content" class="workflow-step">
             <div class="card shadow-lg mb-4 border-0" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
                 <div class="card-body p-5">
                     <h2 class="card-title text-center mb-4 text-white">
@@ -426,7 +525,7 @@
             const indicators = document.querySelectorAll('.step-indicator');
             
             // Update progress bar width
-            const progressWidth = (step / 3) * 100;
+            const progressWidth = (step / 4) * 100;
             progressBar.style.width = progressWidth + '%';
             progressBar.setAttribute('aria-valuenow', progressWidth);
             
@@ -476,7 +575,7 @@
             }
             
             // Next button - enable based on step completion
-            if (currentStep >= 3) {
+            if (currentStep >= 4) {
                 nextBtn.disabled = true;
                 nextBtn.style.opacity = '0.5';
                 nextBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Completed';
@@ -486,6 +585,10 @@
                 if (currentStep === 1 && globalPreprocessedText) {
                     canProceed = true;
                 } else if (currentStep === 2) {
+                    // Check if vectorization is done (proceed button is enabled)
+                    const proceedBtn = document.getElementById('proceed-tfidf-btn');
+                    canProceed = proceedBtn && !proceedBtn.disabled;
+                } else if (currentStep === 3) {
                     // Check if TF-IDF is calculated (table has content)
                     const tableBody = document.getElementById('tfidfTableBody');
                     canProceed = tableBody && tableBody.children.length > 0;
@@ -535,7 +638,7 @@
             
             // Next button
             document.getElementById('next-step-btn').addEventListener('click', function() {
-                if (currentStep < 3) {
+                if (currentStep < 4) {
                     updateProgress(currentStep + 1);
                 }
             });
@@ -544,9 +647,9 @@
         // Get maximum accessible step based on completion
         function getMaxAccessibleStep() {
             if (globalPreprocessedText && document.getElementById('tfidfTableBody').children.length > 0) {
-                return 3; // All steps accessible
+                return 4; // All steps accessible
             } else if (globalPreprocessedText) {
-                return 2; // Can access TF-IDF
+                return 3; // Can access vectorization and TF-IDF
             } else {
                 return 1; // Only preprocessing
             }
@@ -619,7 +722,7 @@
                 }
                 
                 // Enable the TF-IDF button
-                document.getElementById('convert-tfidf-btn').disabled = false;
+                document.getElementById('proceed-vectorization-btn').disabled = false;
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -628,17 +731,307 @@
         });
         
         // Step 2: Convert to TF-IDF
-        document.getElementById('convert-tfidf-btn').addEventListener('click', async function() {
+        // Step 1: Proceed to Vectorization
+        document.getElementById('proceed-vectorization-btn').addEventListener('click', function() {
             updateProgress(2);
+            // Automatically show vectorization when moving to step 2
+            setTimeout(() => {
+                showVectorizationStep();
+            }, 500);
+        });
+        
+        // Function to show vectorization step
+        async function showVectorizationStep() {
+            const allWordsDiv = document.getElementById('all-words-display');
+            const binaryVectorsDiv = document.getElementById('binary-vectors-display');
+            
+            // Get preprocessed text and create word list
+            const words = globalPreprocessedText.split(' ').filter(word => word.length > 0);
+            const uniqueWords = [...new Set(words)].sort();
+            
+            // Show all preprocessed words
+            let allWordsHTML = `
+                <div class="alert alert-info mb-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Total Words:</strong> ${words.length} | <strong>Unique Words:</strong> ${uniqueWords.length}
+                </div>
+                <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto; background: #f8f9fa;">
+                    ${words.map((word, index) => `<span class="badge bg-secondary m-1" style="font-size: 0.9rem;">${index + 1}. ${word}</span>`).join('')}
+                </div>
+            `;
+            allWordsDiv.innerHTML = allWordsHTML;
+            
+            // Wait a moment then show binary vectors
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Create binary vectors showing all unique words
+            let binaryHTML = `
+                <div class="alert alert-success mb-3">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <strong>Binary Vectorization Complete!</strong> Each unique word gets a position in the vector.
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-dark">Binary Vector Representation:</h6>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-sm table-striped">
+                            <thead class="table-dark sticky-top">
+                                <tr>
+                                    <th width="5%">#</th>
+                                    <th width="20%">Word</th>
+                                    <th width="60%">Binary Vector (showing first 20 positions)</th>
+                                    <th width="15%">Present</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            uniqueWords.forEach((word, index) => {
+                // Create proper binary vector: 1 at this word's position, 0 everywhere else
+                const binaryVector = uniqueWords.map((uniqueWord, pos) => pos === index ? '1' : '0');
+                const sampleVector = binaryVector.slice(0, 20).join('');
+                const restVector = binaryVector.length > 20 ? '...' : '';
+                const isPresent = words.includes(word);  // Check if word appears in original text
+                
+                binaryHTML += `
+                    <tr>
+                        <td><strong>${index + 1}</strong></td>
+                        <td><span class="badge bg-primary">${word}</span></td>
+                        <td><code class="text-success">${sampleVector}${restVector}</code></td>
+                        <td><span class="badge ${isPresent ? 'bg-success' : 'bg-secondary'}">${isPresent ? 'Yes' : 'No'}</span></td>
+                    </tr>
+                `;
+            });
+            
+            binaryHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        <strong>Vectorization Complete!</strong> All ${uniqueWords.length} unique words have been converted to binary vectors.
+                    </div>
+                </div>
+            `;
+            
+            binaryVectorsDiv.innerHTML = binaryHTML;
+            
+            // Enable proceed to TF-IDF button
+            document.getElementById('proceed-tfidf-btn').disabled = false;
+        }
+        
+        // Function to show binary vectorization (legacy - for TF-IDF step)
+        async function showBinaryVectorization() {
+            const binaryContent = document.getElementById('binary-vectorization-content');
+            
+            // Get preprocessed text and create word list
+            const words = globalPreprocessedText.split(' ').filter(word => word.length > 0);
+            const uniqueWords = [...new Set(words)].sort();
+            
+            // Create binary vectors showing all words
+            let binaryHTML = `
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-dark">Preprocessed Words (${words.length} total words)</h6>
+                        <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                            ${words.map(word => `<span class="badge bg-light text-dark m-1">${word}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-dark">Unique Words for Vectorization (${uniqueWords.length} unique words)</h6>
+                        <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                            ${uniqueWords.map(word => `<span class="badge bg-primary text-white m-1">${word}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Binary Representation:</strong> Each unique word gets a position in the vector. 
+                    For each document, we set 1 if the word appears, 0 if it doesn't.
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-dark">Sample Binary Vectors (first 10 unique words):</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Word</th>
+                                    <th>Binary Vector (first 10 positions)</th>
+                                    <th>Present in Text</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            const displayWords = uniqueWords.slice(0, 10);
+            displayWords.forEach((word, index) => {
+                // Create proper binary vector: 1 at this word's position, 0 everywhere else
+                const wordIndex = uniqueWords.indexOf(word);
+                const binaryVector = uniqueWords.map((uniqueWord, pos) => pos === wordIndex ? '1' : '0');
+                const sampleVector = binaryVector.slice(0, 10).join('');
+                const isPresent = words.includes(word);
+                
+                binaryHTML += `
+                    <tr>
+                        <td><strong>${word}</strong></td>
+                        <td><code>${sampleVector}...</code></td>
+                        <td><span class="badge ${isPresent ? 'bg-success' : 'bg-secondary'}">${isPresent ? 'Yes' : 'No'}</span></td>
+                    </tr>
+                `;
+            });
+            
+            binaryHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Binary vectorization complete! Proceeding to TF-IDF calculation...
+                    </div>
+                </div>
+            `;
+            
+            binaryContent.innerHTML = binaryHTML;
+            
+            // Wait a moment to show the binary representation
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+
+        // Step 2: Vectorize Text
+        document.getElementById('vectorize-workflow-btn').addEventListener('click', async function() {
+            const button = this;
+            const originalText = button.innerHTML;
+            
+            // Get preprocessed text from session storage or form
+            const title = document.getElementById('title').value;
+            const abstract = document.getElementById('abstract').value;
+            
+            if (!title && !abstract) {
+                alert('Please enter title and abstract first, then preprocess the text.');
+                return;
+            }
+            
+            button.innerHTML = '<i class="bi bi-hourglass-split me-2"></i> Vectorizing...';
+            button.disabled = true;
             
             try {
-                // Call the TF-IDF calculation endpoint
+                // Create binary representation of the text
+                const combinedText = title + ' ' + abstract;
+                const words = combinedText.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, '').split(/\s+/).filter(word => word.length > 0);
+                const uniqueWords = [...new Set(words)].sort();
+                
+                // Create binary vectors for each word
+                const binaryVectors = {};
+                uniqueWords.forEach((word, index) => {
+                    const binaryArray = new Array(uniqueWords.length).fill(0);
+                    binaryArray[index] = 1;
+                    binaryVectors[word] = binaryArray.join('');
+                });
+                
+                // Show vectorization results
+                const resultsDiv = document.getElementById('vectorization-results');
+                const infoDiv = document.getElementById('vectorization-info');
+                
+                let vectorDisplay = `
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <h5>Binary</h5>
+                                <p class="text-muted">Representation</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <h5>${uniqueWords.length}</h5>
+                                <p class="text-muted">Unique Words</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <h5>${uniqueWords.length}</h5>
+                                <p class="text-muted">Vector Length</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h6>Binary Word Vectors (First 10 words):</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Word</th>
+                                        <th>Binary Vector</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+                
+                uniqueWords.slice(0, 10).forEach(word => {
+                    const shortVector = binaryVectors[word].substring(0, 20) + (binaryVectors[word].length > 20 ? '...' : '');
+                    vectorDisplay += `
+                        <tr>
+                            <td><strong>${word}</strong></td>
+                            <td><code>${shortVector}</code></td>
+                        </tr>
+                    `;
+                });
+                
+                vectorDisplay += '</tbody></table></div></div>';
+                
+                infoDiv.innerHTML = vectorDisplay;
+                resultsDiv.style.display = 'block';
+                document.getElementById('proceed-tfidf-btn').disabled = false;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error during vectorization. Please try again.');
+            }
+            
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+
+        // Step 2: Proceed to TF-IDF
+        document.getElementById('proceed-tfidf-btn').addEventListener('click', function() {
+            updateProgress(3);
+            // Automatically calculate TF-IDF when moving to step 3
+            setTimeout(() => {
+                calculateTFIDFStep();
+            }, 500);
+        });
+
+        // Function to calculate TF-IDF (called automatically when entering step 3)
+        async function calculateTFIDFStep() {
+            try {
+                // Check if we have preprocessed text
+                if (!globalPreprocessedText) {
+                    throw new Error('No preprocessed text available. Please complete preprocessing first.');
+                }
+                
+                // Call the TF-IDF calculation endpoint directly (vectorization already done in step 2)
                 const response = await fetch('/calculate_tfidf', {
                     method: 'POST',
                     body: new URLSearchParams({preprocessed_text: globalPreprocessedText})
                 });
                 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const result = await response.json();
+                
+                // Check if result has the expected structure
+                if (!result.tfidf_words || !result.tfidf_values) {
+                    throw new Error('Invalid response from TF-IDF calculation endpoint');
+                }
                 
                 // Update TF-IDF table with enhanced styling
                 let tfidfTableHtml = '';
@@ -825,17 +1218,30 @@
                 });
                 
             } catch (error) {
-                console.error('Error:', error);
-                alert('Error calculating TF-IDF. Please try again.');
+                console.error('TF-IDF Error:', error);
+                
+                // Show error in the TF-IDF section
+                const tfidfSection = document.querySelector('#step3-content .tfidf-results-container');
+                if (tfidfSection) {
+                    tfidfSection.innerHTML = `
+                        <div class="alert alert-danger text-dark">
+                            <i class="bi bi-exclamation-circle me-2"></i>
+                            <strong>TF-IDF Calculation Error:</strong> ${error.message}
+                            <br><small>Please go back to preprocessing and try again.</small>
+                        </div>
+                    `;
+                }
+                
+                alert(`Error calculating TF-IDF: ${error.message}`);
             }
-        });
+        }
         
         // Step 3: Proceed to Classification
         document.getElementById('proceed-classification-btn').addEventListener('click', function() {
-            updateProgress(3);
+            updateProgress(4);
         });
         
-        // Step 3: Classify Papers
+        // Step 4: Classify Papers
         document.getElementById('classify-papers-btn').addEventListener('click', async function() {
             // Show loading state
             this.disabled = true;
@@ -891,5 +1297,27 @@
             initializeNavigation();
         });
     </script>
+
+    <style>
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            margin: 0.5rem;
+        }
+        
+        .stat-card h5 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            color: #333;
+        }
+        
+        .stat-card p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+    </style>
 </body>
 </html>
