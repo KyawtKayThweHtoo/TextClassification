@@ -14,6 +14,7 @@ from nltk.stem import WordNetLemmatizer
 import re
 import pickle
 import json
+from datetime import timedelta
 
 # Optional import for Word2Vec (for demonstration purposes)
 try:
@@ -29,9 +30,14 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Change this in production
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 minutes
+app.secret_key = 'your-secret-key-here-change-in-production'  # Change this in production
+
+# Configure session to be permanent and set timeout
+app.permanent_session_lifetime = timedelta(hours=2)  # Session lasts 2 hours
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 # Thesis fields
 FIELDS = [
@@ -562,7 +568,6 @@ def upload_data():
         # Convert to JSON for session storage with proper NaN handling
         data_json = df.to_json(orient='records', force_ascii=False)
         session['uploaded_data'] = data_json
-        session.permanent = True  # Make session permanent
         print(f"Stored data in session with {len(df)} records")  # Debug upload
         print(f"Session ID: {session.get('_permanent')}")  # Debug session
         
@@ -791,7 +796,6 @@ def train_svm():
 def test_session():
     """Test session functionality"""
     session['test_data'] = 'test_value'
-    session.permanent = True
     return jsonify({
         'message': 'Session test data stored',
         'session_keys': list(session.keys()),
@@ -898,6 +902,449 @@ def evaluate_model():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# --- Excel ML Pipeline Endpoints ---
+
+@app.route('/api/load_existing_data', methods=['GET'])
+def load_existing_data():
+    """Load existing Excel data from data directory"""
+    try:
+        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        excel_files = [f for f in os.listdir(data_dir) if f.endswith('.xlsx') and not f.startswith('~$') and 'backup' not in f]
+        
+        if not excel_files:
+            return jsonify({'success': False, 'error': 'No Excel files found in data directory'}), 404
+        
+        # Load and combine all Excel files
+        all_dataframes = []
+        for file in excel_files:
+            file_path = os.path.join(data_dir, file)
+            print(f"DEBUG: Loading {file_path}")
+            df = pd.read_excel(file_path)
+            
+            # Validate required columns
+            if 'Title' in df.columns and 'Abstract' in df.columns and 'Category' in df.columns:
+                all_dataframes.append(df)
+                print(f"DEBUG: Added {len(df)} rows from {file}")
+        
+        if not all_dataframes:
+            return jsonify({'success': False, 'error': 'No valid Excel files with required columns found'}), 400
+        
+        # Combine all dataframes
+        combined_df = pd.concat(all_dataframes, ignore_index=True)
+        print(f"DEBUG: Combined {len(combined_df)} total rows")
+        
+        # Clean NaN values
+        combined_df['Title'] = combined_df['Title'].fillna('').astype(str)
+        combined_df['Abstract'] = combined_df['Abstract'].fillna('').astype(str) 
+        combined_df['Category'] = combined_df['Category'].fillna('Unknown').astype(str)
+        
+        # Remove rows with empty title AND abstract
+        combined_df = combined_df[~((combined_df['Title'] == '') & (combined_df['Abstract'] == ''))]
+        
+        # Clean all other columns to prevent NaN issues
+        for col in combined_df.columns:
+            if combined_df[col].dtype == 'object':
+                combined_df[col] = combined_df[col].fillna('').astype(str)
+            else:
+                combined_df[col] = combined_df[col].fillna(0)
+        
+        # Store in session
+        json_data = combined_df.to_json(orient='records', force_ascii=False, date_format='iso')
+        session['excel_data'] = json_data
+        print(f"DEBUG: Stored {len(combined_df)} rows in session from existing files")
+        
+        # Prepare response data
+        categories = [str(cat) for cat in combined_df['Category'].unique() if str(cat) != 'nan']
+        category_distribution = {}
+        for cat, count in combined_df['Category'].value_counts().items():
+            if str(cat) != 'nan':
+                category_distribution[str(cat)] = int(count)
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_rows': len(combined_df),
+                'categories': categories,
+                'category_distribution': category_distribution,
+                'columns': combined_df.columns.tolist(),
+                'files_loaded': excel_files
+            }
+        })
+        
+    except Exception as e:
+        print(f"Load existing data error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/upload_excel', methods=['POST'])
+def upload_excel():
+    """Handle Excel file upload for ML pipeline"""
+    print(f"DEBUG: Upload endpoint called")
+    print(f"DEBUG: Request files: {list(request.files.keys())}")
+    
+    if 'file' not in request.files:
+        print(f"DEBUG: No file in request")
+        return jsonify({'success': False, 'error': 'No file provided'}), 400
+    
+    file = request.files['file']
+    print(f"DEBUG: File received: {file.filename}")
+    if file.filename == '':
+        print(f"DEBUG: Empty filename")
+        return jsonify({'success': False, 'error': 'No file selected'}), 400
+    
+    try:
+        # Clear any existing session data for fresh start
+        session.pop('excel_data', None)
+        session.pop('excel_preprocessed', None)
+        session.pop('excel_tfidf', None)
+        
+        # Read Excel file
+        df = pd.read_excel(file)
+        print(f"DEBUG: Uploaded file with {len(df)} rows")
+        
+        # Validate required columns
+        required_columns = ['Title', 'Abstract', 'Category']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        
+        if missing_columns:
+            return jsonify({'success': False, 'error': f'Missing columns: {missing_columns}'}), 400
+        
+        # Clean data - handle NaN values properly
+        df['Title'] = df['Title'].fillna('').astype(str)
+        df['Abstract'] = df['Abstract'].fillna('').astype(str)
+        df['Category'] = df['Category'].fillna('Unknown').astype(str)
+        
+        # Remove rows where both title and abstract are empty
+        df = df[~((df['Title'] == '') & (df['Abstract'] == ''))]
+        
+        # Clean all other columns to prevent NaN issues
+        for col in df.columns:
+            if df[col].dtype == 'object':
+                df[col] = df[col].fillna('').astype(str)
+            else:
+                df[col] = df[col].fillna(0)
+        
+        # Store in session with proper NaN handling
+        json_data = df.to_json(orient='records', force_ascii=False, date_format='iso')
+        session['excel_data'] = json_data
+        print(f"DEBUG: Stored {len(df)} rows in session")
+        print(f"DEBUG: Session keys after upload: {list(session.keys())}")
+        print(f"DEBUG: JSON data length: {len(json_data)}")
+        
+        # Prepare response data with NaN handling
+        categories = [str(cat) for cat in df['Category'].unique() if str(cat) != 'nan' and str(cat) != '']
+        category_distribution = {}
+        for cat, count in df['Category'].value_counts().items():
+            cat_str = str(cat)
+            if cat_str != 'nan' and cat_str != '':
+                category_distribution[cat_str] = int(count)
+        
+        columns = df.columns.tolist()
+        
+        # Sample data for preview - ensure no NaN values and handle any problematic values
+        sample_df = df.head(10).copy()
+        sample_df = sample_df.fillna('')
+        
+        # Convert to dict with safe handling
+        sample_data = []
+        for _, row in sample_df.iterrows():
+            record = {}
+            for col in sample_df.columns:
+                value = row[col]
+                try:
+                    # Handle various data types safely
+                    if pd.isna(value) or str(value) == 'nan':
+                        record[col] = ''
+                    elif isinstance(value, (int, float)):
+                        if pd.isna(value) or np.isnan(value):
+                            record[col] = 0
+                        else:
+                            record[col] = float(value) if isinstance(value, float) else int(value)
+                    else:
+                        record[col] = str(value)
+                except (ValueError, TypeError):
+                    record[col] = str(value) if value is not None else ''
+            sample_data.append(record)
+        
+        print(f"DEBUG: Prepared response with {len(categories)} categories and {len(sample_data)} sample records")
+        
+        response_data = {
+            'success': True,
+            'total_papers': len(df),
+            'categories': categories,
+            'category_distribution': category_distribution,
+            'columns': columns,
+            'sample_data': sample_data
+        }
+        
+        print(f"DEBUG: About to return JSON response")
+        try:
+            return jsonify(response_data)
+        except Exception as json_error:
+            print(f"DEBUG: JSON serialization error: {str(json_error)}")
+            # Return a simpler response if JSON serialization fails
+            return jsonify({
+                'success': True,
+                'total_papers': len(df),
+                'categories': categories,
+                'category_distribution': category_distribution,
+                'columns': columns,
+                'sample_data': []  # Empty sample data to avoid serialization issues
+            })
+        
+    except Exception as e:
+        print(f"Excel upload error: {str(e)}")  # Debug logging
+        print(f"DEBUG: Exception type: {type(e)}")
+        import traceback
+        print(f"DEBUG: Traceback: {traceback.format_exc()}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/preprocess_excel', methods=['POST'])
+def preprocess_excel():
+    """Preprocess Excel data for ML pipeline"""
+    print(f"DEBUG: Session keys in preprocess: {list(session.keys())}")
+    print(f"DEBUG: Has excel_data in session: {'excel_data' in session}")
+    print(f"DEBUG: Session permanent: {session.permanent}")
+    print(f"DEBUG: Session ID exists: {hasattr(session, '_permanent')}")
+    
+    if 'excel_data' not in session:
+        return jsonify({'success': False, 'error': 'No Excel data found. Please upload a file first.'}), 400
+    
+    try:
+        # Load data from session
+        session_data = session['excel_data']
+        print(f"DEBUG: Session data type: {type(session_data)}")
+        print(f"DEBUG: Session data length: {len(session_data) if isinstance(session_data, str) else 'N/A'}")
+        
+        df = pd.read_json(session_data)
+        print(f"DEBUG: Loaded {len(df)} rows from session")
+        
+        # Ensure columns are strings and handle NaN
+        df['Title'] = df['Title'].fillna('').astype(str)
+        df['Abstract'] = df['Abstract'].fillna('').astype(str)
+        df['Category'] = df['Category'].fillna('Unknown').astype(str)
+        
+        # Combine title and abstract
+        df['combined_text'] = df['Title'] + ' ' + df['Abstract']
+        
+        # Preprocess all texts
+        preprocessed_texts = []
+        total_tokens = 0
+        all_words = set()
+        
+        for text in df['combined_text']:
+            # Ensure text is string and handle any remaining NaN
+            text_str = str(text) if not pd.isna(text) else ''
+            processed = preprocess_simple(text_str)
+            preprocessed_texts.append(processed)
+            
+            # Calculate statistics
+            tokens = processed.split() if processed else []
+            total_tokens += len(tokens)
+            all_words.update(tokens)
+        
+        df['preprocessed_text'] = preprocessed_texts
+        
+        # Clean dataframe before storing to prevent NaN issues
+        df = df.fillna('')
+        
+        # Store preprocessed data with proper NaN handling
+        session['excel_preprocessed'] = df.to_json(orient='records', force_ascii=False, date_format='iso')
+        
+        # Calculate statistics
+        avg_tokens = total_tokens / len(df) if len(df) > 0 else 0
+        
+        # Get sample comparison
+        sample_comparison = None
+        if len(df) > 0:
+            original_text = str(df['combined_text'].iloc[0])[:300]
+            preprocessed_text = str(df['preprocessed_text'].iloc[0])[:300]
+            sample_comparison = {
+                'original': original_text,
+                'preprocessed': preprocessed_text
+            }
+        
+        return jsonify({
+            'success': True,
+            'total_processed': len(df),
+            'avg_tokens': round(avg_tokens, 1),
+            'total_unique_words': len(all_words),
+            'sample_comparison': sample_comparison
+        })
+        
+    except Exception as e:
+        print(f"Preprocessing error: {str(e)}")  # Debug logging
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/calculate_tfidf_excel', methods=['POST'])
+def calculate_tfidf_excel():
+    """Calculate TF-IDF for Excel data"""
+    if 'excel_preprocessed' not in session:
+        return jsonify({'success': False, 'error': 'No preprocessed data available'}), 400
+    
+    try:
+        # Load preprocessed data
+        df = pd.read_json(session['excel_preprocessed'])
+        
+        # Ensure preprocessed_text column is clean
+        df['preprocessed_text'] = df['preprocessed_text'].fillna('').astype(str)
+        
+        # Filter out empty texts
+        valid_texts = [text for text in df['preprocessed_text'] if text.strip()]
+        
+        if len(valid_texts) == 0:
+            return jsonify({'success': False, 'error': 'No valid preprocessed text found'}), 400
+        
+        # Calculate TF-IDF with adjusted parameters for robustness
+        min_doc_freq = max(1, min(2, len(valid_texts) // 10))  # Adjust min_df based on dataset size
+        max_doc_freq = min(0.9, max(0.5, 1.0 - (10.0 / len(valid_texts))))  # Adjust max_df
+        
+        tfidf_vectorizer = TfidfVectorizer(
+            max_features=1000, 
+            min_df=min_doc_freq, 
+            max_df=max_doc_freq,
+            stop_words='english'  # Add English stop words
+        )
+        
+        tfidf_matrix = tfidf_vectorizer.fit_transform(valid_texts)
+        
+        # Get feature names and their average TF-IDF scores
+        feature_names = tfidf_vectorizer.get_feature_names_out()
+        tfidf_scores = np.asarray(tfidf_matrix.mean(axis=0)).flatten()
+        
+        # Create word-score pairs and sort by score
+        word_score_pairs = list(zip(feature_names, tfidf_scores))
+        word_score_pairs.sort(key=lambda x: x[1], reverse=True)
+        
+        # Separate words and scores, ensure no NaN values
+        tfidf_words = []
+        tfidf_values = []
+        
+        for word, score in word_score_pairs:
+            if not pd.isna(score) and not np.isnan(score):
+                tfidf_words.append(str(word))
+                tfidf_values.append(float(score))
+        
+        # Store TF-IDF data
+        session['excel_tfidf'] = {
+            'words': tfidf_words,
+            'values': tfidf_values,
+            'vectorizer': 'stored'  # We'll recreate when needed
+        }
+        
+        return jsonify({
+            'success': True,
+            'tfidf_words': tfidf_words,
+            'tfidf_values': tfidf_values,
+            'total_features': len(feature_names),
+            'papers_processed': len(valid_texts)
+        })
+        
+    except Exception as e:
+        print(f"TF-IDF calculation error: {str(e)}")  # Debug logging
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/classify_excel', methods=['POST'])
+def classify_excel():
+    """Train and evaluate SVM on Excel data"""
+    if 'excel_preprocessed' not in session:
+        return jsonify({'success': False, 'error': 'No preprocessed data available'}), 400
+    
+    try:
+        data = request.get_json()
+        kernel = data.get('kernel', 'linear')
+        train_split = int(data.get('train_split', 80))
+        test_split = 100 - train_split
+        
+        # Load preprocessed data
+        df = pd.read_json(session['excel_preprocessed'])
+        
+        # Clean data and handle NaN values
+        df['preprocessed_text'] = df['preprocessed_text'].fillna('').astype(str)
+        df['Category'] = df['Category'].fillna('Unknown').astype(str)
+        
+        # Filter out empty texts
+        valid_df = df[df['preprocessed_text'].str.strip() != ''].copy()
+        
+        if len(valid_df) == 0:
+            return jsonify({'success': False, 'error': 'No valid data for classification'}), 400
+        
+        # Prepare data  
+        X = valid_df['preprocessed_text']
+        y = valid_df['Category']
+        
+        # Check if we have multiple categories
+        unique_categories = y.unique()
+        if len(unique_categories) < 2:
+            return jsonify({'success': False, 'error': 'Need at least 2 categories for classification'}), 400
+        
+        # Label encoding
+        label_encoder = LabelEncoder()
+        y_encoded = label_encoder.fit_transform(y)
+        
+        # Split data with stratification if possible
+        try:
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y_encoded, test_size=test_split/100, random_state=42, stratify=y_encoded
+            )
+        except ValueError:
+            # If stratification fails (e.g., some classes have only 1 sample), split without stratification
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y_encoded, test_size=test_split/100, random_state=42
+            )
+        
+        # Create pipeline with robust parameters
+        tfidf_params = {
+            'max_features': min(1000, len(X_train)),
+            'min_df': max(1, len(X_train) // 100),
+            'max_df': 0.95,
+            'stop_words': 'english'
+        }
+        
+        if kernel == 'linear':
+            pipeline = Pipeline([
+                ('tfidf', TfidfVectorizer(**tfidf_params)),
+                ('scaler', MaxAbsScaler()),
+                ('svm', SVC(kernel='linear', probability=True, random_state=42))
+            ])
+        else:  # polynomial
+            pipeline = Pipeline([
+                ('tfidf', TfidfVectorizer(**tfidf_params)),
+                ('scaler', MaxAbsScaler()),
+                ('svm', SVC(kernel='poly', degree=2, gamma='scale', C=1.0, probability=True, random_state=42))
+            ])
+        
+        # Train model
+        pipeline.fit(X_train, y_train)
+        
+        # Make predictions
+        y_pred = pipeline.predict(X_test)
+        
+        # Calculate metrics with zero division handling
+        accuracy = accuracy_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
+        recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+        f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
+        
+        # Get feature count
+        total_features = len(pipeline.named_steps['tfidf'].get_feature_names_out())
+        
+        return jsonify({
+            'success': True,
+            'accuracy': float(accuracy),
+            'precision': float(precision),
+            'recall': float(recall),
+            'f1_score': float(f1),
+            'kernel': kernel,
+            'total_papers': len(valid_df),
+            'training_samples': len(X_train),
+            'test_samples': len(X_test),
+            'total_features': total_features
+        })
+        
+    except Exception as e:
+        print(f"Classification error: {str(e)}")  # Debug logging
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

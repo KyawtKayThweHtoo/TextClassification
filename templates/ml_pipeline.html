@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ML Pipeline Studio - Research Paper Classification</title>
+    <title>ML Pipeline - Research Paper Classification</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/static/style.css">
@@ -12,221 +12,450 @@
 <body class="bg-light">
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top mb-4">
-      <div class="container">
-        <a class="navbar-brand" href="/">Research Paper Categorization</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Home</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/workflow">Workflow</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/ml_pipeline">ML Pipeline</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/explore">Explore Dataset</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
-            <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
-          </ul>
+        <div class="container">
+            <a class="navbar-brand" href="/">Research Paper Categorization</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/workflow">Workflow</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/ml_pipeline">ML Pipeline</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/explore">Explore Dataset</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
 
-    <div class="container mt-5 pt-5">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-center mb-4">ML Pipeline Studio - Complete Machine Learning Workflow</h1>
-                
-                <!-- Progress Tracker -->
-                <div class="progress-tracker mb-5">
-                    <div class="step-item" id="step-upload">
-                        <div class="step-circle">1</div>
-                        <div class="step-label">Upload Data</div>
-                    </div>
-                    <div class="step-item" id="step-display">
-                        <div class="step-circle">2</div>
-                        <div class="step-label">Display Data</div>
-                    </div>
-                    <div class="step-item" id="step-preprocess">
-                        <div class="step-circle">3</div>
-                        <div class="step-label">Preprocessing</div>
-                    </div>
-                    <div class="step-item" id="step-vectorize">
-                        <div class="step-circle">4</div>
-                        <div class="step-label">Vectorization</div>
-                    </div>
-                    <div class="step-item" id="step-tfidf">
-                        <div class="step-circle">5</div>
-                        <div class="step-label">TF-IDF</div>
-                    </div>
-                    <div class="step-item" id="step-svm">
-                        <div class="step-circle">6</div>
-                        <div class="step-label">SVM Training</div>
-                    </div>
-                    <div class="step-item" id="step-accuracy">
-                        <div class="step-circle">7</div>
-                        <div class="step-label">Evaluation</div>
+    <div class="container mt-6">
+        <!-- Progress Indicator -->
+        <div class="workflow-progress mb-4">
+            <div class="progress" style="height: 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.1);">
+                <div class="progress-bar" role="progressbar" id="workflow-progress-bar" 
+                     style="width: 25%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 10px;" 
+                     aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+                <span class="step-indicator active clickable-step" id="step1-indicator" data-step="1" 
+                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
+                    <i class="bi bi-cloud-upload me-2"></i>Upload Data
+                </span>
+                <span class="step-indicator clickable-step" id="step2-indicator" data-step="2" 
+                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
+                    <i class="bi bi-funnel me-2"></i>Preprocessing
+                </span>
+                <span class="step-indicator clickable-step" id="step3-indicator" data-step="3" 
+                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
+                    <i class="bi bi-calculator me-2"></i>TF-IDF
+                </span>
+                <span class="step-indicator clickable-step" id="step4-indicator" data-step="4" 
+                      style="cursor: pointer; padding: 8px 16px; border-radius: 20px; transition: all 0.3s ease;">
+                    <i class="bi bi-robot me-2"></i>Classification
+                </span>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="workflow-navigation d-flex justify-content-between mb-4">
+            <button id="prev-step-btn" class="btn btn-primary px-4 py-2 shadow-lg" disabled 
+                    style="border-radius: 50px; font-weight: 600">
+                <i class="bi bi-arrow-left me-2"></i>Previous Step
+            </button>
+            <button id="next-step-btn" class="btn btn-primary px-4 py-2 shadow-lg" disabled 
+                    style="border-radius: 50px; font-weight: 600">
+                Next Step<i class="bi bi-arrow-right ms-2"></i>
+            </button>
+        </div>
+
+        <!-- Step 1: Upload Excel File -->
+        <div id="step1-content" class="workflow-step active">
+            <div class="card shadow-lg mb-4">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="bi bi-cloud-upload me-2"></i> Upload Dataset
+                    </h2>
+                    
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="upload-area border-2 border-dashed rounded p-4 text-center mb-4" 
+                                 style="border-color: #dee2e6; background: #f8f9fa;">
+                                <i class="bi bi-file-earmark-excel display-1 text-success mb-3"></i>
+                                <h5>Upload Excel File</h5>
+                                <p class="text-muted mb-3">Select an Excel file (.xlsx, .xls) with research paper data</p>
+                                <input type="file" class="form-control mb-3" id="fileInput" accept=".xlsx,.xls">
+                                <small class="text-muted">
+                                    Expected format: Title, Abstract, Category columns<br>
+                                    Supported categories: AI, Distributed Systems, Image Processing, Networking & Cybersecurity, Software Engineering
+                                </small>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button class="btn btn-primary btn-lg px-5 py-3 shadow-lg" id="uploadBtn" disabled 
+                                        style="border-radius: 50px; font-weight: 600">
+                                    <i class="bi bi-upload me-3" style="font-size: 1.2rem"></i>
+                                    Upload and Process File
+                                </button>
+                            </div>
+                            
+                            <div id="uploadStatus" class="mt-4"></div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Step 1: File Upload -->
-                <div class="card mb-4" id="upload-section">
-                    <div class="card-header">
-                        <h4><i class="bi bi-cloud-upload"></i> Step 1: Upload Dataset</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label for="fileInput" class="form-label">Upload Excel File (.xlsx, .xls)</label>
-                            <input type="file" class="form-control" id="fileInput" accept=".xlsx,.xls" />
-                            <div class="form-text">
-                                Supported formats: Excel files with columns: Title, Abstract, Category<br>
-                                Categories: AI, Distributed Systems, Image Processing, Networking & Cybersecurity, Software Engineering<br>
-                                Dataset size: 10-3000 papers per file
+        <!-- Step 2: Preprocessing -->
+        <div id="step2-content" class="workflow-step">
+            <div class="card shadow-lg mb-4">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="bi bi-funnel me-2"></i> Text Preprocessing
+                    </h2>
+                    
+                    <!-- Dataset Overview -->
+                    <div id="datasetOverview" class="mb-4" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="bi bi-file-text me-2"></i>Dataset Statistics</h6>
+                                        <div id="datasetStats"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><i class="bi bi-pie-chart me-2"></i>Category Distribution</h6>
+                                        <div id="categoryDistribution"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn btn-primary" id="uploadBtn" disabled>
-                            <i class="bi bi-upload"></i> Upload and Process File
-                        </button>
-                        
-                        <!-- Debug Session Button (remove in production) -->
-                        <button class="btn btn-secondary btn-sm ms-2" id="testSessionBtn">
-                            <i class="bi bi-bug"></i> Test Session
-                        </button>
-                        
-                        <div id="uploadStatus" class="mt-3"></div>
                     </div>
-                </div>
 
-                <!-- Step 2: Data Display -->
-                <div class="card mb-4" id="display-section" style="display: none;">
-                    <div class="card-header">
-                        <h4><i class="bi bi-table"></i> Step 2: Dataset Overview</h4>
+                    <!-- Sample Data Table -->
+                    <div id="sampleDataContainer" class="mb-4" style="display: none;">
+                        <h5><i class="bi bi-table me-2"></i>Sample Data (First 10 rows)</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="sampleDataTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th width="5%">#</th>
+                                        <th width="30%">Title</th>
+                                        <th width="50%">Abstract</th>
+                                        <th width="15%">Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sampleDataBody"></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div id="datasetSummary" class="mb-3"></div>
-                        <div id="datasetTable"></div>
-                        <button class="btn btn-success mt-3" id="proceedToPreprocessBtn" disabled>
-                            <i class="bi bi-arrow-right"></i> Proceed to Preprocessing
-                        </button>
-                    </div>
-                </div>
 
-                <!-- Step 3: Text Preprocessing -->
-                <div class="card mb-4" id="preprocess-section" style="display: none;">
-                    <div class="card-header">
-                        <h4><i class="bi bi-gear"></i> Step 3: Text Preprocessing</h4>
-                    </div>
-                    <div class="card-body">
-                        <p>Clean and normalize the text data using NLTK tokenization, stop word removal, and lemmatization.</p>
-                        <button class="btn btn-primary" id="preprocessBtn" disabled>
-                            <i class="bi bi-play"></i> Preprocess Data
-                        </button>
-                        
-                        <!-- Debug Session Button (remove in production) -->
-                        <button class="btn btn-secondary btn-sm ms-2" id="checkSessionBtn">
-                            <i class="bi bi-search"></i> Check Session
-                        </button>
-                        
-                        <div id="preprocessStatus" class="mt-3"></div>
-                        <div id="preprocessComparison" class="mt-3"></div>
-                        <button class="btn btn-success mt-3" id="proceedToVectorizeBtn" disabled style="display: none;">
-                            <i class="bi bi-arrow-right"></i> Proceed to Vectorization
+                    <div class="text-center mb-4">
+                        <button id="preprocess-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" disabled 
+                                style="border-radius: 50px; font-weight: 600">
+                            <i class="bi bi-play-circle-fill me-3" style="font-size: 1.2rem"></i>
+                            Preprocess All Data
                         </button>
                     </div>
-                </div>
 
-                <!-- Step 4: Vectorization -->
-                <div class="card mb-4" id="vectorize-section" style="display: none;">
-                    <div class="card-header">
-                        <h4><i class="bi bi-diagram-3"></i> Step 4: Text Vectorization</h4>
-                    </div>
-                    <div class="card-body">
-                        <p>Convert text to numerical vectors for machine learning processing.</p>
-                        <div class="mb-3">
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Binary Vectorization:</strong> Each word will be represented as binary digits (0s and 1s) 
-                                showing presence or absence in the vocabulary.
+                    <!-- Preprocessing Progress -->
+                    <div id="preprocessingProgress" class="mb-4" style="display: none;">
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 id="preprocessingProgressBar" role="progressbar" style="width: 0%">
+                                <span id="progressText">0%</span>
                             </div>
                         </div>
-                        <button class="btn btn-primary" id="vectorizeBtn" disabled>
-                            <i class="bi bi-play"></i> Vectorize Text
-                        </button>
-                        <div id="vectorizeStatus" class="mt-3"></div>
-                        <div id="vectorizeResults" class="mt-3"></div>
-                        <button class="btn btn-success mt-3" id="proceedToTfidfBtn" disabled style="display: none;">
-                            <i class="bi bi-arrow-right"></i> Proceed to Text Representation
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 5: Text Representation (TF-IDF) -->
-                <div class="card mb-4" id="tfidf-section" style="display: none;">
-                    <div class="card-header">
-                        <h4><i class="bi bi-bar-chart"></i> Step 5: Text Representation Calculation</h4>
-                    </div>
-                    <div class="card-body">
-                        <p>Calculate feature importance using various text representation methods.</p>
-                        <div class="mb-3">
-                            <label class="form-label">Select Text Representation Method:</label>
-                            <select class="form-select" id="tfidfMethod">
-                                <option value="tfidf">TF-IDF (Term Frequency-Inverse Document Frequency)</option>
-                                <option value="count">Count Vectorizer</option>
-                                <option value="ngram">N-gram Features</option>
-                            </select>
+                        <div id="preprocessingLog" class="alert alert-info">
+                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                            Starting preprocessing...
                         </div>
-                        <button class="btn btn-primary" id="tfidfBtn" disabled>
-                            <i class="bi bi-play"></i> Calculate Text Representation
-                        </button>
-                        <div id="tfidfStatus" class="mt-3"></div>
-                        <div id="tfidfResults" class="mt-3"></div>
-                        <button class="btn btn-success mt-3" id="proceedToSvmBtn" disabled style="display: none;">
-                            <i class="bi bi-arrow-right"></i> Proceed to SVM Training
-                        </button>
                     </div>
-                </div>
 
-                <!-- Step 6: SVM Classification -->
-                <div class="card mb-4" id="svm-section" style="display: none;">
-                    <div class="card-header">
-                        <h4><i class="bi bi-cpu"></i> Step 6: SVM Classification Training</h4>
-                    </div>
-                    <div class="card-body">
-                        <p>Train Support Vector Machine classifier on the processed data.</p>
-                        <div class="mb-3">
-                            <label class="form-label">Select SVM Kernel:</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="svmKernel" id="linear" value="linear" checked>
-                                <label class="form-check-label" for="linear">Linear SVM</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="svmKernel" id="polynomial" value="poly">
-                                <label class="form-check-label" for="polynomial">Polynomial SVM</label>
+                    <!-- Preprocessing Results -->
+                    <div id="preprocessingResults" class="accordion" style="display: none;">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#preprocessingSummary">
+                                    <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                                    Preprocessing Summary
+                                </button>
+                            </h2>
+                            <div id="preprocessingSummary" class="accordion-collapse collapse show">
+                                <div class="accordion-body">
+                                    <div id="preprocessingSummaryContent"></div>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn btn-primary" id="svmBtn" disabled>
-                            <i class="bi bi-play"></i> Train SVM Classifier
-                        </button>
-                        <div id="svmStatus" class="mt-3"></div>
-                        <div id="svmResults" class="mt-3"></div>
-                        <button class="btn btn-success mt-3" id="proceedToAccuracyBtn" disabled style="display: none;">
-                            <i class="bi bi-arrow-right"></i> Proceed to Evaluation
+                        
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#preprocessingComparison">
+                                    <i class="bi bi-eye me-2 text-primary"></i>
+                                    Before/After Comparison
+                                </button>
+                            </h2>
+                            <div id="preprocessingComparison" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div id="preprocessingComparisonContent"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button id="proceed-tfidf-btn" class="btn btn-success btn-lg" disabled style="display: none;">
+                            <i class="bi bi-calculator me-2"></i> Proceed to TF-IDF Analysis
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Step 7: Accuracy & Evaluation -->
-                <div class="card mb-4" id="accuracy-section" style="display: none;">
-                    <div class="card-header">
-                        <h4><i class="bi bi-graph-up"></i> Step 7: Model Evaluation</h4>
+        <!-- Step 3: TF-IDF Analysis -->
+        <div id="step3-content" class="workflow-step">
+            <div class="card shadow-lg mb-4 border-0" 
+                 style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4 text-white">
+                        <i class="bi bi-calculator me-3" style="font-size: 2rem; color: #ffd700"></i>
+                        TF-IDF Analysis
+                    </h2>
+                    <p class="text-center text-white-50 mb-4">
+                        Calculate TF-IDF weights to identify the most important words across all documents in your uploaded dataset
+                    </p>
+
+                    <!-- TF-IDF Progress -->
+                    <div id="tfidfProgress" class="mb-4" style="display: none;">
+                        <div class="alert alert-info">
+                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                            <span id="tfidfProgressText">Calculating TF-IDF weights...</span>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <p>Calculate accuracy metrics and generate performance visualizations.</p>
-                        <button class="btn btn-primary" id="accuracyBtn" disabled>
-                            <i class="bi bi-play"></i> Calculate Accuracy
+
+                    <!-- TF-IDF Results Container -->
+                    <div class="tfidf-results-container" style="display: none;">
+                        <!-- Top Words Visualization -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card shadow-lg border-0" 
+                                     style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                                    <div class="card-header bg-transparent border-0 text-center py-3">
+                                        <h4 class="mb-0 text-dark">
+                                            <i class="bi bi-bar-chart-fill me-2 text-warning" style="font-size: 1.5rem"></i>
+                                            Top Important Words Across Dataset
+                                        </h4>
+                                        <small class="text-muted">Words with highest TF-IDF scores</small>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <div class="chart-container" style="position: relative; height: 350px; width: 100%">
+                                            <canvas id="tfidfChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TF-IDF Table -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card shadow-lg border-0" 
+                                     style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                                    <div class="card-header bg-transparent border-0">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-6">
+                                                <h4 class="mb-0 text-dark">
+                                                    <i class="bi bi-table me-2 text-info" style="font-size: 1.5rem"></i>
+                                                    Complete TF-IDF Analysis
+                                                </h4>
+                                                <small class="text-muted">All words ranked by importance</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light border-0">
+                                                        <i class="bi bi-search text-primary"></i>
+                                                    </span>
+                                                    <input type="text" class="form-control border-0 bg-light" 
+                                                           id="tfidfSearch" placeholder="Search for specific words..." 
+                                                           style="box-shadow: none">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto">
+                                            <table class="table table-hover mb-0" id="tfidfTable">
+                                                <thead class="sticky-top" 
+                                                       style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                                                    <tr>
+                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
+                                                            <i class="bi bi-hash me-2"></i>Rank
+                                                        </th>
+                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
+                                                            <i class="bi bi-type me-2"></i>Word
+                                                        </th>
+                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
+                                                            <i class="bi bi-speedometer2 me-2"></i>TF-IDF Score
+                                                        </th>
+                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
+                                                            <i class="bi bi-graph-up me-2"></i>Importance
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tfidfTableBody" class="text-dark">
+                                                    <!-- TF-IDF values will be inserted here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <button id="proceed-classification-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
+                                style="border-radius: 50px; font-weight: 600; display: none;">
+                            <i class="bi bi-arrow-right-circle-fill me-3" style="font-size: 1.2rem"></i>
+                            Proceed to Classification
                         </button>
-                        <div id="accuracyStatus" class="mt-3"></div>
-                        <div id="accuracyResults" class="mt-3"></div>
-                        <div id="confusionMatrix" class="mt-3"></div>
-                        <div id="classificationReport" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Classification -->
+        <div id="step4-content" class="workflow-step">
+            <div class="card shadow-lg mb-4 border-0" 
+                 style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4 text-white">
+                        <i class="bi bi-robot me-3" style="font-size: 2rem; color: #ffd700"></i>
+                        Machine Learning Classification
+                    </h2>
+                    <p class="text-center text-white-50 mb-4">
+                        Train and evaluate SVM model on your uploaded dataset
+                    </p>
+
+                    <!-- Model Configuration -->
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-lg-8">
+                            <div class="card shadow-lg border-0" 
+                                 style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                                <div class="card-header bg-transparent border-0 text-center py-3">
+                                    <h4 class="mb-0 text-dark">
+                                        <i class="bi bi-gear-fill me-2 text-primary" style="font-size: 1.5rem"></i>
+                                        Model Configuration
+                                    </h4>
+                                    <small class="text-muted">Configure your machine learning parameters</small>
+                                </div>
+                                <div class="card-body p-4">
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <div class="config-option">
+                                                <label for="train-test-split" class="form-label fw-bold text-dark">
+                                                    <i class="bi bi-pie-chart-fill me-2 text-info"></i>Train-Test Split
+                                                </label>
+                                                <select class="form-select form-select-lg border-0 shadow-sm" 
+                                                        id="train-test-split" style="background: #f8f9fa">
+                                                    <option value="90">90% Training / 10% Testing</option>
+                                                    <option value="80" selected>80% Training / 20% Testing</option>
+                                                    <option value="70">70% Training / 30% Testing</option>
+                                                    <option value="60">60% Training / 40% Testing</option>
+                                                </select>
+                                                <small class="text-muted mt-1 d-block">
+                                                    Higher training % usually means better accuracy
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="config-option">
+                                                <label for="kernel-type" class="form-label fw-bold text-dark">
+                                                    <i class="bi bi-cpu-fill me-2 text-warning"></i>Kernel Type
+                                                </label>
+                                                <select class="form-select form-select-lg border-0 shadow-sm" 
+                                                        id="kernel-type" style="background: #f8f9fa">
+                                                    <option value="linear" selected>Linear SVM</option>
+                                                    <option value="poly">Polynomial SVM</option>
+                                                </select>
+                                                <small class="text-muted mt-1 d-block">
+                                                    Linear is faster, Polynomial is more complex
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center mt-4">
+                                        <button id="classify-papers-btn" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
+                                                style="border-radius: 50px; font-weight: 600">
+                                            <i class="bi bi-play-circle-fill me-3" style="font-size: 1.2rem"></i>
+                                            Start Classification
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Classification Progress -->
+                    <div id="classificationProgress" class="mb-4" style="display: none;">
+                        <div class="alert alert-info">
+                            <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                            <span id="classificationProgressText">Training model on dataset...</span>
+                        </div>
+                    </div>
+
+                    <!-- Classification Results -->
+                    <div id="classification-results" style="display: none;">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <!-- Main Result Card -->
+                                <div class="card shadow-lg border-0 mb-4" 
+                                     style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                                    <div class="card-body text-center p-5">
+                                        <div class="mb-4">
+                                            <i class="bi bi-trophy-fill" style="font-size: 4rem; color: #ffd700"></i>
+                                        </div>
+                                        <h3 class="mb-3 text-dark">
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            Model Training Complete
+                                        </h3>
+                                        <div class="d-flex justify-content-center align-items-center mb-4">
+                                            <div class="accuracy-display" id="resultAccuracy" 
+                                                 style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); 
+                                                        color: white; border-radius: 20px; padding: 15px 30px; 
+                                                        font-weight: 700; font-size: 1.3rem; 
+                                                        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); 
+                                                        display: inline-flex; align-items: center;">
+                                                <i class="bi bi-graph-up-arrow me-3" style="font-size: 1.5rem"></i>
+                                                Accuracy: 0%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Detailed Results -->
+                                <div class="card shadow-lg border-0" 
+                                     style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+                                    <div class="card-header bg-transparent border-0">
+                                        <h5 class="card-title mb-0 text-dark">
+                                            <i class="bi bi-clipboard-data me-2 text-info" style="font-size: 1.3rem"></i>
+                                            Classification Results
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="classificationResultsContent"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -236,11 +465,144 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script>
+        // Global variables
         let uploadedData = null;
         let preprocessedData = null;
-        let vectorizedData = null;
         let tfidfData = null;
-        let trainedModel = null;
+        let currentStep = 1;
+
+        // Function to update progress bar and indicators
+        function updateProgress(step) {
+            currentStep = step;
+            const progressBar = document.getElementById("workflow-progress-bar");
+            const indicators = document.querySelectorAll(".step-indicator");
+
+            // Update progress bar width
+            const progressWidth = (step / 4) * 100;
+            progressBar.style.width = progressWidth + "%";
+            progressBar.setAttribute("aria-valuenow", progressWidth);
+
+            // Update step indicators
+            indicators.forEach((indicator, index) => {
+                if (index < step) {
+                    indicator.classList.add("active");
+                    indicator.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                    indicator.style.color = "white";
+                    indicator.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.4)";
+                } else {
+                    indicator.classList.remove("active");
+                    indicator.style.background = "rgba(255,255,255,0.8)";
+                    indicator.style.color = "#666";
+                    indicator.style.boxShadow = "0 2px 10px rgba(0,0,0,0.1)";
+                }
+            });
+
+            // Show/hide workflow steps
+            document.querySelectorAll(".workflow-step").forEach((stepDiv, index) => {
+                if (index === step - 1) {
+                    stepDiv.classList.add("active");
+                } else {
+                    stepDiv.classList.remove("active");
+                }
+            });
+
+            // Update navigation buttons
+            updateNavigationButtons();
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        // Function to update navigation button states
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById("prev-step-btn");
+            const nextBtn = document.getElementById("next-step-btn");
+
+            // Previous button
+            if (currentStep <= 1) {
+                prevBtn.disabled = true;
+                prevBtn.style.opacity = "0.5";
+            } else {
+                prevBtn.disabled = false;
+                prevBtn.style.opacity = "1";
+            }
+
+            // Next button - enable based on step completion
+            if (currentStep >= 4) {
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = "0.5";
+                nextBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Completed';
+            } else {
+                // Check if current step is completed
+                let canProceed = false;
+                if (currentStep === 1 && uploadedData) {
+                    canProceed = true;
+                } else if (currentStep === 2 && preprocessedData) {
+                    canProceed = true;
+                } else if (currentStep === 3 && tfidfData) {
+                    canProceed = true;
+                }
+
+                nextBtn.disabled = !canProceed;
+                nextBtn.style.opacity = canProceed ? "1" : "0.5";
+                nextBtn.innerHTML = 'Next Step<i class="bi bi-arrow-right ms-2"></i>';
+            }
+        }
+
+        // Initialize navigation functionality
+        function initializeNavigation() {
+            // Clickable step indicators
+            document.querySelectorAll(".clickable-step").forEach((indicator) => {
+                indicator.addEventListener("click", function () {
+                    const targetStep = parseInt(this.dataset.step);
+                    if (targetStep <= getMaxAccessibleStep()) {
+                        updateProgress(targetStep);
+                    }
+                });
+
+                // Add hover effects
+                indicator.addEventListener("mouseenter", function () {
+                    if (!this.classList.contains("active")) {
+                        this.style.background = "rgba(102, 126, 234, 0.2)";
+                        this.style.transform = "translateY(-2px)";
+                    }
+                });
+
+                indicator.addEventListener("mouseleave", function () {
+                    if (!this.classList.contains("active")) {
+                        this.style.background = "rgba(255,255,255,0.8)";
+                        this.style.transform = "translateY(0)";
+                    }
+                });
+            });
+
+            // Previous button
+            document.getElementById("prev-step-btn").addEventListener("click", function () {
+                if (currentStep > 1) {
+                    updateProgress(currentStep - 1);
+                }
+            });
+
+            // Next button
+            document.getElementById("next-step-btn").addEventListener("click", function () {
+                if (currentStep < 4) {
+                    updateProgress(currentStep + 1);
+                }
+            });
+        }
+
+        // Get maximum accessible step based on completion
+        function getMaxAccessibleStep() {
+            if (tfidfData) {
+                return 4; // All steps accessible
+            } else if (preprocessedData) {
+                return 3; // Can access TF-IDF
+            } else if (uploadedData) {
+                return 2; // Can access preprocessing
+            } else {
+                return 1; // Only upload
+            }
+        }
 
         // File input handler
         document.getElementById('fileInput').addEventListener('change', function(e) {
@@ -249,75 +611,6 @@
                 document.getElementById('uploadBtn').disabled = false;
             }
         });
-        
-        // Test session button (for debugging)
-        document.getElementById('testSessionBtn').addEventListener('click', function() {
-            fetch('/api/test_session')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Test session result:', data);
-                    alert(`Session test: ${data.message}. Keys: ${data.session_keys.join(', ')}`);
-                    
-                    // Now check if session persists
-                    return fetch('/api/check_session');
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Check session result:', data);
-                    document.getElementById('uploadStatus').innerHTML = `
-                        <div class="alert alert-info">
-                            <strong>Session Debug Info:</strong><br>
-                            Keys: ${data.session_keys.join(', ')}<br>
-                            Has uploaded data: ${data.has_uploaded_data}<br>
-                            Has test data: ${data.has_test_data}<br>
-                            Permanent: ${data.permanent}<br>
-                            Size: ${data.session_size} chars
-                        </div>
-                    `;
-                })
-                .catch(error => {
-                    console.error('Session test error:', error);
-                    alert('Session test failed: ' + error.message);
-                });
-        });
-        
-        // Check session button (for debugging)
-        document.getElementById('checkSessionBtn').addEventListener('click', function() {
-            fetch('/api/check_session')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Check session result:', data);
-                    document.getElementById('preprocessStatus').innerHTML = `
-                        <div class="alert alert-info">
-                            <strong>Session Status:</strong><br>
-                            Keys: ${data.session_keys.join(', ')}<br>
-                            Has uploaded data: ${data.has_uploaded_data}<br>
-                            Has test data: ${data.has_test_data}<br>
-                            Permanent: ${data.permanent}<br>
-                            Size: ${data.session_size} chars
-                        </div>
-                    `;
-                })
-                .catch(error => {
-                    console.error('Session check error:', error);
-                    document.getElementById('preprocessStatus').innerHTML = `
-                        <div class="alert alert-danger">
-                            Session check failed: ${error.message}
-                        </div>
-                    `;
-                });
-        });
-
-        // Step completion tracking
-        function completeStep(stepId) {
-            const stepElement = document.getElementById(stepId);
-            stepElement.classList.add('completed');
-        }
-
-        function activateStep(stepId) {
-            const stepElement = document.getElementById(stepId);
-            stepElement.classList.add('active');
-        }
 
         // Upload handler
         document.getElementById('uploadBtn').addEventListener('click', function() {
@@ -337,26 +630,41 @@
             formData.append('file', file);
 
             // Send to backend API
-            fetch('/api/upload_data', {
+            fetch('/api/upload_excel', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
-                console.log('Upload response status:', response.status);
-                return response.json();
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(text => {
+                console.log('Raw response:', text);
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    console.error('Response text:', text);
+                    throw new Error('Invalid JSON response');
+                }
             })
             .then(data => {
-                console.log('Upload response data:', data);
                 if (data.success) {
                     uploadedData = data;
-                    statusDiv.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> File uploaded successfully!</div>';
+                    statusDiv.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> File uploaded and stored successfully!</div>';
                     
-                    completeStep('step-upload');
-                    activateStep('step-display');
-                    document.getElementById('display-section').style.display = 'block';
-                    document.getElementById('proceedToPreprocessBtn').disabled = false;
+                    // Clear any previous session data to ensure fresh start
+                    preprocessedData = null;
+                    tfidfData = null;
                     
-                    displayDatasetSummary();
+                    // Show dataset overview in step 2
+                    displayDatasetOverview();
+                    
+                    updateNavigationButtons();
                 } else {
                     statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
                 }
@@ -367,454 +675,476 @@
             });
         });
 
-        function displayDatasetSummary() {
-            const summaryDiv = document.getElementById('datasetSummary');
-            const tableDiv = document.getElementById('datasetTable');
-            
-            let summaryHTML = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5>Dataset Statistics</h5>
-                        <p><strong>Total Papers:</strong> ${uploadedData.total_papers}</p>
-                        <p><strong>Categories:</strong> ${uploadedData.categories}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Category Distribution</h5>
-                        <ul class="list-group">
-            `;
-            
-            for (const [category, count] of Object.entries(uploadedData.category_distribution)) {
-                summaryHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    ${category} <span class="badge bg-primary rounded-pill">${count}</span>
-                </li>`;
-            }
-            
-            summaryHTML += '</ul></div></div>';
-            summaryDiv.innerHTML = summaryHTML;
+        function displayDatasetOverview() {
+            // Update step 2 with dataset information
+            const statsDiv = document.getElementById('datasetStats');
+            const distributionDiv = document.getElementById('categoryDistribution');
+            const sampleDataBody = document.getElementById('sampleDataBody');
 
-            // Display first 10 rows in a table
-            let tableHTML = `
-                <h5>Sample Data (First 10 rows)</h5>
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Abstract</th>
-                                <th>Category</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            // Display statistics
+            statsDiv.innerHTML = `
+                <div class="alert alert-info mb-3">
+                    <i class="bi bi-info-circle me-2"></i><strong>Using Your Uploaded Data</strong><br>
+                    All subsequent steps will process your Excel file data.
+                </div>
+                <p><strong>Total Papers:</strong> ${uploadedData.total_papers}</p>
+                <p><strong>Categories:</strong> ${uploadedData.categories.join(', ')}</p>
+                <p><strong>Columns:</strong> ${uploadedData.columns.join(', ')}</p>
             `;
-            
-            uploadedData.sample_data.forEach(row => {
-                tableHTML += `
-                    <tr>
-                        <td>${row.Title || 'N/A'}</td>
-                        <td>${(row.Abstract || 'N/A').substring(0, 100)}...</td>
-                        <td><span class="badge bg-secondary">${row.Category || 'N/A'}</span></td>
-                    </tr>
+
+            // Display category distribution
+            let distributionHTML = '<ul class="list-group list-group-flush">';
+            for (const [category, count] of Object.entries(uploadedData.category_distribution)) {
+                distributionHTML += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${category} <span class="badge bg-primary rounded-pill">${count}</span>
+                    </li>`;
+            }
+            distributionHTML += '</ul>';
+            distributionDiv.innerHTML = distributionHTML;
+
+            // Display sample data
+            sampleDataBody.innerHTML = '';
+            uploadedData.sample_data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${(row.Title || 'N/A').substring(0, 100)}${row.Title && row.Title.length > 100 ? '...' : ''}</td>
+                    <td>${(row.Abstract || 'N/A').substring(0, 150)}${row.Abstract && row.Abstract.length > 150 ? '...' : ''}</td>
+                    <td><span class="badge bg-secondary">${row.Category || 'N/A'}</span></td>
                 `;
+                sampleDataBody.appendChild(tr);
             });
-            
-            tableHTML += '</tbody></table></div>';
-            tableDiv.innerHTML = tableHTML;
+
+            // Show overview sections
+            document.getElementById('datasetOverview').style.display = 'block';
+            document.getElementById('sampleDataContainer').style.display = 'block';
+            document.getElementById('preprocess-btn').disabled = false;
         }
 
-        // Proceed buttons
-        document.getElementById('proceedToPreprocessBtn').addEventListener('click', function() {
-            completeStep('step-display');
-            activateStep('step-preprocess');
-            document.getElementById('preprocess-section').style.display = 'block';
-            document.getElementById('preprocessBtn').disabled = false;
-        });
-
-        document.getElementById('proceedToVectorizeBtn').addEventListener('click', function() {
-            completeStep('step-preprocess');
-            activateStep('step-vectorize');
-            document.getElementById('vectorize-section').style.display = 'block';
-            document.getElementById('vectorizeBtn').disabled = false;
-        });
-
-        document.getElementById('proceedToTfidfBtn').addEventListener('click', function() {
-            completeStep('step-vectorize');
-            activateStep('step-tfidf');
-            document.getElementById('tfidf-section').style.display = 'block';
-            document.getElementById('tfidfBtn').disabled = false;
-        });
-
-        document.getElementById('proceedToSvmBtn').addEventListener('click', function() {
-            completeStep('step-tfidf');
-            activateStep('step-svm');
-            document.getElementById('svm-section').style.display = 'block';
-            document.getElementById('svmBtn').disabled = false;
-        });
-
-        document.getElementById('proceedToAccuracyBtn').addEventListener('click', function() {
-            completeStep('step-svm');
-            activateStep('step-accuracy');
-            document.getElementById('accuracy-section').style.display = 'block';
-            document.getElementById('accuracyBtn').disabled = false;
-        });
-
-        // Processing step handlers
-        document.getElementById('preprocessBtn').addEventListener('click', function() {
-            const statusDiv = document.getElementById('preprocessStatus');
-            const comparisonDiv = document.getElementById('preprocessComparison');
-            
-            // Check if data was uploaded first
-            console.log('uploadedData:', uploadedData);
+        // Preprocessing handler
+        document.getElementById('preprocess-btn').addEventListener('click', function() {
             if (!uploadedData) {
-                statusDiv.innerHTML = '<div class="alert alert-warning"><i class="bi bi-exclamation-triangle"></i> Please upload a file first before preprocessing.</div>';
+                alert('Please upload a file first');
                 return;
             }
-            
-            statusDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split"></i> Preprocessing data...</div>';
-            
-            fetch('/api/preprocess_data', {
+
+            // Show progress
+            document.getElementById('preprocessingProgress').style.display = 'block';
+            const progressBar = document.getElementById('preprocessingProgressBar');
+            const progressText = document.getElementById('progressText');
+            const logDiv = document.getElementById('preprocessingLog');
+
+            // Start preprocessing - uses uploaded Excel data from session
+            fetch('/api/preprocess_excel', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     preprocessedData = data;
-                    statusDiv.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Preprocessing completed!</div>';
                     
-                    // Show before/after comparison
-                    let comparisonHTML = `
-                        <h6>Before/After Preprocessing Comparison</h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Original Text</h6>
-                                <div class="border p-2 bg-light">${data.sample_original}</div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Preprocessed Text</h6>
-                                <div class="border p-2 bg-light">${data.sample_preprocessed}</div>
+                    // Update progress to complete
+                    progressBar.style.width = '100%';
+                    progressText.textContent = '100%';
+                    logDiv.innerHTML = '<i class="bi bi-check-circle-fill text-success me-2"></i>Preprocessing completed successfully using your uploaded data!';
+                    
+                    // Show results
+                    displayPreprocessingResults(data);
+                    
+                    document.getElementById('proceed-tfidf-btn').style.display = 'inline-block';
+                    document.getElementById('proceed-tfidf-btn').disabled = false;
+                    
+                    updateNavigationButtons();
+                } else {
+                    logDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                logDiv.innerHTML = `<div class="alert alert-danger">Network error: ${error.message}</div>`;
+            });
+        });
+
+        function displayPreprocessingResults(data) {
+            // Show summary
+            const summaryDiv = document.getElementById('preprocessingSummaryContent');
+            summaryDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-file-text me-2"></i>Processing Statistics</h6>
+                        <p><strong>Papers Processed:</strong> ${data.total_processed}</p>
+                        <p><strong>Average Tokens per Paper:</strong> ${data.avg_tokens}</p>
+                        <p><strong>Total Unique Words:</strong> ${data.total_unique_words}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-clock me-2"></i>Processing Steps</h6>
+                        <ul>
+                            <li>Text cleaning and normalization</li>
+                            <li>Tokenization</li>
+                            <li>Stop word removal</li>
+                            <li>Lemmatization</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            // Show comparison if available
+            if (data.sample_comparison) {
+                const comparisonDiv = document.getElementById('preprocessingComparisonContent');
+                comparisonDiv.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Original Text</h6>
+                            <div class="border p-3 bg-light rounded" style="max-height: 200px; overflow-y: auto;">
+                                ${data.sample_comparison.original}
                             </div>
                         </div>
-                        <p class="mt-2"><strong>Total papers processed:</strong> ${data.total_processed}</p>
-                    `;
-                    comparisonDiv.innerHTML = comparisonHTML;
-                    
-                    document.getElementById('proceedToVectorizeBtn').style.display = 'inline-block';
-                } else {
-                    statusDiv.innerHTML = `<div class="alert alert-danger">
-                        <i class="bi bi-exclamation-circle"></i> <strong>Error:</strong> ${data.error}
-                        <br><small>Make sure you have uploaded a file first. If you have uploaded a file, try uploading it again.</small>
-                    </div>`;
-                }
-            })
-            .catch(error => {
-                statusDiv.innerHTML = `<div class="alert alert-danger">
-                    <i class="bi bi-wifi-off"></i> <strong>Network error:</strong> ${error.message}
-                    <br><small>Please check your connection and try again.</small>
-                </div>`;
-            });
+                        <div class="col-md-6">
+                            <h6>Preprocessed Text</h6>
+                            <div class="border p-3 bg-light rounded" style="max-height: 200px; overflow-y: auto;">
+                                ${data.sample_comparison.preprocessed}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('preprocessingResults').style.display = 'block';
+        }
+
+        // TF-IDF button handler
+        document.getElementById('proceed-tfidf-btn').addEventListener('click', function() {
+            updateProgress(3);
+            setTimeout(calculateTFIDF, 500);
         });
 
-        document.getElementById('vectorizeBtn').addEventListener('click', function() {
-            const statusDiv = document.getElementById('vectorizeStatus');
-            const resultsDiv = document.getElementById('vectorizeResults');
-            
-            statusDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split"></i> Creating binary vectors...</div>';
-            
-            fetch('/api/vectorize_data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ method: 'binary' })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    vectorizedData = data;
-                    statusDiv.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Binary vectorization completed!</div>';
-                    
-                    let resultsHTML = `
-                        <h6>Binary Vectorization Results</h6>
-                        <p><strong>Method:</strong> ${data.vector_info.method}</p>
-                        <p><strong>Vocabulary Size:</strong> ${data.vector_info.vocabulary_size} unique words</p>
-                        <p><strong>Vector Length:</strong> ${data.vector_info.dimensions} bits per document</p>
-                        <p><strong>Papers Processed:</strong> ${data.papers_processed}</p>
-                        <div class="mt-3">
-                            <h6>Sample Binary Vectors:</h6>
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead>
-                                        <tr><th>Word</th><th>Binary Vector (first 20 bits)</th></tr>
-                                    </thead>
-                                    <tbody>
-                    `;
-                    
-                    for (const [word, vector] of Object.entries(data.sample_binary_vectors)) {
-                        resultsHTML += `<tr><td><strong>${word}</strong></td><td><code>${vector}</code></td></tr>`;
-                    }
-                    
-                    resultsHTML += '</tbody></table></div></div>';
-                    resultsDiv.innerHTML = resultsHTML;
-                    
-                    document.getElementById('proceedToTfidfBtn').style.display = 'inline-block';
-                } else {
-                    statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
-                }
-            })
-            .catch(error => {
-                statusDiv.innerHTML = `<div class="alert alert-danger">Network error: ${error.message}</div>`;
-            });
-        });
+        function calculateTFIDF() {
+            if (!preprocessedData) {
+                alert('Please complete preprocessing first');
+                return;
+            }
 
-        document.getElementById('tfidfBtn').addEventListener('click', function() {
-            const method = document.getElementById('tfidfMethod').value;
-            const statusDiv = document.getElementById('tfidfStatus');
-            const resultsDiv = document.getElementById('tfidfResults');
-            
-            statusDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split"></i> Calculating text representation...</div>';
-            
-            fetch('/api/calculate_text_representation', {
+            document.getElementById('tfidfProgress').style.display = 'block';
+            document.getElementById('tfidfProgressText').textContent = 'Calculating TF-IDF weights using your preprocessed data...';
+
+            fetch('/api/calculate_tfidf_excel', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ method: method })
+                headers: { 'Content-Type': 'application/json' }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     tfidfData = data;
-                    statusDiv.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Text representation calculation completed!</div>';
                     
-                    let resultsHTML = `
-                        <h6>Text Representation Results</h6>
-                        <p><strong>Method:</strong> ${data.method}</p>
-                        <p><strong>Feature Count:</strong> ${data.feature_count}</p>
-                        <p><strong>Top Features:</strong> ${data.top_features.join(', ')}</p>
-                        <p><strong>Papers Processed:</strong> ${data.papers_processed}</p>
-                    `;
-                    resultsDiv.innerHTML = resultsHTML;
+                    // Hide progress
+                    document.getElementById('tfidfProgress').style.display = 'none';
                     
-                    document.getElementById('proceedToSvmBtn').style.display = 'inline-block';
+                    // Show results
+                    displayTFIDFResults(data);
+                    
+                    document.getElementById('proceed-classification-btn').style.display = 'inline-block';
+                    updateNavigationButtons();
                 } else {
-                    statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                    document.getElementById('tfidfProgressText').textContent = `Error: ${data.error}`;
                 }
             })
             .catch(error => {
-                statusDiv.innerHTML = `<div class="alert alert-danger">Network error: ${error.message}</div>`;
+                document.getElementById('tfidfProgressText').textContent = `Network error: ${error.message}`;
             });
-        });
+        }
 
-        document.getElementById('svmBtn').addEventListener('click', function() {
-            const kernel = document.querySelector('input[name="svmKernel"]:checked').value;
-            const statusDiv = document.getElementById('svmStatus');
-            const resultsDiv = document.getElementById('svmResults');
-            
-            statusDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split"></i> Training SVM classifier...</div>';
-            
-            fetch('/api/train_svm', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+        function displayTFIDFResults(data) {
+            // Show results container
+            document.querySelector('.tfidf-results-container').style.display = 'block';
+
+            // Create TF-IDF table with enhanced styling
+            let tfidfTableHtml = "";
+            const maxScore = Math.max(...data.tfidf_values);
+
+            for (let i = 0; i < Math.min(data.tfidf_words.length, 100); i++) { // Show top 100
+                const score = data.tfidf_values[i];
+                const importance = score / maxScore;
+                let importanceLevel = "";
+                let importanceColor = "";
+                let rankBadge = "";
+
+                if (importance >= 0.8) {
+                    importanceLevel = "Very High";
+                    importanceColor = "text-danger";
+                    rankBadge = "badge bg-danger";
+                } else if (importance >= 0.6) {
+                    importanceLevel = "High";
+                    importanceColor = "text-warning";
+                    rankBadge = "badge bg-warning";
+                } else if (importance >= 0.4) {
+                    importanceLevel = "Medium";
+                    importanceColor = "text-info";
+                    rankBadge = "badge bg-info";
+                } else {
+                    importanceLevel = "Low";
+                    importanceColor = "text-secondary";
+                    rankBadge = "badge bg-secondary";
+                }
+
+                tfidfTableHtml += `
+                    <tr class="table-row-hover" style="transition: all 0.2s ease;">
+                        <td class="px-4 py-3">
+                            <span class="${rankBadge} rounded-pill px-2 py-1">${i + 1}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <strong class="text-primary">${data.tfidf_words[i]}</strong>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="badge bg-light text-dark px-3 py-2" style="font-family: monospace; font-size: 0.9rem;">
+                                ${score.toFixed(4)}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="progress me-2" style="width: 80px; height: 8px;">
+                                    <div class="progress-bar ${importanceColor.replace("text-", "bg-")}" 
+                                         style="width: ${(importance * 100).toFixed(0)}%"></div>
+                                </div>
+                                <small class="${importanceColor} fw-bold">${importanceLevel}</small>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            document.getElementById("tfidfTableBody").innerHTML = tfidfTableHtml;
+
+            // Create chart for top 10 words
+            const top10Words = data.tfidf_words.slice(0, 10);
+            const top10Values = data.tfidf_values.slice(0, 10);
+
+            const gradientColors = [
+                "rgba(255, 99, 132, 0.8)", "rgba(255, 159, 64, 0.8)", "rgba(255, 205, 86, 0.8)",
+                "rgba(75, 192, 192, 0.8)", "rgba(54, 162, 235, 0.8)", "rgba(153, 102, 255, 0.8)",
+                "rgba(201, 203, 207, 0.8)", "rgba(255, 99, 255, 0.8)", "rgba(99, 255, 132, 0.8)",
+                "rgba(132, 99, 255, 0.8)"
+            ];
+
+            const ctx = document.getElementById("tfidfChart").getContext("2d");
+
+            if (window.tfidfChartInstance) {
+                window.tfidfChartInstance.destroy();
+            }
+
+            window.tfidfChartInstance = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: top10Words.map(word => word.charAt(0).toUpperCase() + word.slice(1)),
+                    datasets: [{
+                        label: "TF-IDF Score",
+                        data: top10Values,
+                        backgroundColor: gradientColors.slice(0, top10Words.length),
+                        borderColor: gradientColors.slice(0, top10Words.length).map(color => color.replace("0.8", "1")),
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
                 },
-                body: JSON.stringify({ kernel: kernel })
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: "y",
+                    layout: { padding: { left: 10, right: 30, top: 10, bottom: 10 } },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: "rgba(0,0,0,0.1)", drawBorder: false },
+                            ticks: { color: "#666", font: { size: 12, weight: "500" } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: "#333", font: { size: 13, weight: "600" } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: "rgba(0,0,0,0.8)",
+                            titleColor: "#fff",
+                            bodyColor: "#fff",
+                            borderColor: "rgba(255,255,255,0.2)",
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                label: function (context) {
+                                    return `TF-IDF Score: ${context.parsed.x.toFixed(4)}`;
+                                }
+                            }
+                        }
+                    },
+                    animation: { duration: 1500, easing: "easeInOutQuart" }
+                }
+            });
+
+            // Add search functionality
+            document.getElementById("tfidfSearch").addEventListener("input", function () {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.getElementById("tfidfTableBody").getElementsByTagName("tr");
+
+                for (let i = 0; i < rows.length; i++) {
+                    const wordCell = rows[i].getElementsByTagName("td")[1];
+                    if (wordCell) {
+                        const word = wordCell.textContent || wordCell.innerText;
+                        if (word.toLowerCase().indexOf(searchTerm) > -1) {
+                            rows[i].style.display = "";
+                        } else {
+                            rows[i].style.display = "none";
+                        }
+                    }
+                }
+            });
+        }
+
+        // Classification button handler
+        document.getElementById('proceed-classification-btn').addEventListener('click', function() {
+            updateProgress(4);
+        });
+
+        document.getElementById('classify-papers-btn').addEventListener('click', function() {
+            if (!tfidfData) {
+                alert('Please complete TF-IDF analysis first');
+                return;
+            }
+
+            // Show progress
+            document.getElementById('classificationProgress').style.display = 'block';
+            document.getElementById('classificationProgressText').textContent = 'Training SVM model on your uploaded dataset...';
+            this.disabled = true;
+
+            const kernel = document.getElementById('kernel-type').value;
+            const trainSplit = document.getElementById('train-test-split').value;
+
+            fetch('/api/classify_excel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ kernel: kernel, train_split: trainSplit })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    trainedModel = data;
-                    statusDiv.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> SVM training completed!</div>';
+                    // Hide progress
+                    document.getElementById('classificationProgress').style.display = 'none';
                     
-                    let resultsHTML = `
-                        <h6>SVM Training Results</h6>
-                        <p><strong>Kernel:</strong> ${data.kernel}</p>
-                        <p><strong>Training Samples:</strong> ${data.training_samples}</p>
-                        <p><strong>Test Samples:</strong> ${data.test_samples}</p>
-                        <p><strong>Total Features:</strong> ${data.total_features}</p>
-                    `;
-                    resultsDiv.innerHTML = resultsHTML;
+                    // Show results
+                    displayClassificationResults(data);
                     
-                    document.getElementById('proceedToAccuracyBtn').style.display = 'inline-block';
+                    document.getElementById('classification-results').style.display = 'block';
                 } else {
-                    statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                    document.getElementById('classificationProgressText').textContent = `Error: ${data.error}`;
                 }
             })
             .catch(error => {
-                statusDiv.innerHTML = `<div class="alert alert-danger">Network error: ${error.message}</div>`;
+                document.getElementById('classificationProgressText').textContent = `Network error: ${error.message}`;
+            })
+            .finally(() => {
+                this.disabled = false;
             });
         });
 
-        document.getElementById('accuracyBtn').addEventListener('click', function() {
-            const statusDiv = document.getElementById('accuracyStatus');
-            const resultsDiv = document.getElementById('accuracyResults');
-            const matrixDiv = document.getElementById('confusionMatrix');
-            const reportDiv = document.getElementById('classificationReport');
-            
-            statusDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split"></i> Calculating accuracy metrics...</div>';
-            
-            fetch('/api/evaluate_model', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    completeStep('step-accuracy');
-                    statusDiv.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Evaluation completed!</div>';
-                    
-                    let resultsHTML = `
-                        <h6>Model Performance</h6>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="card bg-primary text-white">
-                                    <div class="card-body text-center">
-                                        <h4>${(data.accuracy * 100).toFixed(1)}%</h4>
-                                        <p>Overall Accuracy</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card bg-success text-white">
-                                    <div class="card-body text-center">
-                                        <h4>${data.precision}</h4>
-                                        <p>Precision</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card bg-info text-white">
-                                    <div class="card-body text-center">
-                                        <h4>${data.recall}</h4>
-                                        <p>Recall</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="card bg-warning text-white">
-                                    <div class="card-body text-center">
-                                        <h4>${data.f1_score}</h4>
-                                        <p>F1-Score</p>
-                                    </div>
-                                </div>
+        function displayClassificationResults(data) {
+            // Update accuracy display
+            document.getElementById('resultAccuracy').innerHTML = `
+                <i class="bi bi-graph-up-arrow me-3" style="font-size: 1.5rem"></i>
+                Accuracy: ${(data.accuracy * 100).toFixed(1)}%
+            `;
+
+            // Show detailed results
+            const resultsDiv = document.getElementById('classificationResultsContent');
+            resultsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <h4>${(data.accuracy * 100).toFixed(1)}%</h4>
+                                <p class="mb-0">Overall Accuracy</p>
                             </div>
                         </div>
-                        <p class="mt-3"><strong>Test Samples:</strong> ${data.test_samples}</p>
-                    `;
-                    resultsDiv.innerHTML = resultsHTML;
-                    
-                    // Generate confusion matrix visualization (simplified for now)
-                    matrixDiv.innerHTML = `
-                        <h6>Confusion Matrix</h6>
-                        <p>Confusion matrix data received with ${data.confusion_matrix.length} entries.</p>
-                    `;
-                    
-                    // Generate classification report
-                    let reportHTML = `
-                        <h6>Classification Report</h6>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Category</th>
-                                        <th>Precision</th>
-                                        <th>Recall</th>
-                                        <th>F1-Score</th>
-                                        <th>Support</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
-                    
-                    data.category_metrics.forEach(metric => {
-                        reportHTML += `
-                            <tr>
-                                <td>${metric.category}</td>
-                                <td>${metric.precision}</td>
-                                <td>${metric.recall}</td>
-                                <td>${metric.f1_score}</td>
-                                <td>${metric.support}</td>
-                            </tr>
-                        `;
-                    });
-                    
-                    reportHTML += '</tbody></table></div>';
-                    reportDiv.innerHTML = reportHTML;
-                } else {
-                    statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
-                }
-            })
-            .catch(error => {
-                statusDiv.innerHTML = `<div class="alert alert-danger">Network error: ${error.message}</div>`;
-            });
-        });
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center">
+                                <h4>${data.precision.toFixed(3)}</h4>
+                                <p class="mb-0">Precision</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body text-center">
+                                <h4>${data.recall.toFixed(3)}</h4>
+                                <p class="mb-0">Recall</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body text-center">
+                                <h4>${data.f1_score.toFixed(3)}</h4>
+                                <p class="mb-0">F1-Score</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h6><i class="bi bi-info-circle me-2"></i>Training Summary</h6>
+                    <p><strong>Total Papers:</strong> ${data.total_papers}</p>
+                    <p><strong>Training Papers:</strong> ${data.training_samples}</p>
+                    <p><strong>Test Papers:</strong> ${data.test_samples}</p>
+                    <p><strong>Features Used:</strong> ${data.total_features}</p>
+                    <p><strong>Kernel:</strong> ${data.kernel.toUpperCase()}</p>
+                </div>
+            `;
+        }
 
+        // Initialize the workflow
+        document.addEventListener("DOMContentLoaded", function () {
+            updateProgress(1);
+            initializeNavigation();
+        });
     </script>
 
     <style>
-        .progress-tracker {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 2rem 0;
-            position: relative;
+        .workflow-step {
+            display: none;
+        }
+        
+        .workflow-step.active {
+            display: block;
         }
 
-        .progress-tracker::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: #dee2e6;
-            z-index: 1;
+        .upload-area {
+            transition: all 0.3s ease;
         }
 
-        .step-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
+        .upload-area:hover {
+            background: #e9ecef !important;
+            border-color: #6c757d !important;
         }
 
-        .step-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #dee2e6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #6c757d;
-            margin-bottom: 0.5rem;
+        .step-indicator {
+            background: rgba(255,255,255,0.8);
+            color: #666;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .step-item.active .step-circle {
-            background-color: #0d6efd;
+        .step-indicator.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .step-item.completed .step-circle {
-            background-color: #198754;
-            color: white;
+        .table-row-hover:hover {
+            background-color: rgba(0,123,255,0.1);
         }
 
-        .step-label {
-            font-size: 0.875rem;
-            text-align: center;
-            color: #6c757d;
-        }
-
-        .step-item.active .step-label,
-        .step-item.completed .step-label {
-            color: #212529;
-            font-weight: 500;
+        .progress-bar {
+            transition: width 0.6s ease;
         }
     </style>
 </body>
