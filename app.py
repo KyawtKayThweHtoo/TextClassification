@@ -924,13 +924,40 @@ def load_existing_data():
         if not excel_files:
             return jsonify({'success': False, 'error': 'No Excel files found in data directory'}), 404
         
-        # Load and combine all Excel files
+        # Load and combine Excel files (limit for performance)
         all_dataframes = []
+        total_rows_loaded = 0
+        max_total_papers = 4000  # Limit total papers to prevent performance issues
+        
+        # Prioritize files: load newer/specific files first
+        def file_priority(filename):
+            # Higher priority for newer or specific files
+            if '500papers' in filename:
+                return 10  # Highest priority for the new file
+            elif any(x in filename for x in ['ai_data', 'se_data', 'networking']):
+                return 5   # Medium priority for common fields
+            else:
+                return 1   # Lower priority for others
+        
+        # Sort files by priority (highest first)
+        excel_files.sort(key=file_priority, reverse=True)
+        print(f"DEBUG: Processing files in priority order: {excel_files}")
+        
         for file in excel_files:
             file_path = os.path.join(data_dir, file)
             print(f"DEBUG: Loading {file_path}")
             try:
                 df = pd.read_excel(file_path, engine='openpyxl')
+                
+                # Limit papers per file if dataset is getting too large
+                if total_rows_loaded + len(df) > max_total_papers:
+                    remaining_space = max_total_papers - total_rows_loaded
+                    if remaining_space > 0:
+                        df = df.head(remaining_space)
+                        print(f"DEBUG: Limited {file} to {remaining_space} rows to stay within performance limits")
+                    else:
+                        print(f"DEBUG: Skipping {file} - already at maximum paper limit")
+                        continue
                 
                 # Clean data immediately after loading
                 if 'Title' in df.columns:
@@ -955,7 +982,8 @@ def load_existing_data():
                 # Validate required columns
                 if 'Title' in df.columns and 'Abstract' in df.columns and 'Category' in df.columns:
                     all_dataframes.append(df)
-                    print(f"DEBUG: Added {len(df)} rows from {file}")
+                    total_rows_loaded += len(df)
+                    print(f"DEBUG: Added {len(df)} rows from {file} (total: {total_rows_loaded})")
                 else:
                     print(f"DEBUG: Skipping {file} - missing required columns")
             except Exception as e:
@@ -983,6 +1011,21 @@ def load_existing_data():
                 combined_df[col] = combined_df[col].fillna('').astype(str)
             else:
                 combined_df[col] = combined_df[col].fillna(0)
+        
+        # Standardize category names
+        combined_df['Category'] = combined_df['Category'].replace({
+            'Networking & Cybersecurity': 'Networking and Cybersecurity',
+            'Distriution System': 'Distributed Systems',
+            'Distribution System': 'Distributed Systems',
+            'AI': 'Artificial Intelligence',
+            'Software Eng': 'Software Engineering',
+            'Image Proc': 'Image Processing',
+            'Networks': 'Networking and Cybersecurity'
+        })
+        
+        # Remove any empty or nan categories
+        combined_df = combined_df[combined_df['Category'].str.strip() != '']
+        combined_df = combined_df[combined_df['Category'] != 'nan']
         
         # Store in session
         json_data = combined_df.to_json(orient='records', force_ascii=False, date_format='iso')
@@ -1436,6 +1479,39 @@ def classify_excel():
         recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
         f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
         
+        # Generate confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+        
+        # Convert confusion matrix to list for JSON serialization
+        confusion_matrix_data = []
+        for i in range(len(label_encoder.classes_)):
+            for j in range(len(label_encoder.classes_)):
+                confusion_matrix_data.append({
+                    'actual': label_encoder.classes_[i],
+                    'predicted': label_encoder.classes_[j],
+                    'count': int(cm[i][j])
+                })
+        
+        # Calculate per-category metrics
+        category_metrics = []
+        # Get per-class metrics
+        precision_per_class = precision_score(y_test, y_pred, average=None, zero_division=0)
+        recall_per_class = recall_score(y_test, y_pred, average=None, zero_division=0)
+        f1_per_class = f1_score(y_test, y_pred, average=None, zero_division=0)
+        
+        # Get support (number of samples for each class)
+        unique_labels, counts = np.unique(y_test, return_counts=True)
+        
+        for i, category in enumerate(label_encoder.classes_):
+            support = counts[i] if i < len(counts) else 0
+            category_metrics.append({
+                'category': category,
+                'precision': float(precision_per_class[i]) if i < len(precision_per_class) else 0.0,
+                'recall': float(recall_per_class[i]) if i < len(recall_per_class) else 0.0,
+                'f1_score': float(f1_per_class[i]) if i < len(f1_per_class) else 0.0,
+                'support': int(support)
+            })
+        
         # Get feature count
         total_features = len(pipeline.named_steps['tfidf'].get_feature_names_out())
         
@@ -1449,7 +1525,10 @@ def classify_excel():
             'total_papers': len(valid_df),
             'training_samples': len(X_train),
             'test_samples': len(X_test),
-            'total_features': total_features
+            'total_features': total_features,
+            'confusion_matrix': confusion_matrix_data,
+            'category_metrics': category_metrics,
+            'categories': label_encoder.classes_.tolist()
         })
         
     except Exception as e:
