@@ -105,9 +105,16 @@ def load_excel_data(filename, category):
     if os.path.exists(file_path):
         print(f"File found: {file_path}")
         try:
-            df = pd.read_excel(file_path)
+            # Use openpyxl engine with encoding support
+            df = pd.read_excel(file_path, engine='openpyxl')
             print(f"Loaded {len(df)} rows from {filename}")
             print(f"Columns: {df.columns.tolist()}")
+            
+            # Clean data immediately after loading
+            if 'Title' in df.columns:
+                df['Title'] = df['Title'].fillna('').astype(str)
+            if 'Abstract' in df.columns:
+                df['Abstract'] = df['Abstract'].fillna('').astype(str)
             
             if 'Title' in df.columns and 'Abstract' in df.columns:
                 df['Category'] = category
@@ -116,10 +123,12 @@ def load_excel_data(filename, category):
                 print(f"Missing required columns in {filename}")
         except Exception as e:
             print(f"Error loading {filename}: {str(e)}")
+            # Return empty dataframe on error
+            return pd.DataFrame(columns=['Title', 'Abstract', 'Category'])
     else:
         print(f"File not found: {file_path}")
     
-    return pd.DataFrame()
+    return pd.DataFrame(columns=['Title', 'Abstract', 'Category'])
 
 # Print current directory for debugging
 print(f"Current working directory: {os.getcwd()}")
@@ -920,12 +929,38 @@ def load_existing_data():
         for file in excel_files:
             file_path = os.path.join(data_dir, file)
             print(f"DEBUG: Loading {file_path}")
-            df = pd.read_excel(file_path)
-            
-            # Validate required columns
-            if 'Title' in df.columns and 'Abstract' in df.columns and 'Category' in df.columns:
-                all_dataframes.append(df)
-                print(f"DEBUG: Added {len(df)} rows from {file}")
+            try:
+                df = pd.read_excel(file_path, engine='openpyxl')
+                
+                # Clean data immediately after loading
+                if 'Title' in df.columns:
+                    df['Title'] = df['Title'].fillna('').astype(str)
+                if 'Abstract' in df.columns:
+                    df['Abstract'] = df['Abstract'].fillna('').astype(str)
+                if 'Category' not in df.columns:
+                    # Add category based on filename
+                    if 'ai_data' in file:
+                        df['Category'] = 'Artificial Intelligence'
+                    elif 'distribution' in file:
+                        df['Category'] = 'Distributed Systems'
+                    elif 'image_processing' in file:
+                        df['Category'] = 'Image Processing'
+                    elif 'networking' in file:
+                        df['Category'] = 'Networking and Cybersecurity'
+                    elif 'se_data' in file:
+                        df['Category'] = 'Software Engineering'
+                    else:
+                        df['Category'] = 'Unknown'
+                
+                # Validate required columns
+                if 'Title' in df.columns and 'Abstract' in df.columns and 'Category' in df.columns:
+                    all_dataframes.append(df)
+                    print(f"DEBUG: Added {len(df)} rows from {file}")
+                else:
+                    print(f"DEBUG: Skipping {file} - missing required columns")
+            except Exception as e:
+                print(f"DEBUG: Error loading {file}: {str(e)}")
+                continue
         
         if not all_dataframes:
             return jsonify({'success': False, 'error': 'No valid Excel files with required columns found'}), 400
@@ -1107,8 +1142,83 @@ def preprocess_excel():
     print(f"DEBUG: Session permanent: {session.permanent}")
     print(f"DEBUG: Session ID exists: {hasattr(session, '_permanent')}")
     
+    # Try to use uploaded data first, then fall back to loading existing Excel files
     if 'excel_data' not in session:
-        return jsonify({'success': False, 'error': 'No Excel data found. Please upload a file first.'}), 400
+        # Load data from existing Excel files
+        try:
+            data_dir = os.path.join(os.path.dirname(__file__), 'data')
+            excel_files = [f for f in os.listdir(data_dir) if f.endswith('.xlsx') and not f.startswith('~$') and 'backup' not in f]
+            
+            if not excel_files:
+                return jsonify({'success': False, 'error': 'No Excel files found in data directory'}), 400
+            
+            # Load and combine all Excel files
+            all_dataframes = []
+            for file in excel_files:
+                file_path = os.path.join(data_dir, file)
+                print(f"DEBUG: Loading {file_path} for preprocessing")
+                try:
+                    df = pd.read_excel(file_path, engine='openpyxl')
+                    
+                    # Clean data immediately after loading
+                    if 'Title' in df.columns:
+                        df['Title'] = df['Title'].fillna('').astype(str)
+                    if 'Abstract' in df.columns:
+                        df['Abstract'] = df['Abstract'].fillna('').astype(str)
+                    if 'Category' not in df.columns:
+                        # Add category based on filename
+                        if 'ai_data' in file:
+                            df['Category'] = 'Artificial Intelligence'
+                        elif 'distribution' in file:
+                            df['Category'] = 'Distributed Systems'
+                        elif 'image_processing' in file:
+                            df['Category'] = 'Image Processing'
+                        elif 'networking' in file:
+                            df['Category'] = 'Networking and Cybersecurity'
+                        elif 'se_data' in file:
+                            df['Category'] = 'Software Engineering'
+                        else:
+                            df['Category'] = 'Unknown'
+                    
+                    # Validate required columns and add to list
+                    if 'Title' in df.columns and 'Abstract' in df.columns:
+                        all_dataframes.append(df)
+                        print(f"DEBUG: Added {len(df)} rows from {file}")
+                    else:
+                        print(f"DEBUG: Skipping {file} - missing required columns")
+                except Exception as e:
+                    print(f"DEBUG: Error loading {file}: {str(e)}")
+                    continue
+            
+            if not all_dataframes:
+                return jsonify({'success': False, 'error': 'No valid Excel files found or all files failed to load'}), 400
+            
+            # Combine all dataframes
+            df = pd.concat(all_dataframes, ignore_index=True)
+            print(f"DEBUG: Combined {len(df)} total rows from existing files")
+            
+            # Clean data - handle NaN values properly
+            df['Title'] = df['Title'].fillna('').astype(str)
+            df['Abstract'] = df['Abstract'].fillna('').astype(str)
+            df['Category'] = df['Category'].fillna('Unknown').astype(str)
+            
+            # Remove rows with empty title AND abstract
+            df = df[~((df['Title'] == '') & (df['Abstract'] == ''))]
+            
+            # Clean all other columns to prevent NaN issues
+            for col in df.columns:
+                if df[col].dtype == 'object':
+                    df[col] = df[col].fillna('').astype(str)
+                else:
+                    df[col] = df[col].fillna(0)
+            
+            # Store in session for consistency with upload workflow
+            json_data = df.to_json(orient='records', force_ascii=False, date_format='iso')
+            session['excel_data'] = json_data
+            print(f"DEBUG: Using existing Excel files - stored {len(df)} rows in session")
+            
+        except Exception as e:
+            return jsonify({'success': False, 'error': f'Failed to load existing data: {str(e)}'}), 500
     
     try:
         # Load data from session
