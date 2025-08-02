@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ML Pipeline - Research Paper Classification</title>
+    <title>Training Dataset - Research Paper Classification</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/static/style.css">
@@ -21,7 +21,7 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/workflow">Workflow</a></li>
-                    <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/ml_pipeline">ML Pipeline</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold text-uppercase active" href="/ml_pipeline">Training Dataset</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/explore">Explore Dataset</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/insights">Accuracy Chart</a></li>
                     <li class="nav-item"><a class="nav-link fw-bold text-uppercase" href="/corpus">Corpus & TF-IDF</a></li>
@@ -155,14 +155,14 @@
                             <i class="bi bi-info-circle me-2"></i>
                             <strong>Complete Dataset View:</strong> All papers from your uploaded file are shown below. You can scroll through the entire dataset.
                         </div>
-                        <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border: 2px solid #dee2e6; border-radius: 8px;">
-                            <table class="table table-striped table-hover mb-0" id="sampleDataTable">
-                                <thead class="table-dark sticky-top">
+                        <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border: 2px solid #dee2e6;">
+                            <table class="table table-bordered mb-0" id="sampleDataTable" style="font-size: 0.85rem;">
+                                <thead>
                                     <tr>
-                                        <th width="5%" class="text-center">#</th>
-                                        <th width="30%">Title</th>
-                                        <th width="50%">Abstract</th>
-                                        <th width="15%" class="text-center">Category</th>
+                                        <th width="5%" style="font-weight: normal;">No</th>
+                                        <th width="30%" style="font-weight: normal;">Title</th>
+                                        <th width="50%" style="font-weight: normal;">Abstract</th>
+                                        <th width="15%" style="font-weight: normal;">Category</th>
                                     </tr>
                                 </thead>
                                 <tbody id="sampleDataBody"></tbody>
@@ -213,132 +213,159 @@
                             </div>
                         </div>
                         
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#preprocessingComparison">
-                                    <i class="bi bi-eye me-2 text-primary"></i>
-                                    Before/After Comparison
-                                </button>
-                            </h2>
-                            <div id="preprocessingComparison" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <div id="preprocessingComparisonContent"></div>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Detailed Preprocessing Steps -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#detailedPreprocessingSteps">
-                                    <i class="bi bi-gear me-2 text-info"></i>
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-gear me-2"></i>
                                     Detailed Preprocessing Steps (All Papers)
-                                </button>
-                            </h2>
-                            <div id="detailedPreprocessingSteps" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <!-- Data Cleaning Step -->
-                                    <div class="accordion" id="preprocessingStepsAccordion">
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                                        data-bs-target="#dataCleaningResults">
-                                                    <i class="bi bi-check-circle-fill me-2 text-success"></i>
-                                                    Data Cleaning Results
-                                                </button>
-                                            </h2>
-                                            <div id="dataCleaningResults" class="accordion-collapse collapse">
-                                                <div class="accordion-body">
-                                                    <div id="dataCleaningContent"></div>
-                                                </div>
-                                            </div>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Preprocessing Step Buttons -->
+                                <div class="mb-4">
+                                    <div class="row g-2">
+                                        <!-- First Row -->
+                                        <div class="col-4">
+                                            <button class="btn btn-outline-primary btn-sm preprocessing-step-btn w-100" data-step="dataCleaning">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Data Cleaning
+                                            </button>
                                         </div>
+                                        <div class="col-4">
+                                            <button class="btn btn-outline-primary btn-sm preprocessing-step-btn w-100" data-step="tokenization">
+                                                <i class="bi bi-scissors me-1"></i>Tokenization
+                                            </button>
+                                        </div>
+                                        <div class="col-4">
+                                            <button class="btn btn-outline-primary btn-sm preprocessing-step-btn w-100" data-step="lowercasing">
+                                                <i class="bi bi-alphabet me-1"></i>Lowercasing
+                                            </button>
+                                        </div>
+                                        <!-- Second Row -->
+                                        <div class="col-4">
+                                            <button class="btn btn-outline-primary btn-sm preprocessing-step-btn w-100" data-step="stopWordRemoval">
+                                                <i class="bi bi-x-circle me-1"></i>Stop Word Removal
+                                            </button>
+                                        </div>
+                                        <div class="col-4">
+                                            <button class="btn btn-outline-primary btn-sm preprocessing-step-btn w-100" data-step="stemmingLemmatization">
+                                                <i class="bi bi-flower1 me-1"></i>Stemming and Lemmatization
+                                            </button>
+                                        </div>
+                                        <div class="col-4">
+                                            <button class="btn btn-outline-primary btn-sm preprocessing-step-btn w-100" data-step="finalPreprocessing">
+                                                <i class="bi bi-check-all me-1"></i>Final Preprocessing
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
 
-                                        <!-- Tokenization Step -->
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                                        data-bs-target="#tokenizationResults">
-                                                    <i class="bi bi-scissors me-2 text-primary"></i>
-                                                    Tokenization Results
-                                                </button>
-                                            </h2>
-                                            <div id="tokenizationResults" class="accordion-collapse collapse">
-                                                <div class="accordion-body">
-                                                    <div id="tokenizationContent"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <!-- Content Containers for Each Step -->
+                                <div id="dataCleaningTable" class="preprocessing-step-content" style="display: none;">
+                                    <h6>Data Cleaning Results</h6>
+                                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border: 2px solid #dee2e6;">
+                                        <table class="table table-bordered mb-0" style="font-size: 0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-weight: normal;">No</th>
+                                                    <th style="font-weight: normal;">Title</th>
+                                                    <th style="font-weight: normal;">Before Cleaning</th>
+                                                    <th style="font-weight: normal;">After Cleaning</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dataCleaningTableBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
-                                        <!-- Lowercasing Step -->
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                                        data-bs-target="#lowercasingResults">
-                                                    <i class="bi bi-alphabet me-2"></i>
-                                                    Lowercasing Results
-                                                </button>
-                                            </h2>
-                                            <div id="lowercasingResults" class="accordion-collapse collapse">
-                                                <div class="accordion-body">
-                                                    <div id="lowercasingContent"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div id="tokenizationTable" class="preprocessing-step-content" style="display: none;">
+                                    <h6>Tokenization Results</h6>
+                                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border: 2px solid #dee2e6;">
+                                        <table class="table table-bordered mb-0" style="font-size: 0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-weight: normal;">No</th>
+                                                    <th style="font-weight: normal;">Title</th>
+                                                    <th style="font-weight: normal;">Before Tokenization</th>
+                                                    <th style="font-weight: normal;">After Tokenization</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tokenizationTableBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
-                                        <!-- Stop Word Removal Step -->
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                                        data-bs-target="#stopWordResults">
-                                                    <i class="bi bi-x-circle me-2 text-danger"></i>
-                                                    Stop Word Removal Results
-                                                </button>
-                                            </h2>
-                                            <div id="stopWordResults" class="accordion-collapse collapse">
-                                                <div class="accordion-body">
-                                                    <div id="stopWordContent"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div id="lowercasingTable" class="preprocessing-step-content" style="display: none;">
+                                    <h6>Lowercasing Results</h6>
+                                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border: 2px solid #dee2e6;">
+                                        <table class="table table-bordered mb-0" style="font-size: 0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-weight: normal;">No</th>
+                                                    <th style="font-weight: normal;">Title</th>
+                                                    <th style="font-weight: normal;">Before Lowercasing</th>
+                                                    <th style="font-weight: normal;">After Lowercasing</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="lowercasingTableBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
-                                        <!-- Stemming and Lemmatization Step -->
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                                        data-bs-target="#stemmingResults">
-                                                    <i class="bi bi-flower1 me-2 text-success"></i>
-                                                    Stemming and Lemmatization Results
-                                                </button>
-                                            </h2>
-                                            <div id="stemmingResults" class="accordion-collapse collapse">
-                                                <div class="accordion-body">
-                                                    <div id="stemmingContent"></div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div id="stopWordRemovalTable" class="preprocessing-step-content" style="display: none;">
+                                    <h6>Stop Word Removal Results</h6>
+                                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border: 2px solid #dee2e6;">
+                                        <table class="table table-bordered mb-0" style="font-size: 0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-weight: normal;">No</th>
+                                                    <th style="font-weight: normal;">Title</th>
+                                                    <th style="font-weight: normal;">Before Stop Word Removal</th>
+                                                    <th style="font-weight: normal;">After Stop Word Removal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="stopWordRemovalTableBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div id="stemmingLemmatizationTable" class="preprocessing-step-content" style="display: none;">
+                                    <h6>Stemming and Lemmatization Results</h6>
+                                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border: 2px solid #dee2e6;">
+                                        <table class="table table-bordered mb-0" style="font-size: 0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-weight: normal;">No</th>
+                                                    <th style="font-weight: normal;">Title</th>
+                                                    <th style="font-weight: normal;">Before Stemming and Lemmatization</th>
+                                                    <th style="font-weight: normal;">After Stemming and Lemmatization</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="stemmingLemmatizationTableBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div id="finalPreprocessingTable" class="preprocessing-step-content" style="display: none;">
+                                    <h6>Final Preprocessing Results</h6>
+                                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border: 2px solid #dee2e6;">
+                                        <table class="table table-bordered mb-0" style="font-size: 0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-weight: normal;">No</th>
+                                                    <th style="font-weight: normal;">Title</th>
+                                                    <th style="font-weight: normal;">Original Text</th>
+                                                    <th style="font-weight: normal;">Final Preprocessed Text</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="finalPreprocessingTableBody"></tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Final Results Table -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#finalResultsTable">
-                                    <i class="bi bi-table me-2 text-warning"></i>
-                                    Complete Preprocessing Results Table
-                                </button>
-                            </h2>
-                            <div id="finalResultsTable" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    <div id="finalResultsContent"></div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="text-center mt-4">
@@ -462,32 +489,30 @@
                         <!-- Sample Vectors Table -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="card shadow-lg border-0" 
-                                     style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-                                    <div class="card-header bg-transparent border-0">
-                                        <h4 class="mb-0 text-dark">
-                                            <i class="bi bi-table me-2 text-warning" style="font-size: 1.5rem"></i>
+                                <div class="card border" style="background: white;">
+                                    <div class="card-header">
+                                        <h6 class="mb-0" style="font-size: 0.85rem; font-weight: normal;">
+                                            <i class="bi bi-table me-2"></i>
                                             Sample Word Vectors
-                                        </h4>
-                                        <small class="text-muted">First 10 words with their vector representations</small>
+                                        </h6>
+                                        <small style="font-size: 0.75rem;">First 10 words with their vector representations</small>
                                     </div>
                                     <div class="card-body p-0">
                                         <div class="table-responsive" style="max-height: 400px; overflow-y: auto">
-                                            <table class="table table-hover mb-0" id="word2vecTable">
-                                                <thead class="sticky-top" 
-                                                       style="background: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%); color: white;">
+                                            <table class="table table-bordered mb-0" id="word2vecTable" style="font-size: 0.85rem;">
+                                                <thead class="sticky-top" style="background: white;">
                                                     <tr>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                                            <i class="bi bi-hash me-2"></i>Index
+                                                        <th style="font-weight: normal; font-size: 0.85rem;">
+                                                            Index
                                                         </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                                            <i class="bi bi-type me-2"></i>Word
+                                                        <th style="font-weight: normal; font-size: 0.85rem;">
+                                                            Word
                                                         </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                                            <i class="bi bi-box me-2"></i>Vector (First 5 dimensions)
+                                                        <th style="font-weight: normal; font-size: 0.85rem;">
+                                                            Vector (First 5 dimensions)
                                                         </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                                            <i class="bi bi-speedometer2 me-2"></i>Magnitude
+                                                        <th style="font-weight: normal; font-size: 0.85rem;">
+                                                            Magnitude
                                                         </th>
                                                     </tr>
                                                 </thead>
@@ -560,46 +585,44 @@
                         <!-- TF-IDF Table -->
                         <div class="row">
                             <div class="col-12">
-                                <div class="card shadow-lg border-0" 
-                                     style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-                                    <div class="card-header bg-transparent border-0">
+                                <div class="card border" style="background: white;">
+                                    <div class="card-header">
                                         <div class="row align-items-center">
                                             <div class="col-md-6">
-                                                <h4 class="mb-0 text-dark">
-                                                    <i class="bi bi-table me-2 text-info" style="font-size: 1.5rem"></i>
+                                                <h6 class="mb-0" style="font-size: 0.85rem; font-weight: normal;">
+                                                    <i class="bi bi-table me-2"></i>
                                                     Complete TF-IDF Analysis
-                                                </h4>
-                                                <small class="text-muted">All words from all <span id="tfidf-papers-count">0</span> papers ranked by importance</small>
+                                                </h6>
+                                                <small style="font-size: 0.75rem;">All words from all <span id="tfidf-papers-count">0</span> papers ranked by importance</small>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-light border-0">
-                                                        <i class="bi bi-search text-primary"></i>
+                                                    <span class="input-group-text" style="font-size: 0.85rem;">
+                                                        <i class="bi bi-search"></i>
                                                     </span>
-                                                    <input type="text" class="form-control border-0 bg-light" 
+                                                    <input type="text" class="form-control" 
                                                            id="tfidfSearch" placeholder="Search for specific words..." 
-                                                           style="box-shadow: none">
+                                                           style="font-size: 0.85rem;">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="card-body p-0">
                                         <div class="table-responsive" style="max-height: 400px; overflow-y: auto">
-                                            <table class="table table-hover mb-0" id="tfidfTable">
-                                                <thead class="sticky-top" 
-                                                       style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                                            <table class="table table-bordered mb-0" id="tfidfTable" style="font-size: 0.85rem;">
+                                                <thead class="sticky-top" style="background: white;">
                                                     <tr>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                                            <i class="bi bi-hash me-2"></i>Rank
+                                                        <th style="font-weight: normal; font-size: 0.85rem;">
+                                                            Rank
                                                         </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                                            <i class="bi bi-type me-2"></i>Word
+                                                        <th style="font-weight: normal; font-size: 0.85rem;">
+                                                            Word
                                                         </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                                            <i class="bi bi-speedometer2 me-2"></i>TF-IDF Score
+                                                        <th style="font-weight: normal; font-size: 0.85rem;">
+                                                            TF-IDF Score
                                                         </th>
-                                                        <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                                            <i class="bi bi-graph-up me-2"></i>Importance
+                                                        <th style="font-weight: normal; font-size: 0.85rem;">
+                                                            Importance
                                                         </th>
                                                     </tr>
                                                 </thead>
@@ -617,32 +640,30 @@
                     <!-- TF-IDF Values Table for Each Paper -->
                     <div class="row mt-4" id="tfidf-papers-table" style="display: none;">
                         <div class="col-12">
-                            <div class="card shadow-lg border-0" 
-                                 style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-                                <div class="card-header bg-transparent border-0">
-                                    <h4 class="mb-0 text-dark">
-                                        <i class="bi bi-table me-2 text-success" style="font-size: 1.5rem"></i>
+                            <div class="card border" style="background: white;">
+                                <div class="card-header">
+                                    <h6 class="mb-0" style="font-size: 0.85rem; font-weight: normal;">
+                                        <i class="bi bi-table me-2"></i>
                                         TF-IDF Values for Each Paper
-                                    </h4>
-                                    <small class="text-muted">Top TF-IDF words and their values for each paper in your dataset</small>
+                                    </h6>
+                                    <small style="font-size: 0.75rem;">Top TF-IDF words and their values for each paper in your dataset</small>
                                 </div>
                                 <div class="card-body p-0">
                                     <div class="table-responsive" style="max-height: 600px; overflow-y: auto">
-                                        <table class="table table-hover mb-0" id="tfidfPapersTable">
-                                            <thead class="sticky-top" 
-                                                   style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                                        <table class="table table-bordered mb-0" id="tfidfPapersTable" style="font-size: 0.85rem;">
+                                            <thead class="sticky-top" style="background: white;">
                                                 <tr>
-                                                    <th class="border-0 py-3 px-4" style="font-weight: 600; width: 5%;">
-                                                        <i class="bi bi-hash me-2"></i>#
+                                                    <th style="font-weight: normal; font-size: 0.85rem; width: 5%;">
+                                                        #
                                                     </th>
-                                                    <th class="border-0 py-3 px-4" style="font-weight: 600; width: 25%;">
-                                                        <i class="bi bi-file-text me-2"></i>Paper Title
+                                                    <th style="font-weight: normal; font-size: 0.85rem; width: 25%;">
+                                                        Paper Title
                                                     </th>
-                                                    <th class="border-0 py-3 px-4" style="font-weight: 600; width: 15%;">
-                                                        <i class="bi bi-tag me-2"></i>Category
+                                                    <th style="font-weight: normal; font-size: 0.85rem; width: 15%;">
+                                                        Category
                                                     </th>
-                                                    <th class="border-0 py-3 px-4" style="font-weight: 600; width: 55%;">
-                                                        <i class="bi bi-graph-up me-2"></i>Top TF-IDF Words & Values
+                                                    <th style="font-weight: normal; font-size: 0.85rem; width: 55%;">
+                                                        Top TF-IDF Words & Values
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -1397,19 +1418,15 @@
             allData.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="text-center"><strong>${index + 1}</strong></td>
-                    <td style="max-width: 300px;">
-                        <div class="text-truncate" title="${row.Title || 'N/A'}">
-                            ${(row.Title || 'N/A').substring(0, 80)}${row.Title && row.Title.length > 80 ? '...' : ''}
-                        </div>
+                    <td style="font-weight: normal;">${index + 1}</td>
+                    <td style="word-wrap: break-word; font-weight: normal;">
+                        ${row.Title || 'N/A'}
                     </td>
-                    <td style="max-width: 400px;">
-                        <div class="text-truncate" title="${row.Abstract || 'N/A'}">
-                            ${(row.Abstract || 'N/A').substring(0, 120)}${row.Abstract && row.Abstract.length > 120 ? '...' : ''}
-                        </div>
+                    <td style="word-wrap: break-word; font-weight: normal;">
+                        ${row.Abstract || 'N/A'}
                     </td>
-                    <td class="text-center">
-                        <span class="badge bg-primary">${row.Category || 'N/A'}</span>
+                    <td style="font-weight: normal;">
+                        ${row.Category || 'N/A'}
                     </td>
                 `;
                 sampleDataBody.appendChild(tr);
@@ -1577,385 +1594,146 @@
                 </div>
             `;
 
-            // Show comparison if available
-            if (data.sample_comparison && data.detailed_steps && data.detailed_steps.length > 0) {
-                const sampleStep = data.detailed_steps[0]; // Get first paper's detailed steps
-                const comparisonDiv = document.getElementById('preprocessingComparisonContent');
-                comparisonDiv.innerHTML = `
-                    <div class="alert alert-info mb-4">
-                        <i class="bi bi-lightbulb me-2"></i>
-                        <strong>Detailed Preprocessing Example:</strong> Showing step-by-step transformation for Paper #${sampleStep.paper_index}: "${sampleStep.title}"
-                    </div>
-                    
-                    <!-- Step-by-step preprocessing visualization -->
-                    <div class="preprocessing-steps">
-                        <!-- Step 1: Original Text -->
-                        <div class="step-card mb-3">
-                            <div class="card border-primary">
-                                <div class="card-header bg-primary text-white">
-                                    <h6 class="mb-0"><i class="bi bi-file-text me-2"></i>Step 1: Original Text</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="border p-3 bg-light rounded" style="max-height: 120px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${sampleStep.original}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Step 2: Lowercasing -->
-                        <div class="step-card mb-3">
-                            <div class="card border-info">
-                                <div class="card-header bg-info text-white">
-                                    <h6 class="mb-0"><i class="bi bi-arrow-down me-2"></i>Step 2: Converted to Lowercase</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="border p-3 bg-light rounded" style="max-height: 120px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${sampleStep.lowercased}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Step 3: Data Cleaning -->
-                        <div class="step-card mb-3">
-                            <div class="card border-warning">
-                                <div class="card-header bg-warning text-dark">
-                                    <h6 class="mb-0"><i class="bi bi-scissors me-2"></i>Step 3: Cleaned (Removed Special Characters)</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="border p-3 bg-light rounded" style="max-height: 120px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${sampleStep.cleaned}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Step 4: Tokenization -->
-                        <div class="step-card mb-3">
-                            <div class="card border-success">
-                                <div class="card-header bg-success text-white">
-                                    <h6 class="mb-0"><i class="bi bi-grid me-2"></i>Step 4: Tokenized (Split into Words)</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2"><strong>Total tokens:</strong> ${sampleStep.tokens.length}</div>
-                                    <div class="border p-3 bg-light rounded" style="max-height: 300px; overflow-y: auto;">
-                                        ${sampleStep.tokens.map(token => 
-                                            `<span class="badge bg-light text-dark m-1">${token}</span>`
-                                        ).join('')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Step 5: Stop Word Removal -->
-                        <div class="step-card mb-3">
-                            <div class="card border-danger">
-                                <div class="card-header bg-danger text-white">
-                                    <h6 class="mb-0"><i class="bi bi-x-circle me-2"></i>Step 5: Stop Words Removed</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2"><strong>Remaining tokens:</strong> ${sampleStep.filtered_tokens.length}</div>
-                                    <div class="border p-3 bg-light rounded" style="max-height: 300px; overflow-y: auto;">
-                                        ${sampleStep.filtered_tokens.map(token => 
-                                            `<span class="badge bg-success text-white m-1">${token}</span>`
-                                        ).join('')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Step 6: Stemming/Lemmatization -->
-                        <div class="step-card mb-3">
-                            <div class="card border-secondary">
-                                <div class="card-header bg-secondary text-white">
-                                    <h6 class="mb-0"><i class="bi bi-flower1 me-2"></i>Step 6: Stemmed/Lemmatized</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-2"><strong>Final tokens:</strong> ${sampleStep.lemmatized_tokens.length}</div>
-                                    <div class="border p-3 bg-light rounded" style="max-height: 300px; overflow-y: auto;">
-                                        ${sampleStep.lemmatized_tokens.map(token => 
-                                            `<span class="badge bg-warning text-dark m-1">${token}</span>`
-                                        ).join('')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Final Result -->
-                        <div class="step-card">
-                            <div class="card border-primary">
-                                <div class="card-header bg-primary text-white">
-                                    <h6 class="mb-0"><i class="bi bi-check-circle me-2"></i>Final Preprocessed Text</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="border p-3 bg-success bg-opacity-10 rounded" style="max-height: 120px; overflow-y: auto; font-size: 0.9rem;">
-                                        <strong>${sampleStep.preprocessed_text}</strong>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
 
             document.getElementById('preprocessingResults').style.display = 'block';
         }
 
+        // Store preprocessing data for button handling
+        let globalDetailedSteps = [];
+        let globalProcessedItems = [];
+
         function displayDetailedPreprocessingSteps(detailedSteps, allProcessedItems) {
-            // Data Cleaning Results
-            let dataCleaningHtml = `<h6>Data Cleaning Results (All ${detailedSteps.length} Papers)</h6>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Complete Data Cleaning:</strong> Showing data cleaning results for all papers in your dataset.
-                </div>`;
-            detailedSteps.forEach(step => {
-                dataCleaningHtml += `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <strong>Paper ${step.paper_index}: ${step.title.substring(0, 60)}...</strong>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Original Text:</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.original}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>After Cleaning:</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.cleaned}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('dataCleaningContent').innerHTML = `
-                <div style="max-height: 600px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px;">
-                    ${dataCleaningHtml}
-                </div>
-            `;
+            // Store data globally for button handling
+            globalDetailedSteps = detailedSteps;
+            globalProcessedItems = allProcessedItems;
 
-            // Tokenization Results
-            let tokenizationHtml = `<h6>Tokenization Results (All ${detailedSteps.length} Papers)</h6>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Complete Tokenization:</strong> Showing tokenization results for all papers in your dataset.
-                </div>`;
-            detailedSteps.forEach(step => {
-                const tokensHtml = step.tokens.slice(0, 20).map(token => 
-                    `<span class="badge bg-light text-dark m-1">${token}</span>`
-                ).join('');
-                tokenizationHtml += `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <strong>Paper ${step.paper_index}: ${step.title.substring(0, 60)}...</strong>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Original Text:</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.cleaned.substring(0, 200)}...
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>After Tokenization:</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.tokens.join(' ')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('tokenizationContent').innerHTML = `
-                <div style="max-height: 600px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px;">
-                    ${tokenizationHtml}
-                </div>
-            `;
-
-            // Lowercasing Results
-            let lowercasingHtml = `<h6>Lowercasing Results (All ${detailedSteps.length} Papers)</h6>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Complete Lowercasing:</strong> Showing lowercasing results for all papers in your dataset.
-                </div>`;
-            detailedSteps.forEach(step => {
-                lowercasingHtml += `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <strong>Paper ${step.paper_index}: ${step.title.substring(0, 60)}...</strong>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Original Text:</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 80px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.original}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>After Lowercasing:</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 80px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.lowercased}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('lowercasingContent').innerHTML = `
-                <div style="max-height: 600px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px;">
-                    ${lowercasingHtml}
-                </div>
-            `;
-
-            // Stop Word Removal Results
-            let stopWordHtml = `<h6>Stop Word Removal Results (All ${detailedSteps.length} Papers)</h6>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Complete Stop Word Removal:</strong> Showing stop word removal results for all papers in your dataset.
-                </div>`;
-            detailedSteps.forEach(step => {
-                const filteredTokensHtml = step.filtered_tokens.slice(0, 15).map(token => 
-                    `<span class="badge bg-success text-white m-1">${token}</span>`
-                ).join('');
-                stopWordHtml += `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <strong>Paper ${step.paper_index}: ${step.title.substring(0, 60)}...</strong>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Original Text (with tokens):</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.tokens.join(' ')}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>After Stop Word Removal:</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.filtered_tokens.join(' ')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('stopWordContent').innerHTML = `
-                <div style="max-height: 600px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px;">
-                    ${stopWordHtml}
-                </div>
-            `;
-
-            // Stemming and Lemmatization Results
-            let stemmingHtml = `<h6>Stemming and Lemmatization Results (All ${detailedSteps.length} Papers)</h6>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Complete Stemming/Lemmatization:</strong> Showing stemming and lemmatization results for all papers in your dataset.
-                </div>`;
-            detailedSteps.forEach(step => {
-                const lemmatizedTokensHtml = step.lemmatized_tokens.slice(0, 15).map(token => 
-                    `<span class="badge bg-warning text-dark m-1">${token}</span>`
-                ).join('');
-                stemmingHtml += `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <strong>Paper ${step.paper_index}: ${step.title.substring(0, 60)}...</strong>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Original Text (after stop word removal):</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.filtered_tokens.join(' ')}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>After Stemming and Lemmatization:</h6>
-                                    <div class="border p-2 rounded bg-light" style="max-height: 100px; overflow-y: auto; font-size: 0.9rem;">
-                                        ${step.lemmatized_tokens.join(' ')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('stemmingContent').innerHTML = `
-                <div style="max-height: 600px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px;">
-                    ${stemmingHtml}
-                </div>
-            `;
-
-            // Final Results Table
-            let finalTableHtml = `
-                <h6>Complete Preprocessing Results (All ${allProcessedItems.length} Papers)</h6>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <strong>Complete Results:</strong> This table shows preprocessing results for all papers in your dataset.
-                </div>
-                <div class="table-responsive" style="max-height: 600px; overflow-y: auto; border: 2px solid #dee2e6; border-radius: 8px;">
-                    <table class="table table-striped table-hover mb-0">
-                        <thead class="table-dark sticky-top">
-                            <tr>
-                                <th width="5%">#</th>
-                                <th width="25%">Original Title</th>
-                                <th width="30%">Original Abstract</th>
-                                <th width="30%">Preprocessed Text</th>
-                                <th width="10%">Word Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            allProcessedItems.forEach((item, index) => {
-                const wordCount = item.preprocessed_text.split(' ').filter(w => w.length > 0).length;
-                finalTableHtml += `
-                    <tr>
-                        <td><strong>${index + 1}</strong></td>
-                        <td style="max-width: 200px;">
-                            <div class="text-truncate" title="${item.Title}">
-                                ${item.Title.substring(0, 60)}${item.Title.length > 60 ? '...' : ''}
-                            </div>
-                        </td>
-                        <td style="max-width: 250px;">
-                            <div class="text-truncate" title="${item.Abstract}">
-                                ${item.Abstract.substring(0, 80)}${item.Abstract.length > 80 ? '...' : ''}
-                            </div>
-                        </td>
-                        <td style="max-width: 250px;">
-                            <div class="text-truncate" title="${item.preprocessed_text}">
-                                <span class="text-success">${item.preprocessed_text.substring(0, 80)}${item.preprocessed_text.length > 80 ? '...' : ''}</span>
-                            </div>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge bg-primary">${wordCount}</span>
-                        </td>
-                    </tr>
-                `;
+            // Add event listeners for preprocessing step buttons
+            const stepButtons = document.querySelectorAll('.preprocessing-step-btn');
+            stepButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const step = this.getAttribute('data-step');
+                    
+                    // Hide all step contents
+                    document.querySelectorAll('.preprocessing-step-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // Remove active class from all buttons
+                    stepButtons.forEach(btn => btn.classList.remove('btn-primary'));
+                    stepButtons.forEach(btn => btn.classList.add('btn-outline-primary'));
+                    
+                    // Add active class to clicked button
+                    this.classList.remove('btn-outline-primary');
+                    this.classList.add('btn-primary');
+                    
+                    // Show selected step content
+                    const contentDiv = document.getElementById(step + 'Table');
+                    if (contentDiv) {
+                        contentDiv.style.display = 'block';
+                        populateStepTable(step, detailedSteps);
+                    }
+                });
             });
 
-            finalTableHtml += `
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3 text-muted small">
-                    <i class="bi bi-info-circle me-1"></i>
-                    Hover over truncated text to see the full content. All ${allProcessedItems.length} papers have been successfully preprocessed.
-                </div>
-            `;
+        }
 
-            document.getElementById('finalResultsContent').innerHTML = finalTableHtml;
+        function populateStepTable(step, detailedSteps) {
+            let tableBodyId = '';
+            let beforeColumn = '';
+            let afterColumn = '';
+            
+            switch(step) {
+                case 'dataCleaning':
+                    tableBodyId = 'dataCleaningTableBody';
+                    beforeColumn = 'original';
+                    afterColumn = 'cleaned';
+                    break;
+                case 'tokenization':
+                    tableBodyId = 'tokenizationTableBody';
+                    beforeColumn = 'cleaned';
+                    afterColumn = 'tokens';
+                    break;
+                case 'lowercasing':
+                    tableBodyId = 'lowercasingTableBody';
+                    beforeColumn = 'original';
+                    afterColumn = 'lowercased';
+                    break;
+                case 'stopWordRemoval':
+                    tableBodyId = 'stopWordRemovalTableBody';
+                    beforeColumn = 'tokens';
+                    afterColumn = 'filtered_tokens';
+                    break;
+                case 'stemmingLemmatization':
+                    tableBodyId = 'stemmingLemmatizationTableBody';
+                    beforeColumn = 'filtered_tokens';
+                    afterColumn = 'lemmatized_tokens';
+                    break;
+                case 'finalPreprocessing':
+                    populateFinalPreprocessingTable();
+                    return;
+            }
+            
+            const tableBody = document.getElementById(tableBodyId);
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = '';
+            
+            detailedSteps.forEach((stepData, index) => {
+                const tr = document.createElement('tr');
+                
+                let beforeText = stepData[beforeColumn];
+                let afterText = stepData[afterColumn];
+                
+                // Handle array data (tokens)
+                if (Array.isArray(beforeText)) {
+                    beforeText = beforeText.join(' ');
+                }
+                if (Array.isArray(afterText)) {
+                    afterText = afterText.join(' ');
+                }
+                
+                tr.innerHTML = `
+                    <td style="font-weight: normal;">${index + 1}</td>
+                    <td style="word-wrap: break-word; font-weight: normal;">
+                        ${stepData.title}
+                    </td>
+                    <td style="word-wrap: break-word; font-weight: normal;">
+                        ${beforeText}
+                    </td>
+                    <td style="word-wrap: break-word; font-weight: normal;">
+                        ${afterText}
+                    </td>
+                `;
+                
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function populateFinalPreprocessingTable() {
+            const tableBody = document.getElementById('finalPreprocessingTableBody');
+            if (!tableBody || !globalProcessedItems) return;
+            
+            tableBody.innerHTML = '';
+            
+            globalProcessedItems.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                const originalText = `${item.Title || ''} ${item.Abstract || ''}`;
+                
+                tr.innerHTML = `
+                    <td style="font-weight: normal;">${index + 1}</td>
+                    <td style="word-wrap: break-word; font-weight: normal;">
+                        ${item.Title || 'N/A'}
+                    </td>
+                    <td style="word-wrap: break-word; font-weight: normal;">
+                        ${originalText}
+                    </td>
+                    <td style="word-wrap: break-word; font-weight: normal;">
+                        ${item.preprocessed_text || 'N/A'}
+                    </td>
+                `;
+                
+                tableBody.appendChild(tr);
+            });
         }
 
         // Vectorization button handler
