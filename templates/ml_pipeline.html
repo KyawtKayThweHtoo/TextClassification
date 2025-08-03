@@ -454,10 +454,10 @@
                       >
                         <thead>
                           <tr>
-                            <th style="font-weight: normal">No</th>
-                            <th style="font-weight: normal">Title</th>
-                            <th style="font-weight: normal">Before Cleaning</th>
-                            <th style="font-weight: normal">After Cleaning</th>
+                            <th style="font-weight: bold">No</th>
+                            <th style="font-weight: bold">Title</th>
+                            <th style="font-weight: bold">Before Cleaning</th>
+                            <th style="font-weight: bold">After Cleaning</th>
                           </tr>
                         </thead>
                         <tbody id="dataCleaningTableBody"></tbody>
@@ -485,12 +485,12 @@
                       >
                         <thead>
                           <tr>
-                            <th style="font-weight: normal">No</th>
-                            <th style="font-weight: normal">Title</th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">No</th>
+                            <th style="font-weight: bold">Title</th>
+                            <th style="font-weight: bold">
                               Before Tokenization
                             </th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">
                               After Tokenization
                             </th>
                           </tr>
@@ -520,12 +520,12 @@
                       >
                         <thead>
                           <tr>
-                            <th style="font-weight: normal">No</th>
-                            <th style="font-weight: normal">Title</th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">No</th>
+                            <th style="font-weight: bold">Title</th>
+                            <th style="font-weight: bold">
                               Before Lowercasing
                             </th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">
                               After Lowercasing
                             </th>
                           </tr>
@@ -555,12 +555,12 @@
                       >
                         <thead>
                           <tr>
-                            <th style="font-weight: normal">No</th>
-                            <th style="font-weight: normal">Title</th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">No</th>
+                            <th style="font-weight: bold">Title</th>
+                            <th style="font-weight: bold">
                               Before Stop Word Removal
                             </th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">
                               After Stop Word Removal
                             </th>
                           </tr>
@@ -590,12 +590,12 @@
                       >
                         <thead>
                           <tr>
-                            <th style="font-weight: normal">No</th>
-                            <th style="font-weight: normal">Title</th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">No</th>
+                            <th style="font-weight: bold">Title</th>
+                            <th style="font-weight: bold">
                               Before Stemming and Lemmatization
                             </th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">
                               After Stemming and Lemmatization
                             </th>
                           </tr>
@@ -625,10 +625,10 @@
                       >
                         <thead>
                           <tr>
-                            <th style="font-weight: normal">No</th>
-                            <th style="font-weight: normal">Title</th>
-                            <th style="font-weight: normal">Original Text</th>
-                            <th style="font-weight: normal">
+                            <th style="font-weight: bold">No</th>
+                            <th style="font-weight: bold">Title</th>
+                            <th style="font-weight: bold">Original Text</th>
+                            <th style="font-weight: bold">
                               Final Preprocessed Text
                             </th>
                           </tr>
@@ -789,7 +789,7 @@
                         class="bi bi-vector-pen me-2"
                         style="font-size: 1.1rem"
                       ></i>
-                      Word2Vec Analysis
+                      Word2Vec
                     </button>
                     <button
                       id="proceed-tfidf-btn"
@@ -814,7 +814,7 @@
         </div>
       </div>
 
-      <!-- Step 4: Word2Vec Analysis -->
+      <!-- Step 4: Word2Vec -->
       <div id="step4-content" class="workflow-step">
         <div
           class="card shadow-lg mb-4 border-0"
@@ -861,7 +861,7 @@
                     <div class="card-header">
                       <h5
                         class="mb-0"
-                        style="font-size: 0.85rem; font-weight: normal"
+                      
                       >
                         <i class="bi bi-table me-2"></i>
                         Sample Word Vectors
@@ -880,22 +880,22 @@
                           <thead class="sticky-top" style="background: white">
                             <tr>
                               <th
-                                style="font-weight: normal; font-size: 0.85rem"
+                                style="font-weight: bold; font-size: 0.85rem"
                               >
                                 Index
                               </th>
                               <th
-                                style="font-weight: normal; font-size: 0.85rem"
+                                style="font-weight: bold; font-size: 0.85rem"
                               >
                                 Word
                               </th>
                               <th
-                                style="font-weight: normal; font-size: 0.85rem"
+                                style="font-weight: bold; font-size: 0.85rem"
                               >
                                 Vector (First 5 dimensions)
                               </th>
                               <th
-                                style="font-weight: normal; font-size: 0.85rem"
+                                style="font-weight: bold; font-size: 0.85rem"
                               >
                                 Magnitude
                               </th>
@@ -2708,18 +2708,18 @@
             tableHtml += `
                         <tr class="table-row-hover">
                             <td class="px-4 py-3 text-center">
-                                <span class="text-dark">${index + 1}</span>
+                                <span class="text-dark" style="font-size: 1rem;">${index + 1}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <strong class="text-dark">${item.word}</strong>
+                                <span class="text-dark" style="font-size: 1rem;">${item.word}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <code class="text-dark">[${item.vector.join(
+                                <span class="text-dark" style="font-size: 1rem;">[${item.vector.join(
                                   ", "
-                                )}...]</code>
+                                )}...]</span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="text-dark">${item.magnitude}</span>
+                                <span class="text-dark" style="font-size: 1rem;">${item.magnitude}</span>
                             </td>
                         </tr>
                     `;
@@ -3553,7 +3553,7 @@
               : "None",
           });
 
-          // Check if either TF-IDF or Word2Vec analysis was completed
+          // Check if either TF-IDF or Word2Vec was completed
           const hasTFIDF = !!tfidfData;
           const hasWord2Vec = !!word2vecData;
           const hasAnalysisData = hasTFIDF || hasWord2Vec;
