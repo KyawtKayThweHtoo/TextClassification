@@ -202,6 +202,43 @@ def preprocess_step():
         'preprocessed_text': preprocessed_text
     })
 
+@app.route('/vectorize_single', methods=['POST'])
+def vectorize_single():
+    """Vectorize a single preprocessed text for the workflow"""
+    try:
+        preprocessed_text = request.form.get('preprocessed_text', '')
+        
+        if not preprocessed_text:
+            return jsonify({'success': False, 'error': 'No preprocessed text provided'}), 400
+        
+        # Split text into words
+        words = preprocessed_text.split()
+        
+        # Create binary vectors for each word (simplified vectorization)
+        vectors = []
+        for i, word in enumerate(words):
+            # Create a simple binary vector representation
+            vector = [0] * 20  # 20-dimensional vector
+            # Use hash of word to determine which positions to set to 1
+            # Set multiple positions for better representation
+            word_hash = hash(word)
+            for j in range(3):  # Set 3 positions to 1
+                pos = (word_hash + j * 7) % 20  # Use different offsets
+                vector[pos] = 1
+            vectors.append(vector)
+        
+        # Return vectorization results
+        return jsonify({
+            'success': True,
+            'words': words,
+            'vectors': vectors,
+            'total_words': len(words)
+        })
+        
+    except Exception as e:
+        print(f"Vectorization error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/calculate_tfidf', methods=['POST'])
 def calculate_tfidf():
     # Get the preprocessed text from the request
@@ -1249,6 +1286,9 @@ def preprocess_excel():
     print(f"DEBUG: Session permanent: {session.permanent}")
     print(f"DEBUG: Session ID exists: {hasattr(session, '_permanent')}")
     
+    # Add maximum row limit to prevent memory issues
+    MAX_ROWS = 10000
+    
     # Try to use uploaded data first, then fall back to loading existing Excel files
     if 'excel_data' not in session:
         # Load data from existing Excel files
@@ -1304,6 +1344,11 @@ def preprocess_excel():
             df = pd.concat(all_dataframes, ignore_index=True)
             print(f"DEBUG: Combined {len(df)} total rows from existing files")
             
+            # Limit dataset size to prevent memory issues
+            if len(df) > MAX_ROWS:
+                print(f"DEBUG: Dataset too large ({len(df)} rows). Limiting to {MAX_ROWS} rows.")
+                df = df.head(MAX_ROWS)
+            
             # Clean data - handle NaN values properly
             df['Title'] = df['Title'].fillna('').astype(str)
             df['Abstract'] = df['Abstract'].fillna('').astype(str)
@@ -1320,7 +1365,9 @@ def preprocess_excel():
                     df[col] = df[col].fillna(0)
             
             # Store in session for consistency with upload workflow
-            json_data = df.to_json(orient='records', force_ascii=False, date_format='iso')
+            # Only store essential columns to reduce memory usage
+            essential_df = df[['Title', 'Abstract', 'Category']].copy()
+            json_data = essential_df.to_json(orient='records', force_ascii=False, date_format='iso')
             session['excel_data'] = json_data
             print(f"DEBUG: Using existing Excel files - stored {len(df)} rows in session")
             
@@ -1335,6 +1382,11 @@ def preprocess_excel():
         
         df = pd.read_json(session_data)
         print(f"DEBUG: Loaded {len(df)} rows from session")
+        
+        # Limit dataset size if too large
+        if len(df) > MAX_ROWS:
+            print(f"DEBUG: Session dataset too large ({len(df)} rows). Limiting to {MAX_ROWS} rows.")
+            df = df.head(MAX_ROWS)
         
         # Ensure columns are strings and handle NaN
         df['Title'] = df['Title'].fillna('').astype(str)
@@ -1365,8 +1417,9 @@ def preprocess_excel():
         # Clean dataframe before storing to prevent NaN issues
         df = df.fillna('')
         
-        # Store preprocessed data with proper NaN handling
-        session['excel_preprocessed'] = df.to_json(orient='records', force_ascii=False, date_format='iso')
+        # Store preprocessed data with proper NaN handling - only essential columns
+        preprocessed_df = df[['Title', 'Abstract', 'Category', 'combined_text', 'preprocessed_text']].copy()
+        session['excel_preprocessed'] = preprocessed_df.to_json(orient='records', force_ascii=False, date_format='iso')
         
         # Calculate statistics
         avg_tokens = total_tokens / len(df) if len(df) > 0 else 0
@@ -1381,16 +1434,35 @@ def preprocess_excel():
                 'preprocessed': preprocessed_text
             }
         
-        return jsonify({
+        # Create response data
+        response_data = {
             'success': True,
             'total_processed': len(df),
             'avg_tokens': round(avg_tokens, 1),
             'total_unique_words': len(all_words),
             'sample_comparison': sample_comparison
-        })
+        }
         
+        # Add warning if dataset was limited
+        if len(df) == MAX_ROWS:
+            response_data['warning'] = f'Dataset was limited to {MAX_ROWS} rows for performance reasons'
+        
+        return jsonify(response_data)
+        
+    except MemoryError:
+        print("DEBUG: Memory error - dataset too large")
+        return jsonify({
+            'success': False, 
+            'error': 'Dataset too large to process. Please use a smaller dataset or contact support.'
+        }), 413  # Request Entity Too Large
     except Exception as e:
         print(f"Preprocessing error: {str(e)}")  # Debug logging
+        error_msg = str(e)
+        if 'too large' in error_msg.lower() or 'memory' in error_msg.lower():
+            return jsonify({
+                'success': False, 
+                'error': 'Dataset too large to process. Please try with a smaller file.'
+            }), 413
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/calculate_tfidf_excel', methods=['POST'])

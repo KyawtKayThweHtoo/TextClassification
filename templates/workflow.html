@@ -238,19 +238,19 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
                                                 data-bs-target="#dataCleaningResults">
                                             <i class="bi bi-check-circle-fill me-2 text-success"></i>
-                                            Data Cleaning Result
+                                            Data Cleaning Results
                                         </button>
                                     </h2>
                                     <div id="dataCleaningResults" class="accordion-collapse collapse">
                                         <div class="accordion-body">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <h6>Original Text:</h6>
-                                                    <div class="border p-2 rounded mb-3" id="originalText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <h6>Before Data Cleaning:</h6>
+                                                    <div class="border p-2 rounded mb-3 bg-light" id="originalText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <h6>After Cleaning:</h6>
-                                                    <div class="border p-2 rounded" id="cleanedText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <h6>After Data Cleaning:</h6>
+                                                    <div class="border p-2 rounded bg-light" id="cleanedText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -263,19 +263,19 @@
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
                                                 data-bs-target="#tokenizationResults">
                                             <i class="bi bi-scissors me-2 text-primary"></i>
-                                            Tokenization Result
+                                            Tokenization Results
                                         </button>
                                     </h2>
                                     <div id="tokenizationResults" class="accordion-collapse collapse">
                                         <div class="accordion-body">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <h6>Original Text:</h6>
-                                                    <div class="border p-2 rounded mb-3" id="beforeTokenizationText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <h6>Before Tokenization:</h6>
+                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeTokenizationText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Tokenization:</h6>
-                                                    <div class="border p-2 rounded" id="tokenizedText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <div class="border p-2 rounded bg-light" id="tokenizedText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -295,12 +295,12 @@
                                         <div class="accordion-body">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <h6>Original Text:</h6>
-                                                    <div class="border p-2 rounded mb-3" id="beforeLowercaseText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <h6>Before Lowercasing:</h6>
+                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeLowercaseText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Lowercasing:</h6>
-                                                    <div class="border p-2 rounded" id="lowercasedText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <div class="border p-2 rounded bg-light" id="lowercasedText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -321,11 +321,11 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Before Stop Word Removal:</h6>
-                                                    <div class="border p-2 rounded mb-3" id="beforeStopWordText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeStopWordText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Stop Word Removal:</h6>
-                                                    <div class="border p-2 rounded" id="filteredText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <div class="border p-2 rounded bg-light" id="filteredText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -346,11 +346,36 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Before Stemming and Lemmatization:</h6>
-                                                    <div class="border p-2 rounded mb-3" id="beforeStemmingText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeStemmingText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Stemming and Lemmatization:</h6>
-                                                    <div class="border p-2 rounded" id="lemmatizedText" style="max-height: 200px; overflow-y: auto;"></div>
+                                                    <div class="border p-2 rounded bg-light" id="lemmatizedText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Final Preprocessing Step -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                data-bs-target="#finalPreprocessingResults">
+                                            <i class="bi bi-check2-all me-2 text-primary"></i>
+                                            Final Preprocessing Results
+                                        </button>
+                                    </h2>
+                                    <div id="finalPreprocessingResults" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>Before Preprocessing:</h6>
+                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeFinalPreprocessingText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h6>After Preprocessing:</h6>
+                                                    <div class="border p-2 rounded bg-light" id="afterFinalPreprocessingText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -451,7 +476,7 @@
                         <div class="mb-3">
                           <i class="bi bi-calculator" style="font-size: 2.5rem; color: #ffd700;"></i>
                         </div>
-                        <h5 class="text-white mb-3">TF-IDF Analysis</h5>
+                        <h5 class="text-white mb-3">TF-IDF</h5>
                         <p class="text-white-50 mb-4 small">Calculate Term Frequency-Inverse Document Frequency to identify the most important words across documents</p>
                         <button id="proceed-tfidf-btn" class="btn btn-outline-light btn-lg px-4 py-2 shadow-lg" 
                                 style="border-radius: 50px; font-weight: 600; display: none; width: 100%;" disabled>
@@ -560,7 +585,7 @@
         </div>
       </div>
 
-      <!-- Step 4: TF-IDF Analysis -->
+      <!-- Step 4: TF-IDF -->
       <div id="step4-content" class="workflow-step">
         <div
           class="card shadow-lg mb-4 border-0"
@@ -575,7 +600,7 @@
                 class="bi bi-calculator me-3"
                 style="font-size: 2rem; color: #ffd700"
               ></i>
-              TF-IDF Vectorization Analysis
+              TF-IDF Vectorization 
             </h2>
             <p class="text-center text-white-50 mb-4">
               Calculate TF-IDF weights to identify the most important words across all documents in your uploaded dataset
@@ -609,7 +634,7 @@
                           class="bi bi-bar-chart-fill me-2 text-warning"
                           style="font-size: 1.5rem"
                         ></i>
-                        TF-IDF Analysis - Top Important Words
+                        TF-IDF - Top Important Words
                       </h4>
                       <small class="text-muted"
                         >Words with highest TF-IDF scores in your text</small
@@ -640,13 +665,10 @@
                     <div class="card-header bg-transparent border-0">
                       <div class="row align-items-center">
                         <div class="col-md-6">
-                          <h4 class="mb-0 text-dark">
-                            <i
-                              class="bi bi-table me-2 text-info"
-                              style="font-size: 1.5rem"
-                            ></i>
-                            Complete TF-IDF Analysis
-                          </h4>
+                          <h5 class="mb-0">
+                      <i class="bi bi-table me-2"></i>
+                      Complete TF-IDF
+                    </h5>
                           <small class="text-muted">All words from all <span id="tfidf-papers-count">0</span> papers ranked by importance</small
                           >
                         </div>
@@ -1120,6 +1142,10 @@
             const lemmatizedTokensText = result.preprocessing_steps.lemmatized_tokens.join(" ");
             document.getElementById("lemmatizedText").textContent = lemmatizedTokensText;
 
+            // 6. Final Preprocessing - Complete Before/After
+            document.getElementById("beforeFinalPreprocessingText").textContent = result.preprocessing_steps.original;
+            document.getElementById("afterFinalPreprocessingText").textContent = globalPreprocessedText;
+
             // Show preprocessing results
             document.getElementById("preprocessingResults").style.display = "block";
             
@@ -1186,28 +1212,31 @@
           
           const result = await response.json();
           
-          // Split preprocessed text into words and create binary vectors
-          const words = globalPreprocessedText.split(' ').filter(word => word.length > 0);
-          let tableHtml = '';
-          
-          words.forEach((word, index) => {
-            // Generate binary vector for each word (mock data for now)
-            const binaryVector = Array.from({length: 20}, () => Math.round(Math.random())).join(', ');
+          // Use the actual vectorization results from the server
+          if (result.success && result.words && result.vectors) {
+            let tableHtml = '';
             
-            tableHtml += `
-              <tr class="table-row-hover">
-                <td class="px-4 py-3 text-center">
-                  <span class="badge bg-success rounded-pill">${index + 1}</span>
-                </td>
-                <td class="px-4 py-3">
-                  <span class="text-dark fw-bold">${word}</span>
-                </td>
-                <td class="px-4 py-3">
-                  <code class="text-dark" style="font-size: 0.85rem;">[${binaryVector}...]</code>
-                </td>
-              </tr>
-            `;
-          });
+            result.words.forEach((word, index) => {
+              // Use the actual binary vector from the server
+              const binaryVector = result.vectors[index].join(', ');
+              
+              tableHtml += `
+                <tr class="table-row-hover">
+                  <td class="px-4 py-3 text-center">
+                    <span class="badge bg-success rounded-pill">${index + 1}</span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="text-dark fw-bold">${word}</span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <code class="text-dark" style="font-size: 0.85rem;">[${binaryVector}]</code>
+                  </td>
+                </tr>
+              `;
+            });
+          } else {
+            throw new Error('Invalid response from vectorization endpoint');
+          }
           
           document.getElementById('vectorizationTableBody').innerHTML = tableHtml;
 

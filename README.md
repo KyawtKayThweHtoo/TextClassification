@@ -120,7 +120,7 @@ This Flask-based web application automatically categorizes academic papers into 
 - **Dual Kernel Support**: Linear and Polynomial SVM kernels
 - **Performance Metrics**: Comprehensive accuracy, precision, recall, and F1-score analysis
 - **Dataset Exploration**: Browse and analyze papers by research field
-- **TF-IDF Analysis**: Examine feature importance and word weights
+- **TF-IDF**: Examine feature importance and word weights
 
 ### Web Interface Pages
 - **Home**: Main classification interface
@@ -173,7 +173,7 @@ text_mining_project-V2/
 │   ├── home.html                   # Main interface
 │   ├── workflow.html               # ML pipeline demo
 │   ├── insights.html               # Performance metrics
-│   ├── corpus.html                 # TF-IDF analysis
+│   ├── corpus.html                 # TF-IDF 
 │   └── explore_dataset.html        # Dataset browser
 └── data/                           # Excel datasets (5 categories)
 ```

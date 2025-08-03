@@ -397,7 +397,7 @@
                                         <div class="mb-2">
                                             <i class="bi bi-calculator" style="font-size: 2rem; color: #ffd700;"></i>
                                         </div>
-                                        <h6 class="text-white mb-2">TF-IDF Analysis</h6>
+                                        <h6 class="text-white mb-2">TF-IDF</h6>
                                         <small class="text-white-50">Show TF-IDF values</small>
                                     </div>
                                 </div>
@@ -481,7 +481,7 @@
                     <div class="card-body p-4">
                         <h4 class="mb-3 text-white text-center">
                             <i class="bi bi-calculator me-2" style="color: #ffd700; font-size: 1.5rem;"></i>
-                            TF-IDF Analysis
+                            TF-IDF 
                         </h4>
                         <p class="text-center text-white-50 mb-4">TF-IDF values calculated automatically to show word importance</p>
                         
@@ -491,7 +491,7 @@
                                 <div class="card-header bg-transparent border-0 text-center py-3">
                                     <h5 class="mb-0 text-dark">
                                         <i class="bi bi-table me-2 text-info" style="font-size: 1.3rem;"></i>
-                                        TF-IDF Analysis Results
+                                        TF-IDF Results
                                     </h5>
                                     <small class="text-muted">Words ranked by importance in your document</small>
                                 </div>
@@ -718,10 +718,10 @@
                     categorizeBtn.innerHTML = '<i class="bi bi-play-circle-fill me-2" style="font-size: 1.1rem;"></i> Start Classification';
                 }
                 
-                console.log('TF-IDF analysis completed successfully');
+                console.log('TF-IDF completed successfully');
             } catch (error) {
                 console.error('Error in showTFIDFAnalysis:', error);
-                alert('Error showing TF-IDF analysis: ' + error.message);
+                alert('Error showing TF-IDF: ' + error.message);
             }
         };
         
