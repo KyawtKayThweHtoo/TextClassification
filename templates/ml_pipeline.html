@@ -2464,18 +2464,47 @@
 
           tr.innerHTML = `
                     <td style="font-weight: normal;">${index + 1}</td>
-                    <td style="word-wrap: break-word; font-weight: normal;">
-                        ${stepData.title}
+                    <td class="expandable-cell" style="word-wrap: break-word; font-weight: normal; cursor: pointer; max-width: 200px;">
+                        <div class="cell-content" style="max-height: 50px; overflow: hidden; transition: max-height 0.3s ease;">
+                            ${stepData.title}
+                        </div>
                     </td>
-                    <td style="word-wrap: break-word; font-weight: normal;">
-                        ${beforeText}
+                    <td class="expandable-cell" style="word-wrap: break-word; font-weight: normal; cursor: pointer; max-width: 300px;">
+                        <div class="cell-content" style="max-height: 50px; overflow: hidden; transition: max-height 0.3s ease;">
+                            ${beforeText}
+                        </div>
                     </td>
-                    <td style="word-wrap: break-word; font-weight: normal;">
-                        ${afterText}
+                    <td class="expandable-cell" style="word-wrap: break-word; font-weight: normal; cursor: pointer; max-width: 300px;">
+                        <div class="cell-content" style="max-height: 50px; overflow: hidden; transition: max-height 0.3s ease;">
+                            ${afterText}
+                        </div>
                     </td>
                 `;
 
           tableBody.appendChild(tr);
+        });
+
+        // Add click-to-expand functionality to all preprocessing tables
+        const tableIds = ['#dataCleaningTableBody', '#tokenizationTableBody', '#lowercasingTableBody', '#stopWordRemovalTableBody', '#stemmingLemmatizationTableBody'];
+        tableIds.forEach(tableId => {
+          document.querySelectorAll(`${tableId} .expandable-cell`).forEach(cell => {
+            cell.addEventListener('click', function(e) {
+              e.stopPropagation();
+              
+              const contentDiv = this.querySelector('.cell-content');
+              if (contentDiv) {
+                if (this.classList.contains('expanded')) {
+                  // Collapse
+                  this.classList.remove('expanded');
+                  contentDiv.style.maxHeight = '50px';
+                } else {
+                  // Expand
+                  this.classList.add('expanded');
+                  contentDiv.style.maxHeight = 'none';
+                }
+              }
+            });
+          });
         });
       }
 
@@ -2493,18 +2522,44 @@
 
           tr.innerHTML = `
                     <td style="font-weight: normal;">${index + 1}</td>
-                    <td style="word-wrap: break-word; font-weight: normal;">
-                        ${item.Title || "N/A"}
+                    <td class="expandable-cell" style="word-wrap: break-word; font-weight: normal; cursor: pointer; max-width: 200px;">
+                        <div class="cell-content" style="max-height: 50px; overflow: hidden; transition: max-height 0.3s ease;">
+                            ${item.Title || "N/A"}
+                        </div>
                     </td>
-                    <td style="word-wrap: break-word; font-weight: normal;">
-                        ${originalText}
+                    <td class="expandable-cell" style="word-wrap: break-word; font-weight: normal; cursor: pointer; max-width: 300px;">
+                        <div class="cell-content" style="max-height: 50px; overflow: hidden; transition: max-height 0.3s ease;">
+                            ${originalText}
+                        </div>
                     </td>
-                    <td style="word-wrap: break-word; font-weight: normal;">
-                        ${item.preprocessed_text || "N/A"}
+                    <td class="expandable-cell" style="word-wrap: break-word; font-weight: normal; cursor: pointer; max-width: 300px;">
+                        <div class="cell-content" style="max-height: 50px; overflow: hidden; transition: max-height 0.3s ease;">
+                            ${item.preprocessed_text || "N/A"}
+                        </div>
                     </td>
                 `;
 
           tableBody.appendChild(tr);
+        });
+
+        // Add click-to-expand functionality to Final Preprocessing Results table
+        document.querySelectorAll('#finalPreprocessingTableBody .expandable-cell').forEach(cell => {
+          cell.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            const contentDiv = this.querySelector('.cell-content');
+            if (contentDiv) {
+              if (this.classList.contains('expanded')) {
+                // Collapse
+                this.classList.remove('expanded');
+                contentDiv.style.maxHeight = '50px';
+              } else {
+                // Expand
+                this.classList.add('expanded');
+                contentDiv.style.maxHeight = 'none';
+              }
+            }
+          });
         });
       }
 
@@ -4074,6 +4129,89 @@
         // Enable the preprocess button without setting dummy data
         document.getElementById("preprocess-btn").disabled = false;
       }
+
+      // Expandable cell functionality
+      function makeTableCellsExpandable() {
+        const table = document.getElementById('sampleDataTable');
+        if (!table) return;
+
+        // Add expandable functionality to existing cells
+        const cells = table.querySelectorAll('tbody td');
+        cells.forEach(cell => {
+          // Skip the first column (No column) and category column - only make Title and Abstract expandable
+          const cellIndex = Array.from(cell.parentElement.children).indexOf(cell);
+          if (cellIndex === 1 || cellIndex === 2) { // Title and Abstract columns
+            makeCellExpandable(cell);
+          }
+        });
+      }
+
+      function makeCellExpandable(cell) {
+        // Skip if already processed
+        if (cell.hasAttribute('data-expandable-processed')) {
+          return;
+        }
+        
+        const originalText = cell.textContent.trim();
+        
+        // Only make expandable if text is longer than 50 characters
+        if (originalText.length > 50) {
+          cell.classList.add('expandable-cell');
+          cell.setAttribute('data-expandable-processed', 'true');
+          cell.setAttribute('data-original-text', originalText);
+          
+          // Add click event to toggle expansion
+          cell.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            const storedOriginalText = this.getAttribute('data-original-text');
+            
+            if (this.classList.contains('expanded')) {
+              // Collapse - show truncated text with down arrow
+              this.classList.remove('expanded');
+              this.innerHTML = storedOriginalText + '<span class="expand-indicator">▼</span>';
+            } else {
+              // Expand - show full text with up arrow
+              this.classList.add('expanded');
+              this.innerHTML = storedOriginalText + '<span class="expand-indicator">▲</span>';
+            }
+          });
+          
+          // Initially show truncated text with down arrow
+          cell.innerHTML = originalText + '<span class="expand-indicator">▼</span>';
+        }
+      }
+
+      // Initialize expandable functionality when table is shown
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+            const sampleDataContainer = document.getElementById('sampleDataContainer');
+            if (sampleDataContainer && sampleDataContainer.style.display !== 'none') {
+              setTimeout(makeTableCellsExpandable, 100); // Small delay to ensure table is rendered
+            }
+          }
+          
+          // Also watch for new content being added to the table
+          if (mutation.type === 'childList' && mutation.target.id === 'sampleDataBody') {
+            setTimeout(makeTableCellsExpandable, 100);
+          }
+        });
+      });
+
+      // Start observing the sample data container and table body
+      document.addEventListener('DOMContentLoaded', function() {
+        const sampleDataContainer = document.getElementById('sampleDataContainer');
+        const sampleDataBody = document.getElementById('sampleDataBody');
+        
+        if (sampleDataContainer) {
+          observer.observe(sampleDataContainer, { attributes: true, attributeFilter: ['style'] });
+        }
+        
+        if (sampleDataBody) {
+          observer.observe(sampleDataBody, { childList: true, subtree: true });
+        }
+      });
     </script>
 
     <style>
@@ -4116,6 +4254,36 @@
 
       .progress-bar {
         transition: width 0.6s ease;
+      }
+
+      /* Expandable Cell Styles */
+      .expandable-cell {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      
+      .expandable-cell:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+      }
+      
+      .expandable-cell.expanded {
+        white-space: normal;
+        word-wrap: break-word;
+        max-width: none;
+        background-color: rgba(0, 123, 255, 0.05);
+      }
+      
+      .expand-indicator {
+        display: inline-block;
+        margin-left: 5px;
+        font-size: 0.8em;
+        color: #007bff;
+        font-weight: bold;
       }
     </style>
   </body>

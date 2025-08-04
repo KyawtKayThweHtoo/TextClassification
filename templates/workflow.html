@@ -1745,6 +1745,96 @@
 
         // Note: TF-IDF button event listener is already attached above
       });
+
+      // Expandable preprocessing content functionality
+      function makePreprocessingContentExpandable() {
+        const preprocessingIds = [
+          'originalText', 'cleanedText', 'tokenizedText', 'beforeStopWordText', 
+          'filteredText', 'beforeLowercaseText', 'lowercasedText', 'beforeStemmingText', 
+          'lemmatizedText', 'beforeFinalPreprocessingText', 'afterFinalPreprocessingText'
+        ];
+
+        preprocessingIds.forEach(id => {
+          const element = document.getElementById(id);
+          if (element) {
+            makePreprocessingDivExpandable(element);
+          }
+        });
+      }
+
+      function makePreprocessingDivExpandable(div) {
+        // Skip if already processed
+        if (div.hasAttribute('data-preprocessing-expandable-processed')) {
+          return;
+        }
+
+        // Check if content is long enough to warrant expansion
+        setTimeout(() => {
+          const originalText = div.textContent.trim();
+          if (originalText.length > 50) { // Same threshold as table cells
+            div.classList.add('expandable-preprocessing-content');
+            div.setAttribute('data-preprocessing-expandable-processed', 'true');
+            div.setAttribute('data-preprocessing-original-text', originalText);
+            
+            // Add click event to toggle expansion
+            div.addEventListener('click', function(e) {
+              e.stopPropagation();
+              
+              const storedOriginalText = this.getAttribute('data-preprocessing-original-text');
+              
+              if (this.classList.contains('expanded')) {
+                // Collapse - show truncated text with down arrow
+                this.classList.remove('expanded');
+                this.innerHTML = storedOriginalText + '<span class="preprocessing-expand-indicator">▼</span>';
+              } else {
+                // Expand - show full text with up arrow
+                this.classList.add('expanded');
+                this.innerHTML = storedOriginalText + '<span class="preprocessing-expand-indicator">▲</span>';
+              }
+            });
+            
+            // Initially show truncated text with down arrow
+            div.innerHTML = originalText + '<span class="preprocessing-expand-indicator">▼</span>';
+          }
+        }, 100); // Small delay to ensure content is loaded
+      }
+
+      // Initialize expandable functionality when preprocessing results are shown
+      const preprocessingObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'childList' || mutation.type === 'characterData') {
+            // Check if any preprocessing content was updated
+            const preprocessingIds = [
+              'originalText', 'cleanedText', 'tokenizedText', 'beforeStopWordText', 
+              'filteredText', 'beforeLowercaseText', 'lowercasedText', 'beforeStemmingText', 
+              'lemmatizedText', 'beforeFinalPreprocessingText', 'afterFinalPreprocessingText'
+            ];
+            
+            preprocessingIds.forEach(id => {
+              const element = document.getElementById(id);
+              if (element && element.textContent.trim()) {
+                makePreprocessingDivExpandable(element);
+              }
+            });
+          }
+        });
+      });
+
+      // Start observing preprocessing content
+      document.addEventListener('DOMContentLoaded', function() {
+        // Observe the main preprocessing results container
+        const preprocessingResults = document.getElementById('preprocessingResults');
+        if (preprocessingResults) {
+          preprocessingObserver.observe(preprocessingResults, { 
+            childList: true, 
+            subtree: true, 
+            characterData: true 
+          });
+        }
+        
+        // Also try to initialize immediately
+        setTimeout(makePreprocessingContentExpandable, 500);
+      });
     </script>
 
     <style>
@@ -1779,6 +1869,39 @@
         background: rgba(255, 255, 255, 0.2);
         border-color: #ffd700;
         color: #ffd700;
+      }
+
+      /* Expandable Preprocessing Content Styles - Same as Table Cells */
+      .expandable-preprocessing-content {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        max-height: 200px;
+      }
+      
+      .expandable-preprocessing-content:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+      }
+      
+      .expandable-preprocessing-content.expanded {
+        white-space: normal;
+        word-wrap: break-word;
+        max-width: none;
+        max-height: none;
+        background-color: rgba(0, 123, 255, 0.05);
+        overflow-y: auto;
+      }
+      
+      .preprocessing-expand-indicator {
+        display: inline-block;
+        margin-left: 5px;
+        font-size: 0.8em;
+        color: #007bff;
+        font-weight: bold;
       }
     </style>
   </body>
