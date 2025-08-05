@@ -79,7 +79,7 @@ This Flask-based web application automatically categorizes academic papers into 
 
 ### **Corpus & Vectorization Page**
 - Enhanced corpus analysis with method selection
-- Compare TF-IDF, Word2Vec, Bag of Words, and Count Vectorizer
+- TF-IDF analysis and vectorization methods
 - Interactive charts showing method performance
 - Research field-specific analysis
 
@@ -94,13 +94,10 @@ This Flask-based web application automatically categorizes academic papers into 
 - **Data Validation**: Automatic validation of required columns and data format
 
 #### **Advanced Text Vectorization**
-- **Multiple Vectorization Methods**: 
-  - Word2Vec (Dense 300-dimensional vectors)
-  - Bag of Words (Frequency-based sparse vectors)
-  - TF-IDF (Term Frequency-Inverse Document Frequency)
-  - Count Vectorizer and N-gram features
-- **Method Comparison Tools**: Side-by-side performance analysis
+- **TF-IDF Vectorization**: Term Frequency-Inverse Document Frequency analysis
+- **Binary Vectorization**: Word presence/absence representation
 - **Interactive Visualizations**: Charts showing vector dimensions, performance metrics
+- **Performance Analysis**: Detailed TF-IDF analysis with word importance scores
 
 #### **Enhanced ML Pipeline**
 - **Text Preprocessing**: Advanced preprocessing with before/after comparisons

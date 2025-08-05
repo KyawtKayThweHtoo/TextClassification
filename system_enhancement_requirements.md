@@ -43,9 +43,9 @@ Create a comprehensive data loading interface with step-by-step ML pipeline visu
 - **Button**: "Vectorize Text"
 - **Purpose**: Convert text to numerical vectors for computer understanding
 - **Methods Available**:
-  - **Word2Vec**: Dense vector representations
+  - **Binary Vectorization**: Word presence/absence representation
   - **Bag of Words**: Simple word frequency vectors
-  - **Other vectorization methods** (for comparison)
+  - **TF-IDF preparation**: Foundation for text representation
 - **Output**: Vector statistics and dimensionality information
 
 #### Step 4: Text Representation Calculation
@@ -122,7 +122,7 @@ Create a comprehensive data loading interface with step-by-step ML pipeline visu
 
 #### Vectorization Module
 ```python
-# Word2Vec implementation
+# TF-IDF implementation
 # Bag of Words vectorizer
 # Vector comparison utilities
 # Dimensionality analysis tools

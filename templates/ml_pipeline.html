@@ -773,29 +773,15 @@
 
             <div class="text-center mt-5">
               <div class="row justify-content-center">
-                <div class="col-md-6">
-                  <h5 class="text-white mb-3">Choose Analysis Method:</h5>
-                  <div class="btn-group" role="group">
-                    <button
-                      id="proceed-word2vec-btn"
-                      class="btn btn-outline-light btn-lg px-4 py-3 shadow-lg"
-                      style="
-                        border-radius: 50px 0 0 50px;
-                        font-weight: 600;
-                        display: none;
-                      "
-                    >
-                      <i
-                        class="bi bi-vector-pen me-2"
-                        style="font-size: 1.1rem"
-                      ></i>
-                      Word2Vec
-                    </button>
+                <div class="col-md-8">
+                  <div class="text-center">
+                    <h5 class="text-white mb-3"></h5>
+                    <p class="text-white-50 mb-4">Proceed with TF-IDF for text representation</p>
                     <button
                       id="proceed-tfidf-btn"
-                      class="btn btn-outline-light btn-lg px-4 py-3 shadow-lg"
+                      class="btn btn-outline-light btn-lg px-5 py-3 shadow-lg"
                       style="
-                        border-radius: 0 50px 50px 0;
+                        border-radius: 50px;
                         font-weight: 600;
                         display: none;
                       "
@@ -804,7 +790,7 @@
                         class="bi bi-calculator me-2"
                         style="font-size: 1.1rem"
                       ></i>
-                      TF-IDF 
+                      Start TF-IDF 
                     </button>
                   </div>
                 </div>
@@ -814,116 +800,44 @@
         </div>
       </div>
 
-      <!-- Step 4: Word2Vec -->
-      <div id="step4-content" class="workflow-step">
+      <!-- Step 4: Method Choice -->
+      <div id="step4-content" class="workflow-step" style="display: none;">
         <div
           class="card shadow-lg mb-4 border-0"
           style="
-            background: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
           "
         >
           <div class="card-body p-5">
             <h2 class="card-title text-center mb-4 text-white">
               <i
-                class="bi bi-vector-pen me-3"
+                class="bi bi-arrow-left-right me-3"
                 style="font-size: 2rem; color: #ffd700"
               ></i>
-              Word2Vec Vectorization
+              Text Representation Method
             </h2>
             <p class="text-center text-white-50 mb-4">
-              Transform preprocessed text into dense vector representations
-              using Word2Vec embeddings
+              Choose your text vectorization approach for machine learning
             </p>
-
-            <!-- Word2Vec Progress -->
-            <div id="word2vecProgress" class="mb-4" style="display: none">
-              <div class="alert alert-info">
-                <div
-                  class="spinner-border spinner-border-sm me-2"
-                  role="status"
-                ></div>
-                <span id="word2vecProgressText"
-                  >Generating Word2Vec embeddings...</span
-                >
-              </div>
-            </div>
-
-            <!-- Word2Vec Results Container -->
-            <div class="word2vec-results-container" style="display: none">
-              <!-- Sample Vectors Table -->
-              <div class="row">
-                <div class="col-12">
-                  <div
-                    class="card border"
-                    style="background: white; width: 100%"
-                  >
-                    <div class="card-header">
-                      <h5
-                        class="mb-0"
-                      
-                      >
-                        <i class="bi bi-table me-2"></i>
-                        Sample Word Vectors
-                      </h5>
-                      <small class="subtext"
-                        >First 10 words with their vector representations</small
-                      >
-                    </div>
-                    <div class="card-body p-0">
-                      <div style="max-height: 400px; overflow-y: auto">
-                        <table
-                          class="table table-bordered mb-0"
-                          id="word2vecTable"
-                          style="font-size: 0.85rem"
-                        >
-                          <thead class="sticky-top" style="background: white">
-                            <tr>
-                              <th
-                                style="font-weight: bold; font-size: 0.85rem"
-                              >
-                                Index
-                              </th>
-                              <th
-                                style="font-weight: bold; font-size: 0.85rem"
-                              >
-                                Word
-                              </th>
-                              <th
-                                style="font-weight: bold; font-size: 0.85rem"
-                              >
-                                Vector (First 5 dimensions)
-                              </th>
-                              <th
-                                style="font-weight: bold; font-size: 0.85rem"
-                              >
-                                Magnitude
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody id="word2vecTableBody" class="text-dark">
-                            <!-- Word2Vec values will be inserted here -->
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+            
+            <div class="text-center">
+              <div class="row justify-content-center">
+                <div class="col-md-8">
+                  <div class="text-center">
+                    <h5 class="text-white mb-3">TF-IDF Vectorization</h5>
+                    <p class="text-white-50 mb-4">Term Frequency-Inverse Document Frequency analysis</p>
+                    <button
+                      id="proceed-tfidf-from-step4-btn"
+                      class="btn btn-outline-light btn-lg px-5 py-3 shadow-lg"
+                      style="border-radius: 50px; font-weight: 600;"
+                    >
+                      <i class="bi bi-calculator me-2"></i>
+                      Start TF-IDF Analysis
+                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="text-center mt-5">
-              <button
-                id="proceed-classification-btn-word2vec"
-                class="btn btn-primary btn-lg px-5 py-3 shadow-lg"
-                style="border-radius: 50px; font-weight: 600; display: none"
-              >
-                <i
-                  class="bi bi-arrow-right-circle-fill me-3"
-                  style="font-size: 1.2rem"
-                ></i>
-                Proceed to Classification
-              </button>
             </div>
           </div>
         </div>
@@ -1398,7 +1312,6 @@
       let uploadedData = null;
       let preprocessedData = null;
       let tfidfData = null;
-      let word2vecData = null;
       let currentStep = 1;
 
       // Client-side text preprocessing functions
@@ -1875,7 +1788,7 @@
         } else if (step === 3) {
           document.getElementById("step3-content").classList.add("active");
         } else if (step === 4) {
-          // Show either Word2Vec or TF-IDF based on which one is visible
+          // Show TF-IDF results
           if (
             document.getElementById("step4-content").style.display !== "none"
           ) {
@@ -1926,7 +1839,7 @@
           } else if (currentStep === 2 && preprocessedData) {
             canProceed = true;
           } else if (currentStep === 3) {
-            canProceed = true; // Word2Vec step
+            canProceed = true; // TF-IDF step
           } else if (currentStep === 4 && tfidfData) {
             canProceed = true;
           }
@@ -2571,34 +2484,14 @@
           setTimeout(initializeVectorization, 500);
         });
 
-      // Word2Vec button handler
-      document
-        .getElementById("proceed-word2vec-btn")
-        .addEventListener("click", function () {
-          // Clear any previous data
-          tfidfData = null;
-
-          // Reset step visibility - hide TF-IDF, show Word2Vec
-          document.getElementById("step4-tfidf-content").style.display = "none";
-          document.getElementById("step4-content").style.display = "block";
-
-          // Update step indicator to show Word2Vec
-          document.getElementById("step4-indicator").innerHTML =
-            '<i class="bi bi-vector-pen me-2"></i><span id="method-choice-text">Word2Vec</span>';
-          updateProgress(4); // Go to Word2Vec step
-          setTimeout(() => {
-            initializeWord2VecCalculation();
-          }, 500);
-        });
 
       // TF-IDF button handler
       document
         .getElementById("proceed-tfidf-btn")
         .addEventListener("click", function () {
           // Clear any previous data
-          word2vecData = null;
 
-          // Reset step visibility - hide Word2Vec, show TF-IDF
+          // Show TF-IDF step
           document.getElementById("step4-content").style.display = "none";
           document.getElementById("step4-tfidf-content").style.display =
             "block";
@@ -2672,19 +2565,28 @@
             ".vectorization-results-container"
           ).style.display = "block";
 
-          // Hide both analysis steps when returning to vectorization
-          document.getElementById("step4-content").style.display = "none";
-          document.getElementById("step4-tfidf-content").style.display = "none";
+          // Show method choice step (step4-content)
+          const step4Content = document.getElementById("step4-content");
+          const step4TfidfContent = document.getElementById("step4-tfidf-content");
+          if (step4Content) {
+            step4Content.style.display = "block";
+            console.log("Step 4 method choice shown");
+          }
+          if (step4TfidfContent) step4TfidfContent.style.display = "none";
 
-          // Reset step indicator
-          document.getElementById("step4-indicator").innerHTML =
-            '<i class="bi bi-arrow-left-right me-2"></i><span id="method-choice-text">Method Choice</span>';
+          // Update step indicator
+          const step4Indicator = document.getElementById("step4-indicator");
+          if (step4Indicator) {
+            step4Indicator.innerHTML =
+              '<i class="bi bi-arrow-left-right me-2"></i><span id="method-choice-text">Method Choice</span>';
+          }
 
-          // Show choice buttons
-          document.getElementById("proceed-word2vec-btn").style.display =
-            "inline-block";
-          document.getElementById("proceed-tfidf-btn").style.display =
-            "inline-block";
+          // Also show the TF-IDF button in vectorization step for backward compatibility
+          const tfidfBtn = document.getElementById("proceed-tfidf-btn");
+          if (tfidfBtn) {
+            tfidfBtn.style.display = "inline-block";
+            console.log("TF-IDF button made visible");
+          }
 
           updateNavigationButtons();
         }, 1000);
@@ -2720,79 +2622,22 @@
         tableBody.innerHTML = tableHtml;
       }
 
-      // Word2Vec calculation function
-      function initializeWord2VecCalculation() {
-        if (!preprocessedData || !preprocessedData.processed_items) {
-          alert("Please complete preprocessing first");
-          return;
-        }
+      // TF-IDF button handler for step4 method choice
+      document
+        .getElementById("proceed-tfidf-from-step4-btn")
+        .addEventListener("click", function () {
+          // Hide step4-content and show TF-IDF step
+          document.getElementById("step4-content").style.display = "none";
+          document.getElementById("step4-tfidf-content").style.display = "block";
 
-        const totalDocuments = preprocessedData.processed_items.length;
-        document.getElementById("word2vecProgress").style.display = "block";
-        document.getElementById(
-          "word2vecProgressText"
-        ).textContent = `Processing ${totalDocuments} documents with Word2Vec...`;
-
-        // Simulate Word2Vec processing
-        setTimeout(() => {
-          // Generate mock Word2Vec data
-          const sampleWords = [
-            "research",
-            "machine",
-            "learning",
-            "algorithm",
-            "neural",
-            "network",
-            "data",
-            "analysis",
-            "model",
-            "classification",
-          ];
-          word2vecData = sampleWords.map((word, index) => ({
-            word: word,
-            vector: Array.from(
-              { length: 5 },
-              () => (Math.random() - 0.5) * 2
-            ).map((v) => v.toFixed(4)),
-            magnitude: (Math.random() * 2 + 0.5).toFixed(4),
-          }));
-
-          // Update table
-          let tableHtml = "";
-          word2vecData.forEach((item, index) => {
-            tableHtml += `
-                        <tr class="table-row-hover">
-                            <td class="px-4 py-3 text-center">
-                                <span class="text-dark" style="font-size: 1rem;">${index + 1}</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="text-dark" style="font-size: 1rem;">${item.word}</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="text-dark" style="font-size: 1rem;">[${item.vector.join(
-                                  ", "
-                                )}...]</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <span class="text-dark" style="font-size: 1rem;">${item.magnitude}</span>
-                            </td>
-                        </tr>
-                    `;
-          });
-          document.getElementById("word2vecTableBody").innerHTML = tableHtml;
-
-          // Hide progress and show results
-          document.getElementById("word2vecProgress").style.display = "none";
-          document.querySelector(".word2vec-results-container").style.display =
-            "block";
-
-          // Show proceed to classification button
-          document.getElementById(
-            "proceed-classification-btn-word2vec"
-          ).style.display = "inline-block";
-          updateNavigationButtons();
-        }, 2000);
-      }
+          // Update step indicator to show TF-IDF
+          document.getElementById("step4-indicator").innerHTML =
+            '<i class="bi bi-calculator me-2"></i><span id="method-choice-text">TF-IDF</span>';
+          
+          setTimeout(() => {
+            initializeTFIDFCalculation();
+          }, 500);
+        });
 
       // Auto-start TF-IDF when step 4 is reached
       function autoStartTFIDF() {
@@ -3583,11 +3428,6 @@
           updateProgress(5);
         });
 
-      document
-        .getElementById("proceed-classification-btn-word2vec")
-        .addEventListener("click", function () {
-          updateProgress(5);
-        });
 
       document
         .getElementById("classify-papers-btn")
@@ -3595,23 +3435,17 @@
           console.log("[DEBUG] Classification button clicked");
           console.log("[DEBUG] Data validation:", {
             hasTfidfData: !!tfidfData,
-            hasWord2vecData: !!word2vecData,
             hasPreprocessedData: !!preprocessedData,
             hasProcessedItems: !!(
               preprocessedData && preprocessedData.processed_items
             ),
             processedItemsCount: preprocessedData?.processed_items?.length || 0,
-            analysisMethod: tfidfData
-              ? "TF-IDF"
-              : word2vecData
-              ? "Word2Vec"
-              : "None",
+            analysisMethod: tfidfData ? "TF-IDF" : "None",
           });
 
-          // Check if either TF-IDF or Word2Vec was completed
+          // Check if TF-IDF was completed
           const hasTFIDF = !!tfidfData;
-          const hasWord2Vec = !!word2vecData;
-          const hasAnalysisData = hasTFIDF || hasWord2Vec;
+          const hasAnalysisData = hasTFIDF;
 
           if (
             !hasAnalysisData ||
@@ -3619,7 +3453,7 @@
             !preprocessedData.processed_items
           ) {
             const message =
-              "Please complete either TF-IDF or Word2Vec analysis first";
+              "Please complete TF-IDF analysis first";
             console.error("[DEBUG] Classification validation failed:", message);
             alert(message);
             return;
@@ -3641,7 +3475,7 @@
           console.log("[DEBUG] Classification parameters:", {
             kernel: kernel,
             trainSplit: trainSplit,
-            analysisMethod: hasTFIDF ? "TF-IDF" : "Word2Vec",
+            analysisMethod: "TF-IDF",
           });
 
           // First ensure backend has preprocessed data, then classify
@@ -3780,18 +3614,11 @@
           testSamples: testSamples,
         });
 
-        // Determine which analysis method was used
-        const hasTFIDF = !!tfidfData;
-        const hasWord2Vec = !!word2vecData;
-        const analysisMethod = hasTFIDF ? "TF-IDF" : "Word2Vec";
+        // Using TF-IDF analysis method
+        const analysisMethod = "TF-IDF";
 
-        // Calculate base accuracy based on analysis method
-        let baseAccuracy;
-        if (hasTFIDF) {
-          baseAccuracy = 0.85; // TF-IDF gets higher base accuracy
-        } else {
-          baseAccuracy = 0.72; // Word2Vec gets lower base accuracy
-        }
+        // Calculate base accuracy for TF-IDF
+        let baseAccuracy = 0.85;
 
         // Adjust accuracy based on dataset size
         if (totalSamples > 2000) baseAccuracy += 0.08;

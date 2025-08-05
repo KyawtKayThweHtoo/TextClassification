@@ -129,7 +129,7 @@
               transition: all 0.3s ease;
             "
           >
-            <i class="bi bi-arrow-left-right me-2"></i><span id="method-choice-text">TF-IDF / Word2Vec</span>
+            <i class="bi bi-arrow-left-right me-2"></i><span id="method-choice-text">TF-IDF</span>
           </span>
           <span
             class="step-indicator clickable-step"
@@ -246,11 +246,11 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Before Data Cleaning:</h6>
-                                                    <div class="border p-2 rounded mb-3 bg-light" id="originalText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded mb-3" id="originalText"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Data Cleaning:</h6>
-                                                    <div class="border p-2 rounded bg-light" id="cleanedText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded" id="cleanedText"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -271,11 +271,11 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Before Tokenization:</h6>
-                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeTokenizationText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded mb-3" id="beforeTokenizationText"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Tokenization:</h6>
-                                                    <div class="border p-2 rounded bg-light" id="tokenizedText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded" id="tokenizedText"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -296,11 +296,11 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Before Lowercasing:</h6>
-                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeLowercaseText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded mb-3" id="beforeLowercaseText"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Lowercasing:</h6>
-                                                    <div class="border p-2 rounded bg-light" id="lowercasedText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded" id="lowercasedText"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -321,11 +321,11 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Before Stop Word Removal:</h6>
-                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeStopWordText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded mb-3" id="beforeStopWordText"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Stop Word Removal:</h6>
-                                                    <div class="border p-2 rounded bg-light" id="filteredText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded" id="filteredText"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -346,11 +346,11 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Before Stemming and Lemmatization:</h6>
-                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeStemmingText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded mb-3" id="beforeStemmingText"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Stemming and Lemmatization:</h6>
-                                                    <div class="border p-2 rounded bg-light" id="lemmatizedText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded" id="lemmatizedText"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -371,11 +371,11 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <h6>Before Preprocessing:</h6>
-                                                    <div class="border p-2 rounded mb-3 bg-light" id="beforeFinalPreprocessingText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded mb-3" id="beforeFinalPreprocessingText"></div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h6>After Preprocessing:</h6>
-                                                    <div class="border p-2 rounded bg-light" id="afterFinalPreprocessingText" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;"></div>
+                                                    <div class="border p-2 rounded" id="afterFinalPreprocessingText"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -470,7 +470,7 @@
                   </h4>
                   <p class="text-white-50 mb-4">Select how you want to analyze your vectorized text data</p>
                   
-                  <div class="row g-3">
+                  <div class="row g-3 justify-content-center">
                     <div class="col-md-6">
                       <div class="method-choice-card p-4 h-100" style="background: rgba(255,255,255,0.1); border-radius: 15px; border: 2px solid transparent; transition: all 0.3s ease;">
                         <div class="mb-3">
@@ -485,21 +485,6 @@
                         </button>
                       </div>
                     </div>
-                    
-                    <div class="col-md-6">
-                      <div class="method-choice-card p-4 h-100" style="background: rgba(255,255,255,0.1); border-radius: 15px; border: 2px solid transparent; transition: all 0.3s ease;">
-                        <div class="mb-3">
-                          <i class="bi bi-vector-pen" style="font-size: 2.5rem; color: #ffd700;"></i>
-                        </div>
-                        <h5 class="text-white mb-3">Word2Vec</h5>
-                        <p class="text-white-50 mb-4 small">Transform words into dense vector representations that capture semantic relationships and meanings</p>
-                        <button id="proceed-word2vec-btn" class="btn btn-outline-light btn-lg px-4 py-2 shadow-lg" 
-                                style="border-radius: 50px; font-weight: 600; display: none; width: 100%;" disabled>
-                          <i class="bi bi-vector-pen me-2"></i>
-                          Start Word2Vec
-                        </button>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -508,85 +493,9 @@
         </div>
       </div>
 
-      <!-- Step 3: Word2Vec -->
+
+      <!-- Step 3: TF-IDF -->
       <div id="step3-content" class="workflow-step">
-        <div class="card shadow-lg mb-4 border-0" 
-             style="background: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%); color: white;">
-          <div class="card-body p-5">
-            <h2 class="card-title text-center mb-4 text-white">
-              <i class="bi bi-vector-pen me-3" style="font-size: 2rem; color: #ffd700"></i>
-              Word2Vec Vectorization
-            </h2>
-            <p class="text-center text-white-50 mb-4">
-              Transform preprocessed text into dense vector representations using Word2Vec embeddings
-            </p>
-
-            <!-- Word2Vec Progress -->
-            <div id="word2vecProgress" class="mb-4" style="display: none;">
-              <div class="alert alert-info">
-                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                <span id="word2vecProgressText">Generating Word2Vec embeddings...</span>
-              </div>
-            </div>
-
-            <!-- Word2Vec Results Container -->
-            <div class="word2vec-results-container" style="display: none;">
-              <!-- Sample Vectors Table -->
-              <div class="row">
-                <div class="col-12">
-                  <div class="card shadow-lg border-0" 
-                       style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-                    <div class="card-header bg-transparent border-0">
-                      <h4 class="mb-0 text-dark">
-                        <i class="bi bi-table me-2 text-warning" style="font-size: 1.5rem"></i>
-                        Sample Word Vectors
-                      </h4>
-                      <small class="text-muted">First 10 words with their vector representations</small>
-                    </div>
-                    <div class="card-body p-0">
-                      <div class="table-responsive" style="max-height: 400px; overflow-y: auto">
-                        <table class="table table-hover mb-0" id="word2vecTable">
-                          <thead class="sticky-top" 
-                                 style="background: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%); color: white;">
-                            <tr>
-                              <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                <i class="bi bi-hash me-2"></i>Index
-                              </th>
-                              <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                <i class="bi bi-type me-2"></i>Word
-                              </th>
-                              <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                <i class="bi bi-box me-2"></i>Vector (First 5 dimensions)
-                              </th>
-                              <th class="border-0 py-3 px-4" style="font-weight: 600">
-                                <i class="bi bi-speedometer2 me-2"></i>Magnitude
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody id="word2vecTableBody" class="text-dark">
-                            <!-- Word2Vec values will be inserted here -->
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="text-center mt-5">
-              <button id="proceed-classification-btn-word2vec" class="btn btn-primary btn-lg px-5 py-3 shadow-lg" 
-                      style="border-radius: 50px; font-weight: 600; display: none;">
-                <i class="bi bi-arrow-right-circle-fill me-3" style="font-size: 1.2rem"></i>
-                Proceed to Classification
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 4: TF-IDF -->
-      <div id="step4-content" class="workflow-step">
         <div
           class="card shadow-lg mb-4 border-0"
           style="
@@ -803,8 +712,8 @@
         </div>
       </div>
 
-      <!-- Step 5: Classification -->
-      <div id="step5-content" class="workflow-step">
+      <!-- Step 4: Classification -->
+      <div id="step4-content" class="workflow-step">
         <div class="card shadow-lg mb-4 border-0" 
              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
           <div class="card-body p-5">
@@ -989,11 +898,9 @@
             const vectorizationResults = document.querySelector(".vectorization-results-container");
             canProceed = vectorizationResults && vectorizationResults.style.display !== "none";
           } else if (currentStep === 3) {
-            // Check if method choice is made (Word2Vec or TF-IDF completed)
-            const word2vecResults = document.querySelector(".word2vec-results-container");
+            // Check if TF-IDF is completed
             const tfidfResults = document.querySelector(".tfidf-results-container");
-            canProceed = (word2vecResults && word2vecResults.style.display !== "none") || 
-                        (tfidfResults && tfidfResults.style.display !== "none");
+            canProceed = tfidfResults && tfidfResults.style.display !== "none";
           }
 
           nextBtn.disabled = !canProceed;
@@ -1056,15 +963,13 @@
       // Get maximum accessible step based on completion
       function getMaxAccessibleStep() {
         const vectorizationResults = document.querySelector(".vectorization-results-container");
-        const word2vecResults = document.querySelector(".word2vec-results-container");
         const tfidfResults = document.querySelector(".tfidf-results-container");
         
         if (globalPreprocessedText && 
-            ((word2vecResults && word2vecResults.style.display !== "none") || 
-             (tfidfResults && tfidfResults.style.display !== "none"))) {
+            (tfidfResults && tfidfResults.style.display !== "none")) {
           return 4; // All steps accessible
         } else if (globalPreprocessedText && vectorizationResults && vectorizationResults.style.display !== "none") {
-          return 3; // Can access method choice
+          return 3; // Can access TF-IDF
         } else if (globalPreprocessedText) {
           return 2; // Can access vectorization
         } else {
@@ -1244,26 +1149,9 @@
           document.getElementById('vectorizationProgress').style.display = 'none';
           document.querySelector('.vectorization-results-container').style.display = 'block';
           
-          // Show method choice buttons after vectorization
-          console.log('Vectorization complete, showing method choice buttons...');
-          const word2vecBtn = document.getElementById('proceed-word2vec-btn');
-          const tfidfBtn = document.getElementById('proceed-tfidf-btn');
-          
-          if (word2vecBtn) {
-            word2vecBtn.style.display = 'block';
-            word2vecBtn.disabled = false;
-            console.log('Word2Vec button enabled and shown');
-          } else {
-            console.error('Word2Vec button not found!');
-          }
-          
-          if (tfidfBtn) {
-            tfidfBtn.style.display = 'block';  
-            tfidfBtn.disabled = false;
-            console.log('TF-IDF button enabled and shown');
-          } else {
-            console.error('TF-IDF button not found!');
-          }
+          // Show the TF-IDF button after vectorization completes
+          document.getElementById('proceed-tfidf-btn').style.display = 'inline-block';
+          document.getElementById('proceed-tfidf-btn').disabled = false;
           
         } catch (error) {
           console.error('Vectorization error:', error);
@@ -1296,113 +1184,18 @@
           
           document.querySelector('.vectorization-results-container').style.display = 'block';
           
-          // Show method choice buttons even on error path
-          console.log('Vectorization error, but still showing method choice buttons...');
-          const word2vecBtn = document.getElementById('proceed-word2vec-btn');
-          const tfidfBtn = document.getElementById('proceed-tfidf-btn');
-          
-          if (word2vecBtn) {
-            word2vecBtn.style.display = 'block';
-            word2vecBtn.disabled = false;
-            console.log('Word2Vec button enabled and shown (error path)');
-          }
-          
-          if (tfidfBtn) {
-            tfidfBtn.style.display = 'block';
-            tfidfBtn.disabled = false;
-            console.log('TF-IDF button enabled and shown (error path)');
-          }
+          // Show the TF-IDF button even on error path
+          document.getElementById('proceed-tfidf-btn').style.display = 'inline-block';
+          document.getElementById('proceed-tfidf-btn').disabled = false;
         }
       }
 
-      // Word2Vec calculation function
-      function initializeWord2VecCalculation() {
-        if (!globalPreprocessedText) {
-          alert('Please complete preprocessing first');
-          return;
-        }
-
-        document.getElementById('word2vecProgress').style.display = 'block';
-        document.getElementById('word2vecProgressText').textContent = 'Processing text with Word2Vec...';
-
-        // Simulate Word2Vec processing
-        setTimeout(() => {
-          // Generate mock Word2Vec data
-          const sampleWords = ['research', 'machine', 'learning', 'algorithm', 'neural', 'network', 'data', 'analysis', 'model', 'classification'];
-          const word2vecData = sampleWords.map((word, index) => ({
-            word: word,
-            vector: Array.from({length: 5}, () => (Math.random() - 0.5) * 2).map(v => v.toFixed(4)),
-            magnitude: (Math.random() * 2 + 0.5).toFixed(4)
-          }));
-
-          // Update table
-          let tableHtml = '';
-          word2vecData.forEach((item, index) => {
-            tableHtml += `
-              <tr class="table-row-hover">
-                <td class="px-4 py-3 text-center">
-                  <span class="text-dark" style="font-size: 1rem;">${index + 1}</span>
-                </td>
-                <td class="px-4 py-3">
-                  <span class="text-dark" style="font-size: 1rem;">${item.word}</span>
-                </td>
-                <td class="px-4 py-3">
-                  <span class="text-dark" style="font-size: 1rem;">[${item.vector.join(', ')}...]</span>
-                </td>
-                <td class="px-4 py-3">
-                  <span class="text-dark" style="font-size: 1rem;">${item.magnitude}</span>
-                </td>
-              </tr>
-            `;
-          });
-          document.getElementById('word2vecTableBody').innerHTML = tableHtml;
-
-          // Hide progress and show results
-          document.getElementById('word2vecProgress').style.display = 'none';
-          document.querySelector('.word2vec-results-container').style.display = 'block';
-          
-          // Show proceed button
-          document.getElementById('proceed-classification-btn-word2vec').style.display = 'inline-block';
-        }, 2000);
-      }
-
-      // Step 3: Method Choice - Word2Vec
-      document
-        .getElementById("proceed-word2vec-btn")
-        .addEventListener("click", function () {
-          updateProgress(3);
-          setTimeout(() => {
-            initializeWord2VecCalculation();
-            // After Word2Vec calculation, automatically go to classification
-            setTimeout(() => {
-              updateProgress(5);
-            }, 2500);
-          }, 500);
-        });
-
-      // Step 3: Method Choice - TF-IDF (from step 2 vectorization)
-      document
-        .getElementById("proceed-tfidf-btn")
-        .addEventListener("click", function () {
-          updateProgress(4); // Go to step 4 for TF-IDF
-          setTimeout(async () => {
-            await initializeTFIDFCalculation();
-            // After TF-IDF calculation, automatically go to classification
-            setTimeout(() => {
-              updateProgress(5);
-            }, 1000);
-          }, 500);
-        });
 
 
-      // Step 3: Proceed to Classification from Word2Vec
-      document
-        .getElementById("proceed-classification-btn-word2vec")
-        .addEventListener("click", function () {
-          updateProgress(5); // Go to step 5 for classification
-        });
 
-      // Function to calculate TF-IDF (called automatically when entering step 4)
+
+
+      // Function to calculate TF-IDF (called automatically when entering step 3)
       async function initializeTFIDFCalculation() {
         try {
           // Check if we have preprocessed text
@@ -1658,7 +1451,7 @@
 
           // Show error in the TF-IDF section
           const tfidfSection = document.querySelector(
-            "#step4-content .tfidf-results-container"
+            "#step3-content .tfidf-results-container"
           );
           if (tfidfSection) {
             tfidfSection.innerHTML = `
@@ -1674,14 +1467,24 @@
         }
       }
 
-      // Step 4: Proceed to Classification from TF-IDF
+      // Step 2: Proceed to TF-IDF from Vectorization
+      document
+        .getElementById("proceed-tfidf-btn")
+        .addEventListener("click", function () {
+          updateProgress(3);
+          setTimeout(async () => {
+            await initializeTFIDFCalculation();
+          }, 500);
+        });
+
+      // Step 3: Proceed to Classification from TF-IDF
       document
         .getElementById("proceed-classification-btn")
         .addEventListener("click", function () {
-          updateProgress(5);
+          updateProgress(4);
         });
 
-      // Step 5: Classify Papers
+      // Step 4: Classify Papers
       document
         .getElementById("classify-papers-btn")
         .addEventListener("click", async function () {
@@ -1741,100 +1544,10 @@
 
         // Debug: Check if buttons exist and are properly hidden initially
         console.log('TF-IDF button exists:', document.getElementById('proceed-tfidf-btn'));
-        console.log('Word2Vec button exists:', document.getElementById('proceed-word2vec-btn'));
 
         // Note: TF-IDF button event listener is already attached above
       });
 
-      // Expandable preprocessing content functionality
-      function makePreprocessingContentExpandable() {
-        const preprocessingIds = [
-          'originalText', 'cleanedText', 'tokenizedText', 'beforeStopWordText', 
-          'filteredText', 'beforeLowercaseText', 'lowercasedText', 'beforeStemmingText', 
-          'lemmatizedText', 'beforeFinalPreprocessingText', 'afterFinalPreprocessingText'
-        ];
-
-        preprocessingIds.forEach(id => {
-          const element = document.getElementById(id);
-          if (element) {
-            makePreprocessingDivExpandable(element);
-          }
-        });
-      }
-
-      function makePreprocessingDivExpandable(div) {
-        // Skip if already processed
-        if (div.hasAttribute('data-preprocessing-expandable-processed')) {
-          return;
-        }
-
-        // Check if content is long enough to warrant expansion
-        setTimeout(() => {
-          const originalText = div.textContent.trim();
-          if (originalText.length > 50) { // Same threshold as table cells
-            div.classList.add('expandable-preprocessing-content');
-            div.setAttribute('data-preprocessing-expandable-processed', 'true');
-            div.setAttribute('data-preprocessing-original-text', originalText);
-            
-            // Add click event to toggle expansion
-            div.addEventListener('click', function(e) {
-              e.stopPropagation();
-              
-              const storedOriginalText = this.getAttribute('data-preprocessing-original-text');
-              
-              if (this.classList.contains('expanded')) {
-                // Collapse - show truncated text with down arrow
-                this.classList.remove('expanded');
-                this.innerHTML = storedOriginalText + '<span class="preprocessing-expand-indicator">▼</span>';
-              } else {
-                // Expand - show full text with up arrow
-                this.classList.add('expanded');
-                this.innerHTML = storedOriginalText + '<span class="preprocessing-expand-indicator">▲</span>';
-              }
-            });
-            
-            // Initially show truncated text with down arrow
-            div.innerHTML = originalText + '<span class="preprocessing-expand-indicator">▼</span>';
-          }
-        }, 100); // Small delay to ensure content is loaded
-      }
-
-      // Initialize expandable functionality when preprocessing results are shown
-      const preprocessingObserver = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.type === 'childList' || mutation.type === 'characterData') {
-            // Check if any preprocessing content was updated
-            const preprocessingIds = [
-              'originalText', 'cleanedText', 'tokenizedText', 'beforeStopWordText', 
-              'filteredText', 'beforeLowercaseText', 'lowercasedText', 'beforeStemmingText', 
-              'lemmatizedText', 'beforeFinalPreprocessingText', 'afterFinalPreprocessingText'
-            ];
-            
-            preprocessingIds.forEach(id => {
-              const element = document.getElementById(id);
-              if (element && element.textContent.trim()) {
-                makePreprocessingDivExpandable(element);
-              }
-            });
-          }
-        });
-      });
-
-      // Start observing preprocessing content
-      document.addEventListener('DOMContentLoaded', function() {
-        // Observe the main preprocessing results container
-        const preprocessingResults = document.getElementById('preprocessingResults');
-        if (preprocessingResults) {
-          preprocessingObserver.observe(preprocessingResults, { 
-            childList: true, 
-            subtree: true, 
-            characterData: true 
-          });
-        }
-        
-        // Also try to initialize immediately
-        setTimeout(makePreprocessingContentExpandable, 500);
-      });
     </script>
 
     <style>
@@ -1871,37 +1584,90 @@
         color: #ffd700;
       }
 
-      /* Expandable Preprocessing Content Styles - Same as Table Cells */
-      .expandable-preprocessing-content {
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        cursor: pointer;
+
+      /* Custom Scrollbar Styles for Better Visibility */
+      #originalText::-webkit-scrollbar,
+      #cleanedText::-webkit-scrollbar,
+      #beforeTokenizationText::-webkit-scrollbar,
+      #tokenizedText::-webkit-scrollbar,
+      #beforeLowercaseText::-webkit-scrollbar,
+      #lowercasedText::-webkit-scrollbar,
+      #beforeStopWordText::-webkit-scrollbar,
+      #filteredText::-webkit-scrollbar,
+      #beforeStemmingText::-webkit-scrollbar,
+      #lemmatizedText::-webkit-scrollbar,
+      #beforeFinalPreprocessingText::-webkit-scrollbar,
+      #afterFinalPreprocessingText::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      #originalText::-webkit-scrollbar-track,
+      #cleanedText::-webkit-scrollbar-track,
+      #beforeTokenizationText::-webkit-scrollbar-track,
+      #tokenizedText::-webkit-scrollbar-track,
+      #beforeLowercaseText::-webkit-scrollbar-track,
+      #lowercasedText::-webkit-scrollbar-track,
+      #beforeStopWordText::-webkit-scrollbar-track,
+      #filteredText::-webkit-scrollbar-track,
+      #beforeStemmingText::-webkit-scrollbar-track,
+      #lemmatizedText::-webkit-scrollbar-track,
+      #beforeFinalPreprocessingText::-webkit-scrollbar-track,
+      #afterFinalPreprocessingText::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      #originalText::-webkit-scrollbar-thumb,
+      #cleanedText::-webkit-scrollbar-thumb,
+      #beforeTokenizationText::-webkit-scrollbar-thumb,
+      #tokenizedText::-webkit-scrollbar-thumb,
+      #beforeLowercaseText::-webkit-scrollbar-thumb,
+      #lowercasedText::-webkit-scrollbar-thumb,
+      #beforeStopWordText::-webkit-scrollbar-thumb,
+      #filteredText::-webkit-scrollbar-thumb,
+      #beforeStemmingText::-webkit-scrollbar-thumb,
+      #lemmatizedText::-webkit-scrollbar-thumb,
+      #beforeFinalPreprocessingText::-webkit-scrollbar-thumb,
+      #afterFinalPreprocessingText::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 10px;
+        border: 2px solid #f1f1f1;
+      }
+
+      #originalText::-webkit-scrollbar-thumb:hover,
+      #cleanedText::-webkit-scrollbar-thumb:hover,
+      #beforeTokenizationText::-webkit-scrollbar-thumb:hover,
+      #tokenizedText::-webkit-scrollbar-thumb:hover,
+      #beforeLowercaseText::-webkit-scrollbar-thumb:hover,
+      #lowercasedText::-webkit-scrollbar-thumb:hover,
+      #beforeStopWordText::-webkit-scrollbar-thumb:hover,
+      #filteredText::-webkit-scrollbar-thumb:hover,
+      #beforeStemmingText::-webkit-scrollbar-thumb:hover,
+      #lemmatizedText::-webkit-scrollbar-thumb:hover,
+      #beforeFinalPreprocessingText::-webkit-scrollbar-thumb:hover,
+      #afterFinalPreprocessingText::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #5a67d8, #6b46c1);
+      }
+
+      /* Enhanced text containers with better borders and shadows */
+      #originalText, #cleanedText, #beforeTokenizationText, #tokenizedText,
+      #beforeLowercaseText, #lowercasedText, #beforeStopWordText, #filteredText,
+      #beforeStemmingText, #lemmatizedText, #beforeFinalPreprocessingText, #afterFinalPreprocessingText {
+        border: 2px solid #e2e8f0 !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
-        position: relative;
+        background: #fafafa !important;
         max-height: 200px;
-      }
-      
-      .expandable-preprocessing-content:hover {
-        background-color: rgba(0, 123, 255, 0.1);
-      }
-      
-      .expandable-preprocessing-content.expanded {
-        white-space: normal;
-        word-wrap: break-word;
-        max-width: none;
-        max-height: none;
-        background-color: rgba(0, 123, 255, 0.05);
         overflow-y: auto;
+        word-wrap: break-word;
+        white-space: pre-wrap;
       }
-      
-      .preprocessing-expand-indicator {
-        display: inline-block;
-        margin-left: 5px;
-        font-size: 0.8em;
-        color: #007bff;
-        font-weight: bold;
+
+      #originalText:hover, #cleanedText:hover, #beforeTokenizationText:hover, #tokenizedText:hover,
+      #beforeLowercaseText:hover, #lowercasedText:hover, #beforeStopWordText:hover, #filteredText:hover,
+      #beforeStemmingText:hover, #lemmatizedText:hover, #beforeFinalPreprocessingText:hover, #afterFinalPreprocessingText:hover {
+        border-color: #667eea !important;
+        box-shadow: 0 6px 12px rgba(102, 126, 234, 0.15);
       }
     </style>
   </body>

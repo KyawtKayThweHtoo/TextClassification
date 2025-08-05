@@ -10,24 +10,20 @@ from sklearn.preprocessing import LabelEncoder, MaxAbsScaler
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
 import nltk
 from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+from nltk.stem import WordNetLemmatizer, PorterStemmer
+from nltk.corpus import wordnet
 import re
 import pickle
 import json
 from datetime import timedelta
 
-# Optional import for Word2Vec (for demonstration purposes)
-try:
-    from gensim.models import Word2Vec
-    GENSIM_AVAILABLE = True
-except ImportError:
-    GENSIM_AVAILABLE = False
-    print("Note: gensim not available, Word2Vec will be simulated")
 
 # Ensure NLTK data is downloaded
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('punkt_tab')
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here-change-in-production'  # Change this in production
@@ -48,7 +44,20 @@ FIELDS = [
     'Software Engineering'
 ]
 
-# --- Preprocessing Functions ---
+# --- Helper function for POS tagging ---
+def get_wordnet_pos(word):
+    """Map POS tag to first character lemmatize() accepts"""
+    try:
+        tag = nltk.pos_tag([word])[0][1][0].upper()
+        tag_dict = {"J": wordnet.ADJ,
+                    "N": wordnet.NOUN,
+                    "V": wordnet.VERB,
+                    "R": wordnet.ADV}
+        return tag_dict.get(tag, wordnet.NOUN)
+    except:
+        return wordnet.NOUN
+
+# --- Enhanced Preprocessing Functions ---
 def preprocess(text):
     # Return the full preprocessing steps
     original_text = text
@@ -64,11 +73,33 @@ def preprocess(text):
     
     # Step 4: Stop Word Removal
     stop_words = set(stopwords.words('english'))
-    filtered_tokens = [w for w in tokens if w not in stop_words]
+    filtered_tokens = [w for w in tokens if w not in stop_words and len(w) > 2]
     
-    # Step 5: Stemming and Lemmatization
+    # Step 5: Enhanced Stemming and Lemmatization
+    stemmer = PorterStemmer()
     lemmatizer = WordNetLemmatizer()
-    lemmatized_tokens = [lemmatizer.lemmatize(w) for w in filtered_tokens]
+    
+    # First apply stemming to show more dramatic changes
+    stemmed_tokens = [stemmer.stem(w) for w in filtered_tokens]
+    
+    # Apply comprehensive lemmatization with POS tagging and stemming
+    lemmatized_tokens = []
+    for word in filtered_tokens:
+        # Get the POS tag for better lemmatization
+        pos = get_wordnet_pos(word)
+        
+        # Apply lemmatization for different word forms
+        lemmatized_word = word
+        # Try different POS tags to get better results
+        for pos_tag in [wordnet.NOUN, wordnet.VERB, wordnet.ADJ, wordnet.ADV]:
+            temp_lemma = lemmatizer.lemmatize(word, pos_tag)
+            if temp_lemma != word:  # If lemmatization changed the word
+                lemmatized_word = temp_lemma
+                break
+        
+        # Apply aggressive stemming to the lemmatized word
+        final_word = stemmer.stem(lemmatized_word)
+        lemmatized_tokens.append(final_word)
     
     # Final preprocessed text
     preprocessed_text = ' '.join(lemmatized_tokens)
@@ -80,6 +111,7 @@ def preprocess(text):
         'cleaned': cleaned_text,
         'tokens': tokens,
         'filtered_tokens': filtered_tokens,
+        'stemmed_tokens': stemmed_tokens,
         'lemmatized_tokens': lemmatized_tokens,
         'preprocessed_text': preprocessed_text
     }
@@ -90,10 +122,29 @@ def preprocess_simple(text):
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
     tokens = nltk.word_tokenize(text)
     stop_words = set(stopwords.words('english'))
-    tokens = [w for w in tokens if w not in stop_words]
+    tokens = [w for w in tokens if w not in stop_words and len(w) > 2]
+    
+    # Enhanced stemming and lemmatization
+    stemmer = PorterStemmer()
     lemmatizer = WordNetLemmatizer()
-    tokens = [lemmatizer.lemmatize(w) for w in tokens]
-    return ' '.join(tokens)
+    
+    # Apply comprehensive lemmatization and stemming
+    processed_tokens = []
+    for word in tokens:
+        # Apply lemmatization for different word forms
+        lemmatized_word = word
+        # Try different POS tags to get better results
+        for pos_tag in [wordnet.NOUN, wordnet.VERB, wordnet.ADJ, wordnet.ADV]:
+            temp_lemma = lemmatizer.lemmatize(word, pos_tag)
+            if temp_lemma != word:  # If lemmatization changed the word
+                lemmatized_word = temp_lemma
+                break
+        
+        # Apply aggressive stemming
+        final_word = stemmer.stem(lemmatized_word)
+        processed_tokens.append(final_word)
+    
+    return ' '.join(processed_tokens)
 
 # --- Load Real Data for Thesis Fields ---
 # Load data from Excel files in the data directory
@@ -275,69 +326,6 @@ def calculate_tfidf():
         'preprocessed_text': preprocessed_text
     })
 
-@app.route('/calculate_word2vec', methods=['POST'])
-def calculate_word2vec():
-    # Get the preprocessed text from the request
-    preprocessed_text = request.form.get('preprocessed_text', '')
-    
-    # Split preprocessed text into words
-    words = preprocessed_text.split()
-    
-    if GENSIM_AVAILABLE and len(words) > 0:
-        try:
-            # Create a simple Word2Vec model with the current document
-            # Note: For real implementation, you'd want a pre-trained model or larger corpus
-            sentences = [words]  # Single document as list of sentences
-            model = Word2Vec(sentences, vector_size=300, window=5, min_count=1, workers=1, seed=42)
-            
-            # Get vectors for words that exist in the model
-            word2vec_results = []
-            for word in words[:20]:  # Limit to first 20 words
-                if word in model.wv:
-                    vector = model.wv[word]
-                    magnitude = np.linalg.norm(vector)
-                    word2vec_results.append({
-                        'word': word,
-                        'vector': vector[:5].tolist(),  # First 5 dimensions for display
-                        'full_vector': vector.tolist(),  # Full vector
-                        'magnitude': float(magnitude)
-                    })
-            
-            return jsonify({
-                'word2vec_data': word2vec_results,
-                'vocabulary_size': len(model.wv),
-                'vector_dimensions': 300,
-                'word_coverage': min(100, (len(word2vec_results) / len(set(words))) * 100)
-            })
-            
-        except Exception as e:
-            print(f"Word2Vec error: {str(e)}")
-            # Fall back to mock data
-            pass
-    
-    # Generate mock Word2Vec data if gensim is not available or on error
-    unique_words = list(set(words))[:20]
-    word2vec_data = []
-    
-    for i, word in enumerate(unique_words):
-        # Generate consistent random vectors based on word
-        np.random.seed(hash(word) % 2147483647)  # Use word hash as seed for consistency
-        vector = np.random.randn(300) * 0.1  # Small random vectors
-        magnitude = np.linalg.norm(vector)
-        
-        word2vec_data.append({
-            'word': word,
-            'vector': vector[:5].tolist(),  # First 5 dimensions for display
-            'full_vector': vector.tolist(),  # Full vector
-            'magnitude': float(magnitude)
-        })
-    
-    return jsonify({
-        'word2vec_data': word2vec_data,
-        'vocabulary_size': len(unique_words),
-        'vector_dimensions': 300,
-        'word_coverage': 85.0  # Mock coverage
-    })
 
 @app.route('/classify', methods=['POST'])
 def classify():
@@ -1419,7 +1407,15 @@ def preprocess_excel():
         
         # Store preprocessed data with proper NaN handling - only essential columns
         preprocessed_df = df[['Title', 'Abstract', 'Category', 'combined_text', 'preprocessed_text']].copy()
-        session['excel_preprocessed'] = preprocessed_df.to_json(orient='records', force_ascii=False, date_format='iso')
+        
+        # Check if dataset is too large for session storage
+        json_data = preprocessed_df.to_json(orient='records', force_ascii=False, date_format='iso')
+        if len(json_data) > 1024 * 1024:  # 1MB limit
+            print(f"DEBUG: Dataset too large for session ({len(json_data)} bytes), limiting to first 1000 rows")
+            limited_df = preprocessed_df.head(1000)
+            json_data = limited_df.to_json(orient='records', force_ascii=False, date_format='iso')
+        
+        session['excel_preprocessed'] = json_data
         
         # Calculate statistics
         avg_tokens = total_tokens / len(df) if len(df) > 0 else 0
