@@ -57,6 +57,16 @@ def get_wordnet_pos(word):
     except:
         return wordnet.NOUN
 
+# --- Helper Functions ---
+def truncate_to_words(text, max_words=500):
+    """Truncate text to a maximum number of words"""
+    if not text or pd.isna(text):
+        return ''
+    words = str(text).split()
+    if len(words) <= max_words:
+        return text
+    return ' '.join(words[:max_words])
+
 # --- Enhanced Preprocessing Functions ---
 def preprocess(text):
     # Return the full preprocessing steps
@@ -200,6 +210,7 @@ dataframes = [
 data = pd.concat(dataframes, ignore_index=True)
 data = data.dropna(subset=['Title', 'Abstract', 'Category'])
 data['text'] = data['Title'].astype(str) + ' ' + data['Abstract'].astype(str)
+data['text'] = data['text'].apply(lambda x: truncate_to_words(x, 500))
 data['text'] = data['text'].apply(preprocess_simple)
 
 # Label Encoding
@@ -240,6 +251,7 @@ def preprocess_step():
     title = request.form.get('title', '')
     abstract = request.form.get('abstract', '')
     combined_text = title + ' ' + abstract
+    combined_text = truncate_to_words(combined_text, 500)
     
     # Get all preprocessing steps
     preprocessing_steps = preprocess(combined_text)
@@ -360,7 +372,9 @@ def classify():
 def predict():
     title = request.form.get('title', '')
     abstract = request.form.get('abstract', '')
-    text = preprocess_simple(title + ' ' + abstract)
+    combined_text = title + ' ' + abstract
+    combined_text = truncate_to_words(combined_text, 500)
+    text = preprocess_simple(combined_text)
     kernel = request.form.get('kernel', 'linear')
     
     # Always get the linear prediction first to ensure consistency
@@ -712,6 +726,7 @@ def preprocess_data_pipeline():
         
         # Create combined text
         df['combined_text'] = df['Title'] + ' ' + df['Abstract']
+        df['combined_text'] = df['combined_text'].apply(lambda x: truncate_to_words(x, 500))
         
         # Preprocess each text
         preprocessed_texts = []
@@ -1383,6 +1398,7 @@ def preprocess_excel():
         
         # Combine title and abstract
         df['combined_text'] = df['Title'] + ' ' + df['Abstract']
+        df['combined_text'] = df['combined_text'].apply(lambda x: truncate_to_words(x, 500))
         
         # Preprocess all texts
         preprocessed_texts = []

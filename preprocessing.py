@@ -10,6 +10,16 @@ nltk.download('stopwords')
 import nltk
 nltk.download('punkt_tab')
 
+# --- Helper Functions ---
+def truncate_to_words(text, max_words=500):
+    """Truncate text to a maximum number of words"""
+    if not text or pd.isna(text):
+        return ''
+    words = str(text).split()
+    if len(words) <= max_words:
+        return text
+    return ' '.join(words[:max_words])
+
 
 
 # Step 1: Load all Excel files
@@ -36,6 +46,7 @@ for file in excel_files:
 
     # Combine title and abstract into a single text field
     df['text'] = df['Title'] + ' ' + df['Abstract']
+    df['text'] = df['text'].apply(lambda x: truncate_to_words(x, 500))
     
     all_data.append(df[['text', 'Category']])
 

@@ -3836,7 +3836,6 @@
                 </div>
                 
                 ${generateConfusionMatrixHTML(data)}
-                ${generateCategoryMetricsHTML(data)}
             `;
       }
 
@@ -3906,41 +3905,6 @@
         return html;
       }
 
-      function generateCategoryMetricsHTML(data) {
-        if (!data.category_metrics) {
-          return "";
-        }
-
-        let html = `
-                <div class="mt-4">
-                    <h6><i class="bi bi-bar-chart me-2"></i>Per-Category Performance</h6>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Category</th>
-                                    <th>Precision</th>
-                                    <th>Recall</th>
-                                    <th>F1-Score</th>
-                                    <th>Support</th>
-                                </tr>
-                            </thead>
-                            <tbody>`;
-
-        data.category_metrics.forEach((metric) => {
-          html += `
-                    <tr>
-                        <td class="fw-bold">${metric.category}</td>
-                        <td>${(metric.precision * 100).toFixed(1)}%</td>
-                        <td>${(metric.recall * 100).toFixed(1)}%</td>
-                        <td>${(metric.f1_score * 100).toFixed(1)}%</td>
-                        <td>${metric.support}</td>
-                    </tr>`;
-        });
-
-        html += `</tbody></table></div></div>`;
-        return html;
-      }
 
       // Initialize the workflow
       document.addEventListener("DOMContentLoaded", function () {

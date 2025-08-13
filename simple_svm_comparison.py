@@ -14,6 +14,16 @@ import re
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+# --- Helper Functions ---
+def truncate_to_words(text, max_words=500):
+    """Truncate text to a maximum number of words"""
+    if not text or pd.isna(text):
+        return ''
+    words = str(text).split()
+    if len(words) <= max_words:
+        return text
+    return ' '.join(words[:max_words])
+
 # Ensure NLTK data is downloaded
 try:
     nltk.download('punkt', quiet=True)
@@ -55,6 +65,7 @@ def load_data():
         data = pd.read_csv('preprocessed_papers_data.csv')
         data = data.dropna(subset=['Title', 'Abstract', 'Category'])
         data['text'] = data['Title'].astype(str) + ' ' + data['Abstract'].astype(str)
+        data['text'] = data['text'].apply(lambda x: truncate_to_words(x, 500))
         data['text'] = data['text'].apply(preprocess_text)
         return data
     
@@ -88,6 +99,7 @@ def load_data():
         data = pd.concat(dataframes, ignore_index=True)
         data = data.dropna(subset=['Title', 'Abstract', 'Category'])
         data['text'] = data['Title'].astype(str) + ' ' + data['Abstract'].astype(str)
+        data['text'] = data['text'].apply(lambda x: truncate_to_words(x, 500))
         data['text'] = data['text'].apply(preprocess_text)
         return data
     else:
@@ -268,7 +280,9 @@ class SVMComparisonApp:
             return
         
         # Preprocess text
-        text = preprocess_text(title + " " + abstract)
+        combined_text = title + " " + abstract
+        combined_text = truncate_to_words(combined_text, 500)
+        text = preprocess_text(combined_text)
         
         # Get selected kernel
         kernel = self.kernel_var.get()
